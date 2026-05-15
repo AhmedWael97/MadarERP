@@ -1,0 +1,89 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "field:banner_name",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "banner_name",
+    "image",
+    "link_url",
+    "column_break_1",
+    "position",
+    "is_active",
+    "start_date",
+    "end_date"
+  ],
+  "fields": [
+    {
+      "fieldname": "banner_name",
+      "fieldtype": "Data",
+      "label": "Banner Name",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "image",
+      "fieldtype": "Attach Image",
+      "label": "Image"
+    },
+    {
+      "fieldname": "link_url",
+      "fieldtype": "Data",
+      "label": "Link URL"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "position",
+      "fieldtype": "Int",
+      "label": "Position",
+      "default": 0
+    },
+    {
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Active",
+      "default": 1
+    },
+    {
+      "fieldname": "start_date",
+      "fieldtype": "Date",
+      "label": "Start"
+    },
+    {
+      "fieldname": "end_date",
+      "fieldtype": "Date",
+      "label": "End"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Ecommerce",
+  "name": "Madaar Banner",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "banner_name",
+  "track_changes": 1
+}

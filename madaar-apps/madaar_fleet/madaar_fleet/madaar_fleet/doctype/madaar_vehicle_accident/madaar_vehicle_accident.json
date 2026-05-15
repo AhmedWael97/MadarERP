@@ -1,0 +1,104 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "ACC-.YYYY.-.####",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "vehicle",
+    "driver",
+    "accident_datetime",
+    "location",
+    "column_break_1",
+    "severity",
+    "estimated_repair_cost",
+    "insurance_claim_number",
+    "status",
+    "description"
+  ],
+  "fields": [
+    {
+      "fieldname": "vehicle",
+      "fieldtype": "Link",
+      "label": "Vehicle",
+      "reqd": 1,
+      "options": "Madaar Vehicle"
+    },
+    {
+      "fieldname": "driver",
+      "fieldtype": "Link",
+      "label": "Driver",
+      "options": "Madaar Driver Profile"
+    },
+    {
+      "fieldname": "accident_datetime",
+      "fieldtype": "Datetime",
+      "label": "Date / Time",
+      "reqd": 1
+    },
+    {
+      "fieldname": "location",
+      "fieldtype": "Data",
+      "label": "Location"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "severity",
+      "fieldtype": "Select",
+      "label": "Severity",
+      "options": "Minor\nModerate\nMajor\nTotal Loss",
+      "default": "Minor"
+    },
+    {
+      "fieldname": "estimated_repair_cost",
+      "fieldtype": "Currency",
+      "label": "Est. Repair Cost"
+    },
+    {
+      "fieldname": "insurance_claim_number",
+      "fieldtype": "Data",
+      "label": "Insurance Claim #"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Reported\nUnder Review\nRepaired\nClosed",
+      "default": "Reported"
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text",
+      "label": "Description"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Fleet",
+  "name": "Madaar Vehicle Accident",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

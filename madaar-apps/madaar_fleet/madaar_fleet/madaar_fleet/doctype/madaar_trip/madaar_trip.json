@@ -1,0 +1,128 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "TRP-.YYYY.-.####",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "trip_number",
+    "vehicle",
+    "driver",
+    "route",
+    "column_break_1",
+    "start_date",
+    "end_date",
+    "status",
+    "section_odo",
+    "start_odometer",
+    "end_odometer",
+    "column_break_2",
+    "distance_km",
+    "purpose"
+  ],
+  "fields": [
+    {
+      "fieldname": "trip_number",
+      "fieldtype": "Data",
+      "label": "Trip Number",
+      "read_only": 1
+    },
+    {
+      "fieldname": "vehicle",
+      "fieldtype": "Link",
+      "label": "Vehicle",
+      "reqd": 1,
+      "options": "Madaar Vehicle"
+    },
+    {
+      "fieldname": "driver",
+      "fieldtype": "Link",
+      "label": "Driver",
+      "options": "Madaar Driver Profile"
+    },
+    {
+      "fieldname": "route",
+      "fieldtype": "Link",
+      "label": "Route",
+      "options": "Madaar Route"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "start_date",
+      "fieldtype": "Datetime",
+      "label": "Start",
+      "reqd": 1
+    },
+    {
+      "fieldname": "end_date",
+      "fieldtype": "Datetime",
+      "label": "End"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Planned\nIn Progress\nCompleted\nCancelled",
+      "default": "Planned"
+    },
+    {
+      "fieldname": "section_odo",
+      "fieldtype": "Section Break",
+      "label": "Odometer"
+    },
+    {
+      "fieldname": "start_odometer",
+      "fieldtype": "Int",
+      "label": "Start Odometer (km)"
+    },
+    {
+      "fieldname": "end_odometer",
+      "fieldtype": "Int",
+      "label": "End Odometer (km)"
+    },
+    {
+      "fieldname": "column_break_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "distance_km",
+      "fieldtype": "Float",
+      "label": "Distance (km)"
+    },
+    {
+      "fieldname": "purpose",
+      "fieldtype": "Small Text",
+      "label": "Purpose"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Fleet",
+  "name": "Madaar Trip",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "trip_number",
+  "track_changes": 1
+}

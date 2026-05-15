@@ -1,0 +1,16 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.txt
+recursive-include madaar_core *.css
+recursive-include madaar_core *.csv
+recursive-include madaar_core *.html
+recursive-include madaar_core *.ico
+recursive-include madaar_core *.js
+recursive-include madaar_core *.json
+recursive-include madaar_core *.md
+recursive-include madaar_core *.png
+recursive-include madaar_core *.py
+recursive-include madaar_core *.svg
+recursive-include madaar_core *.txt

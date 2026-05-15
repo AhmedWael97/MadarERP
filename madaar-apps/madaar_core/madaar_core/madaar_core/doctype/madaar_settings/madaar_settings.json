@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-05-14 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tenant_section",
+  "tenant_id",
+  "package_name",
+  "control_plane_url",
+  "column_break_1",
+  "primary_color",
+  "logo_url",
+  "limits_section",
+  "feature_limits"
+ ],
+ "fields": [
+  {"fieldname": "tenant_section", "fieldtype": "Section Break", "label": "Tenant Identity"},
+  {"fieldname": "tenant_id", "fieldtype": "Data", "label": "Tenant ID", "reqd": 0},
+  {"fieldname": "package_name", "fieldtype": "Data", "label": "Package", "reqd": 0},
+  {"fieldname": "control_plane_url", "fieldtype": "Data", "label": "Control Plane URL"},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "primary_color", "fieldtype": "Color", "label": "Primary Color", "default": "#10b981"},
+  {"fieldname": "logo_url", "fieldtype": "Attach Image", "label": "Logo"},
+  {"fieldname": "limits_section", "fieldtype": "Section Break", "label": "Feature Limits"},
+  {"fieldname": "feature_limits", "fieldtype": "Table", "label": "Feature Limits", "options": "Madaar Feature Limit"}
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-05-14 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 0, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

@@ -1,0 +1,89 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "VAT-.YYYY.-.####",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "period_start",
+    "period_end",
+    "column_break_1",
+    "output_vat",
+    "input_vat",
+    "net_payable",
+    "status",
+    "filed_date"
+  ],
+  "fields": [
+    {
+      "fieldname": "period_start",
+      "fieldtype": "Date",
+      "label": "Period Start",
+      "reqd": 1
+    },
+    {
+      "fieldname": "period_end",
+      "fieldtype": "Date",
+      "label": "Period End",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "output_vat",
+      "fieldtype": "Currency",
+      "label": "Output VAT"
+    },
+    {
+      "fieldname": "input_vat",
+      "fieldtype": "Currency",
+      "label": "Input VAT"
+    },
+    {
+      "fieldname": "net_payable",
+      "fieldtype": "Currency",
+      "label": "Net Payable",
+      "read_only": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nFiled\nPaid",
+      "default": "Draft"
+    },
+    {
+      "fieldname": "filed_date",
+      "fieldtype": "Date",
+      "label": "Filed Date"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar E-Gov Tax",
+  "name": "Madaar VAT Return",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

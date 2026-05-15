@@ -1,0 +1,90 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "RES-.YYYY.-.####",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "customer_name",
+    "customer_phone",
+    "reservation_datetime",
+    "column_break_1",
+    "hall",
+    "table_link",
+    "party_size",
+    "status"
+  ],
+  "fields": [
+    {
+      "fieldname": "customer_name",
+      "fieldtype": "Data",
+      "label": "Customer Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "customer_phone",
+      "fieldtype": "Data",
+      "label": "Phone"
+    },
+    {
+      "fieldname": "reservation_datetime",
+      "fieldtype": "Datetime",
+      "label": "Date / Time",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "hall",
+      "fieldtype": "Link",
+      "label": "Hall",
+      "options": "Madaar Hall"
+    },
+    {
+      "fieldname": "table_link",
+      "fieldtype": "Link",
+      "label": "Table",
+      "options": "Madaar Table"
+    },
+    {
+      "fieldname": "party_size",
+      "fieldtype": "Int",
+      "label": "Party Size"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nConfirmed\nSeated\nCompleted\nCancelled\nNo Show",
+      "default": "Pending"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Restaurant",
+  "name": "Madaar Reservation",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

@@ -1,0 +1,17 @@
+[project]
+name = "madaar_fleet"
+version = "0.0.1"
+description = "Fleet management — vehicles, drivers, trips, fuel, maintenance, GPS."
+authors = [
+    { name = "Madaar Software", email = "dev@madaar.app" }
+]
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "madaar_fleet"

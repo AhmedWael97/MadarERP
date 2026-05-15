@@ -1,0 +1,84 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "BUD-.YYYY.-.####",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "project",
+    "fiscal_year",
+    "category",
+    "column_break_1",
+    "planned_amount",
+    "actual_amount",
+    "variance"
+  ],
+  "fields": [
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "fiscal_year",
+      "fieldtype": "Link",
+      "label": "Fiscal Year",
+      "reqd": 1,
+      "options": "Fiscal Year"
+    },
+    {
+      "fieldname": "category",
+      "fieldtype": "Data",
+      "label": "Category"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "planned_amount",
+      "fieldtype": "Currency",
+      "label": "Planned"
+    },
+    {
+      "fieldname": "actual_amount",
+      "fieldtype": "Currency",
+      "label": "Actual",
+      "read_only": 1
+    },
+    {
+      "fieldname": "variance",
+      "fieldtype": "Currency",
+      "label": "Variance",
+      "read_only": 1
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Construction",
+  "name": "Madaar Project Budget",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

@@ -1,0 +1,32 @@
+.env
+.env.local
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log
+
+# Generated frontend artifacts
+frontend/src/_generated/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Docker volumes (host-mounted, if any)
+docker/data/

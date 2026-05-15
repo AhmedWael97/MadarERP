@@ -1,0 +1,6 @@
+app_name = "madaar_construction"
+app_title = "Madaar Construction"
+app_publisher = "Madaar Software"
+app_description = "Construction — BOQ, progress bills (mostakhlas), change orders, project budgets, labor."
+app_license = "MIT"
+app_version = "0.0.1"

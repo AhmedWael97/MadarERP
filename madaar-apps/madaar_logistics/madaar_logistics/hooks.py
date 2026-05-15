@@ -1,0 +1,6 @@
+app_name = "madaar_logistics"
+app_title = "Madaar Logistics"
+app_publisher = "Madaar Software"
+app_description = "Last-mile logistics — COD settlement, live tracking events."
+app_license = "MIT"
+app_version = "0.0.1"

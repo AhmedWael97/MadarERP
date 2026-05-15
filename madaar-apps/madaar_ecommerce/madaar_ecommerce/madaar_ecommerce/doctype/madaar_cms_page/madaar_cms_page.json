@@ -1,0 +1,83 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "field:page_slug",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "page_slug",
+    "title",
+    "column_break_1",
+    "is_published",
+    "published_date",
+    "section_content",
+    "content"
+  ],
+  "fields": [
+    {
+      "fieldname": "page_slug",
+      "fieldtype": "Data",
+      "label": "Slug",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "is_published",
+      "fieldtype": "Check",
+      "label": "Published",
+      "default": 0
+    },
+    {
+      "fieldname": "published_date",
+      "fieldtype": "Date",
+      "label": "Publish Date"
+    },
+    {
+      "fieldname": "section_content",
+      "fieldtype": "Section Break",
+      "label": "Content"
+    },
+    {
+      "fieldname": "content",
+      "fieldtype": "Text Editor",
+      "label": "Content"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Ecommerce",
+  "name": "Madaar CMS Page",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "title",
+  "track_changes": 1
+}

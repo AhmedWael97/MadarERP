@@ -1,0 +1,84 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "field:driver_name",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "driver_name",
+    "employee",
+    "phone",
+    "column_break_1",
+    "license_number",
+    "license_expiry",
+    "status"
+  ],
+  "fields": [
+    {
+      "fieldname": "driver_name",
+      "fieldtype": "Data",
+      "label": "Driver Name",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "employee",
+      "fieldtype": "Link",
+      "label": "Employee",
+      "options": "Employee"
+    },
+    {
+      "fieldname": "phone",
+      "fieldtype": "Data",
+      "label": "Phone"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "license_number",
+      "fieldtype": "Data",
+      "label": "License Number"
+    },
+    {
+      "fieldname": "license_expiry",
+      "fieldtype": "Date",
+      "label": "License Expiry"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Active\nOn Leave\nInactive",
+      "default": "Active"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Fleet",
+  "name": "Madaar Driver Profile",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "driver_name",
+  "track_changes": 1
+}

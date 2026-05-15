@@ -1,0 +1,11 @@
+/* Self-hosted Arabic + Latin fonts. The actual font files come from @fontsource
+ * packages installed at runtime; we keep the @import declarations in JS
+ * (main.tsx) so the bundle stays inspectable. The :lang selectors here
+ * pick the right family based on <html lang>. */
+
+html:lang(ar) {
+  --font-sans: "Tajawal", "Inter", system-ui, sans-serif;
+}
+html:lang(en) {
+  --font-sans: "Inter", "Tajawal", system-ui, sans-serif;
+}

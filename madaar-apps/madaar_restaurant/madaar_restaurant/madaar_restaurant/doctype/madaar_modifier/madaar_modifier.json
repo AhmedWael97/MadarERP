@@ -1,0 +1,45 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "modifier_name",
+    "price_delta",
+    "is_default"
+  ],
+  "fields": [
+    {
+      "fieldname": "modifier_name",
+      "fieldtype": "Data",
+      "label": "Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "price_delta",
+      "fieldtype": "Currency",
+      "label": "Price Δ",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "is_default",
+      "fieldtype": "Check",
+      "label": "Default",
+      "default": 0
+    }
+  ],
+  "istable": 1,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Restaurant",
+  "name": "Madaar Modifier",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

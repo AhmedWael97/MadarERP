@@ -1,0 +1,6 @@
+app_name = "madaar_restaurant"
+app_title = "Madaar Restaurant"
+app_publisher = "Madaar Software"
+app_description = "Restaurant — halls, tables, modifiers, reservations, KDS."
+app_license = "MIT"
+app_version = "0.0.1"

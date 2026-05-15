@@ -1,0 +1,6 @@
+app_name = "madaar_fleet"
+app_title = "Madaar Fleet"
+app_publisher = "Madaar Software"
+app_description = "Fleet management — vehicles, drivers, trips, fuel, maintenance, GPS."
+app_license = "MIT"
+app_version = "0.0.1"

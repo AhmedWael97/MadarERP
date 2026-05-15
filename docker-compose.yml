@@ -1,0 +1,117 @@
+name: madaar-erp
+
+services:
+  db:
+    image: mariadb:10.11
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  redis-cache:
+    image: redis:7-alpine
+    volumes:
+      - redis-cache-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  redis-queue:
+    image: redis:7-alpine
+    volumes:
+      - redis-queue-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      args:
+        ERPNEXT_BASE_IMAGE: ${ERPNEXT_BASE_IMAGE:-frappe/erpnext:v15}
+    environment:
+      # Only dev.localhost by default — add more sites in .env if needed.
+      # Each extra site adds ~5 min to first-boot time.
+      SITES: ${SITES:-dev.localhost}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      REDIS_SOCKETIO: redis-queue:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+    healthcheck:
+      # Frappe's /api/method/ping returns 200 {"message":"pong"} once bench is up.
+      # start_period is long because first-boot creates sites + installs all apps.
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/method/ping', timeout=5)"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 1800s
+    ports:
+      - "${FRAPPE_HTTP_PORT:-8000}:8000"
+      - "${FRAPPE_SOCKET_PORT:-9000}:9000"
+    volumes:
+      # Bind-mount every madaar_* app so live edits land in the container without
+      # rebuilding. Keep this list aligned with the MADAAR_APPS array in
+      # docker/entrypoint.backend.sh — both must agree on which apps exist.
+      - ./madaar-apps/madaar_core:/home/frappe/frappe-bench/apps/madaar_core
+      - ./madaar-apps/madaar_construction:/home/frappe/frappe-bench/apps/madaar_construction
+      - ./madaar-apps/madaar_fleet:/home/frappe/frappe-bench/apps/madaar_fleet
+      - ./madaar-apps/madaar_workshop:/home/frappe/frappe-bench/apps/madaar_workshop
+      - ./madaar-apps/madaar_restaurant:/home/frappe/frappe-bench/apps/madaar_restaurant
+      - ./madaar-apps/madaar_logistics:/home/frappe/frappe-bench/apps/madaar_logistics
+      - ./madaar-apps/madaar_ecommerce:/home/frappe/frappe-bench/apps/madaar_ecommerce
+      - ./madaar-apps/madaar_egov_tax:/home/frappe/frappe-bench/apps/madaar_egov_tax
+      # Named volumes for site data so Windows host perms don't fight Linux uid 1000.
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    environment:
+      VITE_ROOT_DOMAIN: ${VITE_ROOT_DOMAIN:-localhost}
+      VITE_TENANT_OVERRIDE: ${VITE_TENANT_OVERRIDE:-dev}
+      VITE_BACKEND_URL: http://backend:8000
+      VITE_SOCKET_URL: http://backend:9000
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app
+      - ./scan_output:/scan_output:ro
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: pnpm dev --host 0.0.0.0
+
+volumes:
+  db-data:
+  redis-cache-data:
+  redis-queue-data:
+  sites:
+  logs:
+  frontend-node-modules:

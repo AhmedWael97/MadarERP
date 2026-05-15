@@ -1,0 +1,16 @@
+[project]
+name = "madaar_core"
+version = "0.1.0"
+description = "Madaar ERP — core app on top of Frappe/ERPNext (Egyptian regional fields, feature gating, tenant identity)."
+requires-python = ">=3.10"
+authors = [{ name = "Madaar" }]
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "madaar_core"

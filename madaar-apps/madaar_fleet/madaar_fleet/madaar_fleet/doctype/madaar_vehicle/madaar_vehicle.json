@@ -1,0 +1,110 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "field:vehicle_number",
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "vehicle_number",
+    "license_plate",
+    "make",
+    "model",
+    "year",
+    "vin",
+    "column_break_1",
+    "fuel_type",
+    "current_odometer",
+    "status",
+    "driver"
+  ],
+  "fields": [
+    {
+      "fieldname": "vehicle_number",
+      "fieldtype": "Data",
+      "label": "Vehicle Number",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "license_plate",
+      "fieldtype": "Data",
+      "label": "License Plate",
+      "reqd": 1
+    },
+    {
+      "fieldname": "make",
+      "fieldtype": "Data",
+      "label": "Make"
+    },
+    {
+      "fieldname": "model",
+      "fieldtype": "Data",
+      "label": "Model"
+    },
+    {
+      "fieldname": "year",
+      "fieldtype": "Int",
+      "label": "Year"
+    },
+    {
+      "fieldname": "vin",
+      "fieldtype": "Data",
+      "label": "VIN"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "fuel_type",
+      "fieldtype": "Select",
+      "label": "Fuel Type",
+      "options": "Petrol\nDiesel\nElectric\nHybrid\nLPG"
+    },
+    {
+      "fieldname": "current_odometer",
+      "fieldtype": "Int",
+      "label": "Current Odometer (km)"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Active\nIn Service\nOut of Service\nSold",
+      "default": "Active"
+    },
+    {
+      "fieldname": "driver",
+      "fieldtype": "Link",
+      "label": "Default Driver",
+      "options": "Madaar Driver Profile"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Fleet",
+  "name": "Madaar Vehicle",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "vehicle_number",
+  "track_changes": 1
+}

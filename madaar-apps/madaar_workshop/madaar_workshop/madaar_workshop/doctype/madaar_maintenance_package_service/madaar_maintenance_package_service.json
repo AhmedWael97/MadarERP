@@ -1,0 +1,45 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2026-05-15 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "service_type",
+    "price",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "service_type",
+      "fieldtype": "Link",
+      "label": "Service Type",
+      "reqd": 1,
+      "options": "Madaar Service Type",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "price",
+      "fieldtype": "Currency",
+      "label": "Price",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "istable": 1,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-15 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Workshop",
+  "name": "Madaar Maintenance Package Service",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

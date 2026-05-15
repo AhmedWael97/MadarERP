@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./fonts.css";
+
+/* Surface colors driven by the design tokens generated from scan_output. */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    font-family: var(--font-sans, "Tajawal", "Inter", system-ui, sans-serif);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: var(--color-app-bg, oklch(0.984 0.003 247.858));
+    color: var(--color-app-fg, oklch(0.208 0.042 265.755));
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 30%, transparent);
+  }
+}
+
+/* RTL-aware utility shims: prefer logical properties everywhere. */
+@layer utilities {
+  .bg-app {
+    background: var(--color-app-bg);
+  }
+  .text-app {
+    color: var(--color-app-fg);
+  }
+  .bg-sidebar {
+    background: var(--color-sidebar);
+    color: var(--color-sidebar-fg);
+  }
+  .bg-primary {
+    background: var(--color-primary);
+    color: white;
+  }
+  .text-primary {
+    color: var(--color-primary);
+  }
+  .ring-primary {
+    --tw-ring-color: var(--color-primary);
+  }
+}
+
+/* Scrollbar — match the navy/emerald palette without being heavy. */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: oklch(0.869 0.022 252.894);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.704 0.04 256.788);
+}

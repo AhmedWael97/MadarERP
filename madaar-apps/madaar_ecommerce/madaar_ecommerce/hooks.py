@@ -1,0 +1,6 @@
+app_name = "madaar_ecommerce"
+app_title = "Madaar Ecommerce"
+app_publisher = "Madaar Software"
+app_description = "Online store — banners, CMS pages, stores."
+app_license = "MIT"
+app_version = "0.0.1"

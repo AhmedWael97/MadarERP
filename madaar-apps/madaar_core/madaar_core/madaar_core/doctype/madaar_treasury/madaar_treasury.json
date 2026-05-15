@@ -1,0 +1,38 @@
+{
+ "actions": [],
+ "autoname": "field:treasury_name",
+ "creation": "2026-05-14 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "treasury_name",
+  "company",
+  "branch",
+  "column_break_1",
+  "account",
+  "currency",
+  "is_active"
+ ],
+ "fields": [
+  {"fieldname": "treasury_name", "fieldtype": "Data", "in_list_view": 1, "label": "Treasury Name", "reqd": 1, "unique": 1},
+  {"fieldname": "company", "fieldtype": "Link", "in_list_view": 1, "label": "Company", "options": "Company", "reqd": 1},
+  {"fieldname": "branch", "fieldtype": "Link", "label": "Branch", "options": "Branch"},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "account", "fieldtype": "Link", "label": "Linked Account", "options": "Account", "reqd": 1, "description": "Cash account in the chart of accounts that this treasury posts to."},
+  {"fieldname": "currency", "fieldtype": "Link", "label": "Currency", "options": "Currency"},
+  {"fieldname": "is_active", "fieldtype": "Check", "in_list_view": 1, "label": "Active", "default": "1"}
+ ],
+ "links": [],
+ "modified": "2026-05-14 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar Treasury",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Accounts Manager", "share": 1, "write": 1},
+  {"read": 1, "role": "Accounts User"}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

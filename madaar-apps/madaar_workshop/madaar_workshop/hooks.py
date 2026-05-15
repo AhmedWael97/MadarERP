@@ -1,0 +1,6 @@
+app_name = "madaar_workshop"
+app_title = "Madaar Workshop"
+app_publisher = "Madaar Software"
+app_description = "Vehicle workshop — job cards, service types, maintenance packages."
+app_license = "MIT"
+app_version = "0.0.1"

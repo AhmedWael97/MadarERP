@@ -1,0 +1,6 @@
+app_name = "madaar_egov_tax"
+app_title = "Madaar E-Gov Tax"
+app_publisher = "Madaar Software"
+app_description = "Egyptian e-invoicing (ETA) submissions, bulk batches, VAT returns."
+app_license = "MIT"
+app_version = "0.0.1"
