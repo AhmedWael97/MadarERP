@@ -239,7 +239,10 @@ function indexTpl({ doctype, viewType, columnsImport, fieldsImport, titleArabic,
       // when a hand-tuned config doesn't exist for this route.
       return `<ReportPage routePath={meta.routePath} doctype={meta.doctype} />`;
     }
-    return `<div className="text-[color:var(--color-muted)]">{t(meta.titleKey, { defaultValue: ${JSON.stringify(titleEnglish || titleArabic)} })}</div>`;
+    // Hub / dashboard / detail / unknown viewType: render a card grid of all the
+    // sibling pages in the same module. Better than the bare title we used to show.
+    // Filters out the current page so the user doesn't loop back to themselves.
+    return `<ModuleHubCards module={meta.module} currentPath={meta.routePath} />`;
   })();
 
   // Build the actions slot: a "Create new" button on list/tree pages, a "Back" link on forms.
@@ -265,6 +268,9 @@ function indexTpl({ doctype, viewType, columnsImport, fieldsImport, titleArabic,
   const useDataTable = viewType === 'list';
   const useFormShell = viewType === 'form';
   const useReport = viewType === 'report';
+  // Anything that isn't one of the structured viewTypes (typically dashboard / detail
+  // / unknown) falls back to a ModuleHub card grid of sibling pages.
+  const useModuleHub = !useTree && !useDataTable && !useFormShell && !useReport;
 
   // react-router imports — collapse `Link`, `useNavigate`, `useParams` into a single line.
   const rrImports = [
@@ -279,6 +285,7 @@ function indexTpl({ doctype, viewType, columnsImport, fieldsImport, titleArabic,
     useTree ? `import { TreeView } from '@/components/erp/TreeView';` : '',
     useFormShell ? `import { FormShell } from '@/components/erp/FormShell';` : '',
     useReport ? `import { ReportPage } from '@/components/erp/ReportShell';` : '',
+    useModuleHub ? `import { ModuleHubCards } from '@/components/erp/ModuleHub';` : '',
     `import { RequirePerm } from '@/lib/auth/RequirePerm';`,
     `import { useTranslation } from 'react-i18next';`,
     rrImports.length ? `import { ${rrImports.join(', ')} } from 'react-router-dom';` : '',
@@ -310,12 +317,12 @@ export default function Page() {
 `;
 }
 
-function metaTpl({ routePath, titleKey, doctype, viewType, screenshot, columns, fields }) {
+function metaTpl({ routePath, titleKey, doctype, viewType, module, screenshot, columns, fields }) {
   return `// AUTO-GENERATED.
 import type { ColumnDef } from '@/components/erp/DataTable';
 import type { FieldDef } from '@/components/erp/FormShell';
 
-const meta = ${JSON.stringify({ routePath, titleKey, doctype, viewType, screenshot }, null, 2)} as const;
+const meta = ${JSON.stringify({ routePath, titleKey, doctype, viewType, module, screenshot }, null, 2)} as const;
 
 export default meta;
 export const columns: ColumnDef[] = ${JSON.stringify(columns, null, 2)};
@@ -418,14 +425,20 @@ function main() {
    * Emit a single page (writes its index.tsx + meta.ts + i18n.json and records it on
    * the manifest). Shared by both the static-URL pass and the dynamic-pattern pass.
    */
-  function emitPage({ routePath, page, doctype, viewType, isEdit }) {
+  function emitPage({ routePath, page, doctype, viewType, isEdit, parentTitles }) {
     if (seenRoutes.has(routePath)) return;
     seenRoutes.add(routePath);
 
     const { module, slug } = moduleAndSlug(routePath);
     const rawTitle = page?.name || page?.title || routePath;
-    const titleArabic = arabicTitleFor(rawTitle) || rawTitle;
-    const titleEnglish = englishTitleFor(rawTitle, slug) || rawTitle;
+    // For synthesized routes (no page in the scan), prefer a derived title from the
+    // parent — e.g. "Edit Bank Account" rather than the ugly path "/treasury/banks/:id/edit".
+    const titleArabic = parentTitles?.ar
+      ? `تعديل — ${parentTitles.ar}`
+      : (arabicTitleFor(rawTitle) || rawTitle);
+    const titleEnglish = parentTitles?.en
+      ? `Edit — ${parentTitles.en}`
+      : (englishTitleFor(rawTitle, slug) || rawTitle);
     // The key is namespaced (`pages:…`) so react-i18next looks it up in the
     // generated `pages` namespace instead of the hand-maintained `common`.
     const titleKey = `pages:page.${module}.${slug}.title`;
@@ -472,6 +485,7 @@ function main() {
       titleKey,
       doctype,
       viewType,
+      module,
       screenshot: page?.screenshot ?? null,
       columns,
       fields,
@@ -529,6 +543,30 @@ function main() {
       doctype: mapped?.doctype ?? null,
       viewType,
       isEdit: isEditRoute(pattern),
+    });
+    report.collapsed_dynamic += 1;
+  }
+
+  // ---- Pass 3: implicit edit routes for every doctype-bound list/tree page ----
+  // The scan only contains URLs the crawler actually visited, so doctype edit
+  // routes (`/treasury/banks/:id/edit`) only appear for doctypes the crawler
+  // had records for. Synthesize a `:id/edit` route for every list/tree route
+  // that points at a doctype, so users can always reach the edit form by URL.
+  const listLikeRoutes = written.filter(
+    (r) => (r.viewType === 'list' || r.viewType === 'tree') && r.doctype,
+  );
+  for (const r of listLikeRoutes) {
+    const editPath = `${r.path}/:id/edit`;
+    if (seenRoutes.has(editPath)) continue;
+    emitPage({
+      routePath: editPath,
+      page: null,
+      doctype: r.doctype,
+      viewType: 'form',
+      isEdit: true,
+      // Inherit the list page's name so the edit form reads "Edit — Bank Accounts"
+      // instead of a path-based default.
+      parentTitles: { ar: r.titleArabic, en: r.titleEnglish },
     });
     report.collapsed_dynamic += 1;
   }

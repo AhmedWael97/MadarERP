@@ -50,6 +50,12 @@ const HIDDEN_FIELD_TYPES = new Set([
   'Read Only',
 ]);
 
+// Module-level constants. Re-using these refs across renders keeps the
+// useMemo dependency arrays stable when meta has not loaded yet — otherwise
+// `?? []` would mint a fresh array each render, retrigger downstream memos,
+// and cause an infinite render loop in FormShell.
+const EMPTY_FIELDS: FieldDef[] = [];
+
 // Internal/audit fields Frappe manages itself.
 const INTERNAL_FIELDS = new Set([
   'name',
@@ -94,7 +100,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
     isEdit ? `doc:${doctype}:${name}` : null,
   );
 
-  const allFields: FieldDef[] = metaResp?.docs?.[0]?.fields ?? [];
+  const allFields: FieldDef[] = metaResp?.docs?.[0]?.fields ?? EMPTY_FIELDS;
   const isSubmittable = Number(metaResp?.docs?.[0]?.is_submittable ?? 0) === 1;
   const docstatus = Number((existingDoc?.docstatus as number | undefined) ?? 0);
   // 0 = Draft, 1 = Submitted, 2 = Cancelled

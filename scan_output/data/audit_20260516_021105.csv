@@ -1,0 +1,384 @@
+﻿Page URL,Action,Expected,Actual,Passed
+http://localhost:5173/accounting/chart-of-accounts,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/cost-centers,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/dashboard,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/accounting/fiscal-years,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/journal-entries,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/reports/account-statement,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/accounting/reports/aging,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/accounting/reports/balance-sheet,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/reports/cash-flow,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/accounting/reports/general-ledger,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/accounting/reports/income-statement,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/reports/trial-balance,Index,page loads,loaded OK,✓
+http://localhost:5173/construction,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/billings,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/construction/boq,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/construction/budgets,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/construction/contracts,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/construction/equipment,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/expenses,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/labor,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/materials,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/construction/projects,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/reports,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/subcontractors,Index,page loads,loaded OK,✓
+http://localhost:5173/construction/variations,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/crm,Index,page loads,loaded OK,✓
+http://localhost:5173/crm/activities,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/crm/leads,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/crm/opportunities,Index,page loads,loaded OK,✓
+http://localhost:5173/crm/pipeline,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/crm/reports/leads,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/crm/reports/opportunities,Index,page loads,loaded OK,✓
+http://localhost:5173/crm/reports/team-performance,Index,page loads,loaded OK,✓
+http://localhost:5173/crm/setup,Index,page loads,loaded OK,✓
+http://localhost:5173/customer-categories,Index,page loads,loaded OK,✓
+http://localhost:5173/customers,Index,page loads,loaded OK,✓
+http://localhost:5173/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/ecommerce,Index,page loads,loaded OK,✓
+http://localhost:5173/ecommerce/banners,Index,page loads,loaded OK,✓
+http://localhost:5173/ecommerce/categories,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/coupons,Index,page loads,loaded OK,✓
+http://localhost:5173/ecommerce/customers,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/orders,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/pages,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/products,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/returns,Index,page loads,loaded OK,✓
+http://localhost:5173/ecommerce/shipping,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/ecommerce/stores,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/checks,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/credit-notes,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/debit-notes,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/financial/payment-vouchers,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/financial/receipt-vouchers,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/reports/bank-statement,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/reports/cash-flow,Index,page loads,loaded OK,✓
+http://localhost:5173/financial/reports/checks,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/financial/reports/vouchers,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fixed-assets/assets,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fixed-assets/categories,Index,page loads,loaded OK,✓
+http://localhost:5173/fixed-assets/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/fixed-assets/reports/depreciation,Index,page loads,loaded OK,✓
+http://localhost:5173/fixed-assets/reports/register,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/accidents,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/billing,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/contracts,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/drivers,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/fuel,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/maintenance/requests,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fleet/routes,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fleet/setup,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fleet/trips,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/fleet/vehicles,Index,page loads,loaded OK,✓
+http://localhost:5173/fleet/violations,Index,page loads,loaded OK,✓
+http://localhost:5173/hr,Index,page loads,loaded OK,✓
+http://localhost:5173/hr/attendance,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/hr/departments,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/hr/employees,Index,page loads,loaded OK,✓
+http://localhost:5173/hr/leaves,Index,page loads,loaded OK,✓
+http://localhost:5173/hr/payroll,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/hr/reports/departments,Index,page loads,loaded OK,✓
+http://localhost:5173/hr/reports/employees,Index,page loads,loaded OK,✓
+http://localhost:5173/hr/reports/salary,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/hr/reports/turnover,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/hr/setup,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/adjustments,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/movements,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/products,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/inventory/reports/low-stock,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/reports/product-performance,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/reports/stock-movements,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/reports/stock-status,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/reports/valuation,Index,page loads,loaded OK,✓
+http://localhost:5173/inventory/transfers,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/inventory/warehouses,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/language/en,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/logistics/billing,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/logistics/cod,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/deliveries,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/ecommerce/settings,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/fleet,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/orders,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/reports,Index,page loads,loaded OK,✓
+http://localhost:5173/logistics/setup,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/logistics/shipments,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/logistics/tracking-search,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/logistics/tracking/map,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/mfg,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/mfg/bom,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/finished-goods,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/material-issues,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/production-plans,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/scrap,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/setup,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/work-centers,Index,page loads,loaded OK,✓
+http://localhost:5173/mfg/work-orders,Index,page loads,loaded OK,✓
+http://localhost:5173/my-store,Index,page loads,loaded OK,✓
+http://localhost:5173/pos,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/profile,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/purchases/dashboard,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/purchases/invoices,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/purchases/orders,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/purchases/reports/aging,Index,page loads,loaded OK,✓
+http://localhost:5173/purchases/reports/by-product,Index,page loads,loaded OK,✓
+http://localhost:5173/purchases/reports/by-supplier,Index,page loads,loaded OK,✓
+http://localhost:5173/purchases/reports/returns,Index,page loads,loaded OK,✓
+http://localhost:5173/purchases/reports/summary,Index,page loads,loaded OK,✓
+http://localhost:5173/purchases/returns,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/restaurant,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/branches,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/delivery,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/halls,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/restaurant/kitchen,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/restaurant/menu-categories,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/menu-items,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/modifiers,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/orders,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/pos,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/production-centers,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/recipes,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/restaurant/reports/sales,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/reservations,Index,page loads,loaded OK,✓
+http://localhost:5173/restaurant/shifts,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/sales-reps,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/sales/dashboard,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/sales/invoices,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/sales/orders,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/quotations,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/aging,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/by-customer,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/by-product,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/daily,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/returns,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/reports/summary,Index,page loads,loaded OK,✓
+http://localhost:5173/sales/returns,Index,page loads,loaded OK,✓
+http://localhost:5173/settings,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/supplier-categories,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/suppliers,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/support-tickets,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/support-tickets/reports,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/tax/audit-log,Index,page loads,loaded OK,✓
+http://localhost:5173/tax/dashboard,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/tax/reports/summary,Index,page loads,loaded OK,✓
+http://localhost:5173/tax/reports/vat,Index,page loads,loaded OK,✓
+http://localhost:5173/tax/returns,Index,page loads,loaded OK,✓
+http://localhost:5173/tax/setup,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/tax/submissions,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/tax/submissions/bulk,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/treasury/banks,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/treasury/dashboard,Index,page loads,loaded OK,✓
+http://localhost:5173/treasury/treasuries,Index,page loads,loaded OK,✓
+http://localhost:5173/user-management/roles,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/user-management/users,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/invoices,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/job-cards,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/reports/job-card-summary,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/workshop/reports/revenue,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/reports/technicians,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/reports/vehicle-history,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/workshop/setup/labor-operations,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/workshop/setup/sections,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/workshop/setup/service-packages,Index,page loads,blank / nothing rendered,✗
+http://localhost:5173/workshop/setup/service-types,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/setup/technicians,Index,page loads,loaded OK,✓
+http://localhost:5173/workshop/vehicles,Index,page loads,loaded OK,✓
+http://localhost:5173/accounting/chart-of-accounts/create,Create,form saves,filled=6 skipped=0 → no confirmation received,✗
+http://localhost:5173/accounting/fiscal-years/create,Create,form saves,"filled=3 skipped=0 → toast[error]: Year start date or end date is overlapping with <a href=""/app/Form/Fiscal Year/2",✗
+http://localhost:5173/accounting/journal-entries/create,Create,form saves,filled=15 skipped=0 → no confirmation received,✗
+http://localhost:5173/construction/billings/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/construction/boq/create,Create,form saves,filled=2 skipped=0 → no confirmation received,✗
+http://localhost:5173/construction/budgets/create,Create,form saves,filled=2 skipped=0 → no confirmation received,✗
+http://localhost:5173/construction/contracts/create,Create,form saves,"filled=10 skipped=0 → toast[error]: Could not find Party Name: Test, Document Name: Test",✗
+http://localhost:5173/construction/equipment/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/construction/expenses/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/construction/labor/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/construction/materials/create,Create,form saves,filled=7 skipped=0 → no confirmation received,✗
+http://localhost:5173/construction/projects/create,Create,form saves,filled=20 skipped=0 → no confirmation received,✗
+http://localhost:5173/construction/subcontractors/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/construction/variations/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/crm/activities/create,Create,form saves,filled=6 skipped=0 → toast[error]: Reference Type must be set first,✗
+http://localhost:5173/crm/leads/create,Create,form saves,filled=22 skipped=0 → toast[error]: Could not find Lead Owner: __user,✗
+http://localhost:5173/crm/opportunities/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/customers/create,Create,form saves,filled=8 skipped=0 → toast[success]: حفظ,✓
+http://localhost:5173/ecommerce/banners/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/ecommerce/coupons/create,Create,form saves,filled=7 skipped=0 → no confirmation received,✗
+http://localhost:5173/ecommerce/customers/create,Create,form saves,filled=8 skipped=0 → navigated away (saved),✓
+http://localhost:5173/ecommerce/orders/create,Create,form saves,filled=20 skipped=0 → no confirmation received,✗
+http://localhost:5173/ecommerce/pages/create,Create,form saves,filled=4 skipped=0 → navigated away (saved),✓
+http://localhost:5173/ecommerce/products/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/ecommerce/returns/create,Create,form saves,filled=26 skipped=0 → no confirmation received,✗
+http://localhost:5173/ecommerce/shipping/create,Create,form saves,filled=4 skipped=0 → no confirmation received,✗
+http://localhost:5173/ecommerce/stores/create,Create,form saves,filled=1 skipped=0 → navigated away (saved),✓
+http://localhost:5173/financial/checks/create,Create,form saves,filled=11 skipped=0 → navigated away (saved),✓
+http://localhost:5173/financial/credit-notes/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/financial/debit-notes/create,Create,form saves,"navigation error: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""http://localho",✗
+http://localhost:5173/financial/payment-vouchers/create,Create,form saves,"navigation error: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""http://localho",✗
+http://localhost:5173/financial/receipt-vouchers/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/fixed-assets/assets/create,Create,form saves,filled=19 skipped=0 → no confirmation received,✗
+http://localhost:5173/fixed-assets/categories/create,Create,form saves,filled=1 skipped=0 → toast[error]: Error: Data missing in table: Accounts,✗
+http://localhost:5173/fleet/accidents/create,Create,form saves,filled=7 skipped=0 → no confirmation received,✗
+http://localhost:5173/fleet/contracts/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/fleet/drivers/create,Create,form saves,"navigation error: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""http://localho",✗
+http://localhost:5173/fleet/fuel/create,Create,form saves,"navigation error: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""http://localho",✗
+http://localhost:5173/fleet/maintenance/requests/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/fleet/routes/create,Create,form saves,"navigation error: Page.goto: Timeout 20000ms exceeded.
+Call log:
+  - navigating to ""http://localho",✗
+http://localhost:5173/fleet/trips/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/fleet/vehicles/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/fleet/violations/create,Create,form saves,filled=6 skipped=0 → no confirmation received,✗
+http://localhost:5173/hr/attendance/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/hr/employees/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/hr/leaves/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/hr/payroll/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/inventory/adjustments/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/inventory/movements/create,Create,form saves,filled=13 skipped=0 → no confirmation received,✗
+http://localhost:5173/inventory/products/create,Create,form saves,filled=25 skipped=1 → no confirmation received,✗
+http://localhost:5173/inventory/transfers/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/logistics/cod/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/logistics/deliveries/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/logistics/orders/create,Create,form saves,filled=20 skipped=0 → no confirmation received,✗
+http://localhost:5173/logistics/shipments/create,Create,form saves,filled=18 skipped=0 → no confirmation received,✗
+http://localhost:5173/mfg/bom/create,Create,form saves,filled=10 skipped=0 → no confirmation received,✗
+http://localhost:5173/mfg/finished-goods/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/mfg/material-issues/create,Create,form saves,filled=13 skipped=0 → no confirmation received,✗
+http://localhost:5173/mfg/production-plans/create,Create,form saves,filled=15 skipped=0 → no confirmation received,✗
+http://localhost:5173/mfg/scrap/create,Create,form saves,filled=13 skipped=0 → no confirmation received,✗
+http://localhost:5173/mfg/work-centers/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/mfg/work-orders/create,Create,form saves,filled=10 skipped=0 → no confirmation received,✗
+http://localhost:5173/purchases/invoices/create,Create,form saves,filled=26 skipped=0 → no confirmation received,✗
+http://localhost:5173/purchases/orders/create,Create,form saves,filled=20 skipped=0 → no confirmation received,✗
+http://localhost:5173/purchases/returns/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/restaurant/branches/create,Create,form saves,filled=1 skipped=0 → navigated away (saved),✓
+http://localhost:5173/restaurant/delivery/create,Create,form saves,filled=21 skipped=0 → no confirmation received,✗
+http://localhost:5173/restaurant/halls/create,Create,form saves,filled=2 skipped=0 → navigated away (saved),✓
+http://localhost:5173/restaurant/menu-items/create,Create,form saves,filled=25 skipped=1 → no confirmation received,✗
+http://localhost:5173/restaurant/modifiers/create,Create,form saves,filled=3 skipped=0 → no confirmation received,✗
+http://localhost:5173/restaurant/orders/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/restaurant/pos/create,Create,form saves,filled=2 skipped=0 → no confirmation received,✗
+http://localhost:5173/restaurant/production-centers/create,Create,form saves,filled=8 skipped=0 → no confirmation received,✗
+http://localhost:5173/restaurant/recipes/create,Create,form saves,filled=10 skipped=0 → no confirmation received,✗
+http://localhost:5173/restaurant/reservations/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/restaurant/shifts/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/sales-reps/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/sales/invoices/create,Create,form saves,filled=26 skipped=0 → no confirmation received,✗
+http://localhost:5173/sales/orders/create,Create,form saves,filled=20 skipped=0 → no confirmation received,✗
+http://localhost:5173/sales/quotations/create,Create,form saves,filled=16 skipped=0 → no confirmation received,✗
+http://localhost:5173/sales/returns/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/suppliers/create,Create,form saves,filled=8 skipped=0 → navigated away (saved),✓
+http://localhost:5173/support-tickets/create,Create,form saves,filled=8 skipped=0 → toast[error]: Test is not a valid Email Address,✗
+http://localhost:5173/tax/returns/create,Create,form saves,filled=6 skipped=0 → navigated away (saved),✓
+http://localhost:5173/tax/setup/create,Create,form saves,filled=1 skipped=0 → no confirmation received,✗
+http://localhost:5173/tax/submissions/bulk/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/tax/submissions/create,Create,form saves,filled=2 skipped=0 → no confirmation received,✗
+http://localhost:5173/treasury/banks/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/treasury/treasuries/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/user-management/roles/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/user-management/users/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/workshop/invoices/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/workshop/job-cards/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/workshop/setup/labor-operations/create,Create,form saves,form never rendered inputs,✗
+http://localhost:5173/workshop/setup/sections/create,Create,form saves,filled=1 skipped=0 → no confirmation received,✗
+http://localhost:5173/workshop/setup/service-packages/create,Create,form saves,filled=3 skipped=0 → navigated away (saved),✓
+http://localhost:5173/workshop/setup/service-types/create,Create,form saves,filled=4 skipped=0 → navigated away (saved),✓
+http://localhost:5173/workshop/setup/technicians/create,Create,form saves,filled=48 skipped=0 → no confirmation received,✗
+http://localhost:5173/workshop/vehicles/create,Create,form saves,filled=9 skipped=0 → navigated away (saved),✓
+http://localhost:5173/accounting/chart-of-accounts/GST - MAD/edit,Edit,form loads,"loaded OK (record='GST - MAD', inputs=11)",✓
+http://localhost:5173/accounting/fiscal-years/2029-5-2031/edit,Edit,form loads,"loaded OK (record='2029-5-2031', inputs=5)",✓
+http://localhost:5173/construction/billings/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Progress Bill',✗
+http://localhost:5173/construction/boq/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar BOQ',✗
+http://localhost:5173/construction/budgets/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Project Budget',✗
+http://localhost:5173/construction/contracts/:id/edit,Edit,form loads,skipped: no records found for DocType 'Contract',✗
+http://localhost:5173/construction/equipment/:id/edit,Edit,form loads,skipped: no records found for DocType 'Asset',✗
+http://localhost:5173/construction/expenses/:id/edit,Edit,form loads,skipped: no records found for DocType 'Expense Claim',✗
+http://localhost:5173/construction/labor/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Labor Record',✗
+http://localhost:5173/construction/materials/:id/edit,Edit,form loads,skipped: no records found for DocType 'Material Request',✗
+http://localhost:5173/construction/projects/:id/edit,Edit,form loads,skipped: no records found for DocType 'Project',✗
+http://localhost:5173/construction/subcontractors/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=17)",✓
+http://localhost:5173/construction/variations/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Change Order',✗
+http://localhost:5173/crm/activities/:id/edit,Edit,form loads,skipped: no records found for DocType 'ToDo',✗
+http://localhost:5173/crm/leads/:id/edit,Edit,form loads,skipped: no records found for DocType 'Lead',✗
+http://localhost:5173/crm/opportunities/:id/edit,Edit,form loads,skipped: no records found for DocType 'Opportunity',✗
+http://localhost:5173/ecommerce/banners/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Banner',✗
+http://localhost:5173/ecommerce/coupons/:id/edit,Edit,form loads,skipped: no records found for DocType 'Coupon Code',✗
+http://localhost:5173/ecommerce/customers/Test - 1/edit,Edit,form loads,"loaded OK (record='Test - 1', inputs=16)",✓
+http://localhost:5173/ecommerce/orders/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Order',✗
+http://localhost:5173/ecommerce/pages/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=5)",✓
+http://localhost:5173/ecommerce/products/:id/edit,Edit,form loads,skipped: no records found for DocType 'Item',✗
+http://localhost:5173/ecommerce/returns/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Invoice',✗
+http://localhost:5173/ecommerce/shipping/:id/edit,Edit,form loads,skipped: no records found for DocType 'Shipping Rule',✗
+http://localhost:5173/ecommerce/stores/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=2)",✓
+http://localhost:5173/financial/checks/CHQ-IN-2026-00001/edit,Edit,form loads,form never rendered inputs,✗
+http://localhost:5173/financial/credit-notes/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Invoice',✗
+http://localhost:5173/financial/debit-notes/:id/edit,Edit,form loads,skipped: no records found for DocType 'Purchase Invoice',✗
+http://localhost:5173/fixed-assets/assets/:id/edit,Edit,form loads,skipped: no records found for DocType 'Asset',✗
+http://localhost:5173/fixed-assets/categories/:id/edit,Edit,form loads,skipped: no records found for DocType 'Asset Category',✗
+http://localhost:5173/fleet/accidents/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Vehicle Accident',✗
+http://localhost:5173/fleet/contracts/:id/edit,Edit,form loads,skipped: no records found for DocType 'Contract',✗
+http://localhost:5173/fleet/drivers/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Driver Profile',✗
+http://localhost:5173/fleet/fuel/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Fuel Log',✗
+http://localhost:5173/fleet/maintenance/requests/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Vehicle Maintenance Request',✗
+http://localhost:5173/fleet/routes/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Route',✗
+http://localhost:5173/fleet/trips/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Trip',✗
+http://localhost:5173/fleet/vehicles/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=9)",✓
+http://localhost:5173/fleet/violations/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Vehicle Violation',✗
+http://localhost:5173/hr/attendance/:id/edit,Edit,form loads,skipped: no records found for DocType 'Attendance',✗
+http://localhost:5173/hr/leaves/:id/edit,Edit,form loads,skipped: no records found for DocType 'Leave Application',✗
+http://localhost:5173/hr/payroll/:id/edit,Edit,form loads,skipped: no records found for DocType 'Salary Slip',✗
+http://localhost:5173/inventory/adjustments/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Reconciliation',✗
+http://localhost:5173/inventory/movements/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Entry',✗
+http://localhost:5173/inventory/transfers/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Entry',✗
+http://localhost:5173/logistics/cod/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar COD Settlement',✗
+http://localhost:5173/logistics/deliveries/:id/edit,Edit,form loads,skipped: no records found for DocType 'Delivery Note',✗
+http://localhost:5173/logistics/orders/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Order',✗
+http://localhost:5173/logistics/shipments/:id/edit,Edit,form loads,skipped: no records found for DocType 'Shipment',✗
+http://localhost:5173/mfg/bom/:id/edit,Edit,form loads,skipped: no records found for DocType 'BOM',✗
+http://localhost:5173/mfg/finished-goods/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Entry',✗
+http://localhost:5173/mfg/material-issues/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Entry',✗
+http://localhost:5173/mfg/production-plans/:id/edit,Edit,form loads,skipped: no records found for DocType 'Production Plan',✗
+http://localhost:5173/mfg/scrap/:id/edit,Edit,form loads,skipped: no records found for DocType 'Stock Entry',✗
+http://localhost:5173/mfg/work-centers/:id/edit,Edit,form loads,skipped: no records found for DocType 'Workstation',✗
+http://localhost:5173/mfg/work-orders/:id/edit,Edit,form loads,skipped: no records found for DocType 'Work Order',✗
+http://localhost:5173/purchases/returns/:id/edit,Edit,form loads,skipped: no records found for DocType 'Purchase Invoice',✗
+http://localhost:5173/restaurant/branches/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=1)",✓
+http://localhost:5173/restaurant/delivery/:id/edit,Edit,form loads,skipped: no records found for DocType 'Delivery Note',✗
+http://localhost:5173/restaurant/halls/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=3)",✓
+http://localhost:5173/restaurant/menu-items/:id/edit,Edit,form loads,skipped: no records found for DocType 'Item',✗
+http://localhost:5173/restaurant/modifiers/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=3)",✓
+http://localhost:5173/restaurant/orders/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Order',✗
+http://localhost:5173/restaurant/pos/:id/edit,Edit,form loads,skipped: no records found for DocType 'POS Profile',✗
+http://localhost:5173/restaurant/production-centers/Goods In Transit - MAD/edit,Edit,form loads,form never rendered inputs,✗
+http://localhost:5173/restaurant/recipes/:id/edit,Edit,form loads,skipped: no records found for DocType 'BOM',✗
+http://localhost:5173/restaurant/reservations/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Reservation',✗
+http://localhost:5173/restaurant/shifts/:id/edit,Edit,form loads,skipped: no records found for DocType 'Shift Type',✗
+http://localhost:5173/sales/orders/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Order',✗
+http://localhost:5173/sales/returns/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Invoice',✗
+http://localhost:5173/tax/returns/VAT-2026-0001/edit,Edit,form loads,"loaded OK (record='VAT-2026-0001', inputs=7)",✓
+http://localhost:5173/tax/setup/Egypt Tax - MAD/edit,Edit,form loads,form never rendered inputs,✗
+http://localhost:5173/tax/submissions/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar EInvoice Submission',✗
+http://localhost:5173/tax/submissions/bulk/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar EInvoice Bulk Batch',✗
+http://localhost:5173/treasury/banks/:id/edit,Edit,form loads,skipped: no records found for DocType 'Bank Account',✗
+http://localhost:5173/treasury/treasuries/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Treasury',✗
+http://localhost:5173/user-management/roles/Analytics/edit,Edit,form loads,"loaded OK (record='Analytics', inputs=6)",✓
+http://localhost:5173/user-management/users/Guest/edit,Edit,form loads,"loaded OK (record='Guest', inputs=49)",✓
+http://localhost:5173/workshop/invoices/:id/edit,Edit,form loads,skipped: no records found for DocType 'Sales Invoice',✗
+http://localhost:5173/workshop/job-cards/:id/edit,Edit,form loads,skipped: no records found for DocType 'Madaar Vehicle Job Card',✗
+http://localhost:5173/workshop/setup/labor-operations/:id/edit,Edit,form loads,skipped: no records found for DocType 'Operation',✗
+http://localhost:5173/workshop/setup/sections/Legal - MAD/edit,Edit,form loads,form never rendered inputs,✗
+http://localhost:5173/workshop/setup/service-packages/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=3)",✓
+http://localhost:5173/workshop/setup/service-types/Test/edit,Edit,form loads,"loaded OK (record='Test', inputs=4)",✓
+http://localhost:5173/workshop/setup/technicians/:id/edit,Edit,form loads,skipped: no records found for DocType 'Employee',✗
+http://localhost:5173/workshop/vehicles/Test/edit,Edit,form loads,form never rendered inputs,✗

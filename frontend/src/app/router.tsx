@@ -10,8 +10,18 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 const Loading = (
-  <div className="grid min-h-[40vh] place-items-center text-[color:var(--color-muted)]">…</div>
+  <div className="grid min-h-[40vh] place-items-center text-(--color-muted)">…</div>
 );
+
+/**
+ * Call this on link hover to fetch the route's JS chunk before the user
+ * clicks — the browser caches it so the actual navigation is instant.
+ */
+export function prefetchRoute(path: string): void {
+  const normalised = path.startsWith('/') ? path : `/${path}`;
+  const route = generatedRoutes.find((r) => r.path === normalised);
+  if (route) void route.importFn();
+}
 
 // Routes shown in the sidebar that don't have a corresponding generated landing page —
 // each gets a ModuleHub that lists its sub-pages.

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tar -xzf *.tgz)"
+      "Bash(tar -xzf *.tgz)",
+      "PowerShell(try { $r = Resolve-DnsName -Name 'dev.localhost' -ErrorAction Stop; $r | Format-Table } catch { \"DNS fail: $\\($_.Exception.Message\\)\" }; \"---\"; if \\(Test-Path 'C:\\\\Windows\\\\System32\\\\drivers\\\\etc\\\\hosts'\\) { Get-Content 'C:\\\\Windows\\\\System32\\\\drivers\\\\etc\\\\hosts' | Select-String -Pattern 'localhost' } else { 'no hosts file' })",
+      "Bash(python3 scripts/spot_check.py)"
     ]
   }
 }

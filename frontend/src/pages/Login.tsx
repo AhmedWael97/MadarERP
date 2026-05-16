@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -17,15 +17,12 @@ export default function Login() {
 
   // Bail to the dashboard via <Navigate> rather than calling navigate() during
   // render — react-router v6.4+ throws "navigate() in render" otherwise.
+  // MUST come after all hook calls — placing it earlier produced a
+  // "rendered fewer hooks than expected" crash on the anonymous→authenticated
+  // transition because a useEffect below the return was being skipped.
   if (status === 'authenticated') {
     return <Navigate to="/dashboard" replace />;
   }
-
-  // Bubble the locale change so the form re-mounts in the right direction.
-  useEffect(() => {
-    document.documentElement.lang = i18n.language;
-    document.documentElement.dir = i18n.dir(i18n.language);
-  }, [i18n.language]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
