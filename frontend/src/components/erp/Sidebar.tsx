@@ -14,6 +14,7 @@ import {
   GraduationCap,
   Globe,
   HardHat,
+  CalendarRange,
   LayoutDashboard,
   LifeBuoy,
   Package,
@@ -653,7 +654,11 @@ const SECTIONS: Section[] = [
     ],
   },
 
-  // ── 8b. LMS (Frappe LMS integration) ─────────────────────────────────────
+  // ── 8b. LMS (Madaar LMS — Courses / Lessons / Batches / Enrollments) ─────
+  // Only sections backed by the Madaar LMS doctypes that actually exist in
+  // SECTIONS in src/pages/LMS.tsx. Earlier we listed programs/quizzes/grades/…
+  // here, but those pages would render the "قسم غير معروف" empty state and
+  // (worse) trigger a Rules-of-Hooks crash on the list page.
   {
     headerAr: 'التعليم والتدريب',
     items: [
@@ -663,49 +668,58 @@ const SECTIONS: Section[] = [
         icon: GraduationCap,
         accent: 'cyan',
         groups: [
-          { leaves: [{ to: '/lms', labelAr: 'لوحة التحكم' }] },
           {
-            headerAr: 'المحتوى الدراسي',
             leaves: [
-              { to: '/lms/programs',  labelAr: 'البرامج التعليمية' },
-              { to: '/lms/courses',   labelAr: 'الدورات' },
-              { to: '/lms/chapters',  labelAr: 'الفصول' },
-              { to: '/lms/lessons',   labelAr: 'الدروس' },
-              { to: '/lms/quizzes',   labelAr: 'الاختبارات' },
-              { to: '/lms/assignments', labelAr: 'المهام والواجبات' },
+              { to: '/lms',             labelAr: 'لوحة التحكم' },
+              { to: '/lms/courses',     labelAr: 'الدورات' },
+              { to: '/lms/lessons',     labelAr: 'الدروس' },
+              { to: '/lms/batches',     labelAr: 'الدفعات' },
+              { to: '/lms/enrollments', labelAr: 'التسجيلات' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── 8c. Events (Culture Wheel) ───────────────────────────────────────────
+  // Twelve stages + master data, all backed by madaar_events doctypes and
+  // rendered through the generic Events / EventsList / EventsForm pages.
+  {
+    headerAr: 'إدارة الفعاليات',
+    items: [
+      {
+        to: '/events',
+        labelAr: 'عجلة الثقافة',
+        icon: CalendarRange,
+        accent: 'pink',
+        groups: [
+          { leaves: [{ to: '/events', labelAr: 'لوحة التحكم' }] },
+          {
+            headerAr: 'الاستقبال والتعاقد',
+            leaves: [
+              { to: '/events/requests',       labelAr: 'طلبات الفعاليات' },
+              { to: '/events/schedules',      labelAr: 'الجدولة والقاعات' },
+              { to: '/events/resource-plans', labelAr: 'خطط الموارد' },
+              { to: '/events/contracts',      labelAr: 'العقود' },
+              { to: '/events/finance-cases',  labelAr: 'الملفات المالية' },
+              { to: '/events/publications',   labelAr: 'النشر على الموقع' },
+              { to: '/events/marketing',      labelAr: 'الحملات التسويقية' },
             ],
           },
           {
-            headerAr: 'المستخدمون',
+            headerAr: 'التنفيذ والإغلاق',
             leaves: [
-              { to: '/lms/students',     labelAr: 'الطلاب' },
-              { to: '/lms/instructors',  labelAr: 'المدرسين' },
-              { to: '/lms/enrollments',  labelAr: 'التسجيلات' },
-              { to: '/lms/batches',      labelAr: 'الدفعات' },
+              { to: '/events/operations',     labelAr: 'إشعارات التشغيل' },
+              { to: '/events/day-checklist',  labelAr: 'تشيك ليست اليوم' },
+              { to: '/events/closures',       labelAr: 'الإغلاق وما بعد الفعالية' },
             ],
           },
           {
-            headerAr: 'التقييم والتقدم',
+            headerAr: 'البيانات الأساسية',
             leaves: [
-              { to: '/lms/grades',       labelAr: 'الدرجات' },
-              { to: '/lms/certificates', labelAr: 'الشهادات' },
-              { to: '/lms/progress',     labelAr: 'متابعة التقدم' },
-            ],
-          },
-          {
-            headerAr: 'التشغيل',
-            leaves: [
-              { to: '/lms/schedule',   labelAr: 'الجدول الزمني' },
-              { to: '/lms/attendance', labelAr: 'الحضور' },
-              { to: '/lms/payments',   labelAr: 'الرسوم والمدفوعات' },
-            ],
-          },
-          {
-            headerAr: '📊 التقارير',
-            leaves: [
-              { to: '/lms/reports/enrollments',  labelAr: 'تقرير التسجيلات' },
-              { to: '/lms/reports/performance',  labelAr: 'تقرير الأداء' },
-              { to: '/lms/reports/revenue',      labelAr: 'الإيرادات' },
+              { to: '/events/venues', labelAr: 'القاعات والمواقع' },
+              { to: '/events/types',  labelAr: 'أنواع الفعاليات' },
             ],
           },
         ],

@@ -148,6 +148,15 @@ export function LMSList() {
   const cfg = SECTIONS[section];
   const [query, setQuery] = useState('');
 
+  // Hooks must run on every render, in the same order — call them unconditionally
+  // and pass an empty doctype + null swrKey when the section is unknown to keep
+  // the SDK from firing a real request.
+  const { data: rows } = useFrappeGetDocList<any>(cfg?.doctype ?? 'DocType', {
+    fields: cfg?.fields ?? ['name'],
+    limit: 50,
+    orderBy: { field: 'modified', order: 'desc' },
+  }, cfg ? undefined : null);
+
   if (!cfg) {
     return (
       <PageShell title={section} subtitle={isAr ? 'قسم غير معروف' : 'Unknown section'}>
@@ -156,11 +165,6 @@ export function LMSList() {
     );
   }
 
-  const { data: rows } = useFrappeGetDocList<any>(cfg.doctype, {
-    fields: cfg.fields,
-    limit: 50,
-    orderBy: { field: 'modified', order: 'desc' },
-  });
   const filtered = (rows ?? []).filter((r: any) =>
     !query ? true : JSON.stringify(r).toLowerCase().includes(query.toLowerCase()),
   );
