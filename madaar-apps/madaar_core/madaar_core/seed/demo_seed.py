@@ -236,6 +236,24 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
         {"project_name": "مشروع تجريبي", "status": "Open", "company": company},
     ))
 
+    # ── LMS (4 doctypes — Course → Lesson → Batch → Enrollment) ─────────────
+    plan.append((
+        "Madaar LMS Course",
+        {
+            "course_code": "CRS-DEMO-001",
+            "title_ar": "كورس تجريبي للأساسيات",
+            "title_en": "Demo Foundations Course",
+            "instructor": "Demo Instructor",
+            "description": "مقدمة شاملة للمبتدئين.",
+            "duration_hours": 20,
+            "price": 500,
+            "currency": "EGP",
+            "is_published": 1,
+        },
+    ))
+    # Lesson + Batch + Enrollment depend on the Course we just inserted, so
+    # they're deferred to _seed_lms_chain() at run time.
+
     # ── CRM ─────────────────────────────────────────────────────────────────
     plan.append((
         "Lead",
@@ -283,6 +301,19 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
         {"coupon_name": "WELCOME10", "coupon_code": "WELCOME10", "coupon_type": "Promotional", "maximum_use": 100},
     ))
 
+    # ── Events (Culture Wheel) — installed via madaar_events app ────────────
+    # Madaar Event Finance Case is the closest "table to populate" — it's a
+    # standalone doctype the React /events page reads from.
+    plan.append((
+        "Madaar Event Finance Case",
+        {
+            "case_name": "حالة مالية تجريبية",
+            "case_type": "Revenue",
+            "status": "Open",
+            "description": "حالة مالية افتراضية لتجربة الواجهة.",
+        },
+    ))
+
     # ── Logistics ───────────────────────────────────────────────────────────
     plan.append((
         "Shipping Rule",
@@ -297,6 +328,48 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
 
 
 # ─── public entry point ──────────────────────────────────────────────────────
+
+
+def _seed_lms_chain() -> list[str]:
+    """Lessons, batches and enrollments all FK to a Course. We seed them after
+    the main plan so the course definitely exists. Returns one status line per
+    chain entry."""
+    out: list[str] = []
+    if not frappe.db.exists("DocType", "Madaar LMS Course"):
+        return ["  ⊘  LMS chain: course doctype not installed, skipped"]
+    course = _first("Madaar LMS Course")
+    if not course:
+        return ["  ⊘  LMS chain: no Course to anchor on, skipped"]
+
+    out.append(_seed("Madaar LMS Lesson", {
+        "course": course,
+        "title": "الدرس الأول — مقدمة",
+        "sort_order": 1,
+        "duration_min": 30,
+        "body": "<p>محتوى تجريبي للدرس.</p>",
+    }))
+    out.append(_seed("Madaar LMS Batch", {
+        "batch_code": "BATCH-DEMO-001",
+        "course": course,
+        "instructor": "Demo Instructor",
+        "start_date": "2026-06-01",
+        "end_date": "2026-08-31",
+        "max_seats": 25,
+        "is_active": 1,
+    }))
+    batch = _first("Madaar LMS Batch")
+    # Enrollment requires a "student" — pick an Employee or User as fallback.
+    student = _first("Employee") or "Administrator"
+    out.append(_seed("Madaar LMS Enrollment", {
+        "student": student,
+        "course": course,
+        "batch": batch,
+        "enrolled_on": "2026-06-01",
+        "progress_pct": 0,
+        "status": "Active",
+        "amount_paid": 500,
+    }))
+    return out
 
 
 def _seed_opportunity() -> str:
@@ -333,6 +406,8 @@ def run() -> None:
 
     # Deferred seeds — these depend on other seeds in this same run.
     print(_seed_opportunity())
+    for line in _seed_lms_chain():
+        print(line)
 
     frappe.db.commit()
     print("Madaar demo-seed — done")

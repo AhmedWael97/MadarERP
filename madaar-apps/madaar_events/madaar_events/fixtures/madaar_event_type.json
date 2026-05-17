@@ -1,6 +1,7 @@
 [
   {
     "doctype": "Madaar Event Type",
+    "name": "Music Concert",
     "event_type": "Music Concert",
     "category": "Performance",
     "typical_duration_hours": 3.0,
@@ -10,6 +11,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Theatre Play",
     "event_type": "Theatre Play",
     "category": "Performance",
     "typical_duration_hours": 2.5,
@@ -19,6 +21,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Dance Performance",
     "event_type": "Dance Performance",
     "category": "Performance",
     "typical_duration_hours": 2.0,
@@ -28,6 +31,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Cultural Talk",
     "event_type": "Cultural Talk",
     "category": "Talk",
     "typical_duration_hours": 1.5,
@@ -37,6 +41,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Film Screening",
     "event_type": "Film Screening",
     "category": "Performance",
     "typical_duration_hours": 2.5,
@@ -46,6 +51,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Art Exhibition Opening",
     "event_type": "Art Exhibition Opening",
     "category": "Exhibition",
     "typical_duration_hours": 4.0,
@@ -55,6 +61,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Workshop",
     "event_type": "Workshop",
     "category": "Workshop",
     "typical_duration_hours": 3.0,
@@ -64,6 +71,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Seminar",
     "event_type": "Seminar",
     "category": "Seminar",
     "typical_duration_hours": 2.0,
@@ -73,6 +81,7 @@
   },
   {
     "doctype": "Madaar Event Type",
+    "name": "Festival",
     "event_type": "Festival",
     "category": "Festival",
     "typical_duration_hours": 8.0,
