@@ -288,6 +288,14 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      // --- Treasury: Bank institutions (separate from Bank Account) ---
+      {
+        path: 'treasury/bank-institutions',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/bank-institutions/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Sales: detail pages for invoice/order/quotation/return ---
       {
         path: 'sales/invoices/:id',

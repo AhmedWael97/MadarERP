@@ -116,9 +116,10 @@ const SECTIONS: Section[] = [
           {
             headerAr: 'الخزائن والبنوك',
             leaves: [
-              { to: '/treasury',            labelAr: 'لوحة المعلومات' },
-              { to: '/treasury/treasuries', labelAr: 'الخزائن' },
-              { to: '/treasury/banks',      labelAr: 'الحسابات البنكية' },
+              { to: '/treasury',                   labelAr: 'لوحة المعلومات' },
+              { to: '/treasury/treasuries',        labelAr: 'الخزائن' },
+              { to: '/treasury/bank-institutions', labelAr: 'البنوك' },
+              { to: '/treasury/banks',             labelAr: 'الحسابات البنكية' },
             ],
           },
           {
