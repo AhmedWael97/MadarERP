@@ -237,13 +237,15 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
     ))
 
     # ── LMS (4 doctypes — Course → Lesson → Batch → Enrollment) ─────────────
+    # Madaar LMS Course's `instructor` is a Link to ERPNext's Instructor
+    # doctype, not a free-text string. Skip it on seed (it's optional) so we
+    # don't have to seed an Instructor record first.
     plan.append((
         "Madaar LMS Course",
         {
             "course_code": "CRS-DEMO-001",
             "title_ar": "كورس تجريبي للأساسيات",
             "title_en": "Demo Foundations Course",
-            "instructor": "Demo Instructor",
             "description": "مقدمة شاملة للمبتدئين.",
             "duration_hours": 20,
             "price": 500,
@@ -349,9 +351,9 @@ def _seed_lms_chain() -> list[str]:
         "body": "<p>محتوى تجريبي للدرس.</p>",
     }))
     out.append(_seed("Madaar LMS Batch", {
+        # Batch.instructor is also a Link → Instructor; leave it unset.
         "batch_code": "BATCH-DEMO-001",
         "course": course,
-        "instructor": "Demo Instructor",
         "start_date": "2026-06-01",
         "end_date": "2026-08-31",
         "max_seats": 25,
