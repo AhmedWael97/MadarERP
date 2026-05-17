@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Labor Record: hours_worked (not hours), hourly_rate (not hour_rate).
 export default function Page() {
   return (
     <FleetEntityList
@@ -15,8 +16,9 @@ export default function Page() {
           { fieldname: 'date', header: 'التاريخ' },
           { fieldname: 'project', header: 'المشروع' },
           { fieldname: 'employee', header: 'العامل' },
-          { fieldname: 'hours', header: 'الساعات', numeric: true, ltr: true },
-          { fieldname: 'hour_rate', header: 'تكلفة الساعة', numeric: true, ltr: true },
+          { fieldname: 'task_description', header: 'الوصف' },
+          { fieldname: 'hours_worked', header: 'الساعات', numeric: true, ltr: true },
+          { fieldname: 'hourly_rate', header: 'تكلفة الساعة', numeric: true, ltr: true },
           { fieldname: 'total_cost', header: 'الإجمالي', numeric: true, ltr: true },
         ],
       }}

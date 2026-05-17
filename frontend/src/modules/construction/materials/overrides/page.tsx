@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// ERPNext Material Request has no top-level `project` field (it's per row).
 export default function Page() {
   return (
     <FleetEntityList
@@ -8,13 +9,14 @@ export default function Page() {
         subtitle: 'طلبات شراء وصرف مواد المشاريع',
         basePath: '/construction/materials',
         newLabel: 'طلب مواد',
-        searchField: 'project',
+        searchField: 'customer',
         dateField: 'transaction_date',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'transaction_date', header: 'التاريخ' },
-          { fieldname: 'project', header: 'المشروع' },
+          { fieldname: 'customer', header: 'العميل' },
           { fieldname: 'material_request_type', header: 'النوع' },
+          { fieldname: 'company', header: 'الشركة' },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Progress Bill: period_start/period_end (not date/period),
+// gross_amount + retention_amount + net_amount (not total_amount).
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,22 +11,18 @@ export default function Page() {
         basePath: '/construction/billings',
         newLabel: 'مستخلص جديد',
         searchField: 'project',
-        dateField: 'date',
+        dateField: 'period_end',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'project', header: 'المشروع' },
-          { fieldname: 'date', header: 'التاريخ' },
-          { fieldname: 'period', header: 'الفترة' },
-          { fieldname: 'total_amount', header: 'الإجمالي', numeric: true, ltr: true },
-          { fieldname: 'status', header: 'الحالة', isBadge: true },
+          { fieldname: 'boq', header: 'BOQ' },
+          { fieldname: 'period_start', header: 'بداية الفترة' },
+          { fieldname: 'period_end', header: 'نهاية الفترة' },
+          { fieldname: 'completion_pct', header: 'نسبة الإنجاز %', numeric: true, ltr: true },
+          { fieldname: 'gross_amount', header: 'القيمة الإجمالية', numeric: true, ltr: true },
+          { fieldname: 'retention_amount', header: 'الاستقطاع', numeric: true, ltr: true },
+          { fieldname: 'net_amount', header: 'الصافي', numeric: true, ltr: true },
         ],
-        badgeMap: {
-          Draft:    { label: 'مسودة',   cls: 'bg-amber-100 text-amber-700' },
-          Submitted: { label: 'مرسل',   cls: 'bg-blue-100 text-blue-700' },
-          Approved: { label: 'معتمد',   cls: 'bg-emerald-100 text-emerald-700' },
-          Paid:     { label: 'مدفوع',   cls: 'bg-purple-100 text-purple-700' },
-          Rejected: { label: 'مرفوض',   cls: 'bg-red-100 text-red-700' },
-        },
       }}
     />
   );

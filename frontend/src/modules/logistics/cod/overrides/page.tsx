@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar COD Settlement: shipment (link), amount_collected (not total_collected).
 export default function Page() {
   return (
     <FleetEntityList
@@ -8,16 +9,14 @@ export default function Page() {
         subtitle: 'تسويات مبالغ COD المُحصَّلة من شركات الشحن',
         basePath: '/logistics/cod',
         newLabel: 'تسوية جديدة',
-        searchField: 'carrier',
+        searchField: 'shipment',
         dateField: 'settlement_date',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'settlement_date', header: 'التاريخ' },
-          { fieldname: 'carrier', header: 'الناقل' },
-          { fieldname: 'shipments_count', header: 'عدد الشحنات', numeric: true, ltr: true },
-          { fieldname: 'total_collected', header: 'إجمالي المُحصَّل', numeric: true, ltr: true },
-          { fieldname: 'commission', header: 'العمولة', numeric: true, ltr: true },
-          { fieldname: 'net_amount', header: 'الصافي', numeric: true, ltr: true },
+          { fieldname: 'shipment', header: 'الشحنة' },
+          { fieldname: 'payment_method', header: 'وسيلة الدفع' },
+          { fieldname: 'amount_collected', header: 'المبلغ المُحصَّل', numeric: true, ltr: true },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

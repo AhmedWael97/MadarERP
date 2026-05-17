@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Project Budget: planned_amount (was total_budget), actual_amount
+// (was spent), variance (was remaining). Also has `category`.
 export default function Page() {
   return (
     <FleetEntityList
@@ -13,9 +15,10 @@ export default function Page() {
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'project', header: 'المشروع' },
           { fieldname: 'fiscal_year', header: 'السنة المالية' },
-          { fieldname: 'total_budget', header: 'الإجمالي', numeric: true, ltr: true },
-          { fieldname: 'spent', header: 'المنصرف', numeric: true, ltr: true },
-          { fieldname: 'remaining', header: 'المتبقي', numeric: true, ltr: true },
+          { fieldname: 'category', header: 'البند' },
+          { fieldname: 'planned_amount', header: 'المخطط', numeric: true, ltr: true },
+          { fieldname: 'actual_amount', header: 'المنصرف', numeric: true, ltr: true },
+          { fieldname: 'variance', header: 'الفرق', numeric: true, ltr: true },
         ],
       }}
     />

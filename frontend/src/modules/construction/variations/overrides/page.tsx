@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Change Order: amount_change (not amount), description, no change_type.
 export default function Page() {
   return (
     <FleetEntityList
@@ -13,9 +14,10 @@ export default function Page() {
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'project', header: 'المشروع' },
+          { fieldname: 'boq', header: 'BOQ' },
           { fieldname: 'date', header: 'التاريخ' },
-          { fieldname: 'change_type', header: 'النوع' },
-          { fieldname: 'amount', header: 'القيمة', numeric: true, ltr: true },
+          { fieldname: 'description', header: 'الوصف' },
+          { fieldname: 'amount_change', header: 'فرق القيمة', numeric: true, ltr: true },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

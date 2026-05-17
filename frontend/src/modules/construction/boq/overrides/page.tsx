@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar BOQ actual fields: project, date, currency, total_amount, status. No `boq_name`.
 export default function Page() {
   return (
     <FleetEntityList
@@ -8,13 +9,13 @@ export default function Page() {
         subtitle: 'تقديرات الكميات والأسعار للمشاريع',
         basePath: '/construction/boq',
         newLabel: 'BOQ جديد',
-        searchField: 'boq_name',
+        searchField: 'project',
         dateField: 'date',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'project', header: 'المشروع' },
-          { fieldname: 'boq_name', header: 'اسم البند' },
           { fieldname: 'date', header: 'التاريخ' },
+          { fieldname: 'currency', header: 'العملة' },
           { fieldname: 'total_amount', header: 'الإجمالي', numeric: true, ltr: true },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
