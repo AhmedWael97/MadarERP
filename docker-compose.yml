@@ -84,6 +84,7 @@ services:
       - ./madaar-apps/madaar_logistics:/home/frappe/frappe-bench/apps/madaar_logistics
       - ./madaar-apps/madaar_ecommerce:/home/frappe/frappe-bench/apps/madaar_ecommerce
       - ./madaar-apps/madaar_egov_tax:/home/frappe/frappe-bench/apps/madaar_egov_tax
+      - ./madaar-apps/madaar_events:/home/frappe/frappe-bench/apps/madaar_events
       # Named volumes for site data so Windows host perms don't fight Linux uid 1000.
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs

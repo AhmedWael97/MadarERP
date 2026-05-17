@@ -431,14 +431,10 @@ function main() {
 
     const { module, slug } = moduleAndSlug(routePath);
     const rawTitle = page?.name || page?.title || routePath;
-    // For synthesized routes (no page in the scan), prefer a derived title from the
-    // parent — e.g. "Edit Bank Account" rather than the ugly path "/treasury/banks/:id/edit".
-    const titleArabic = parentTitles?.ar
-      ? `تعديل — ${parentTitles.ar}`
-      : (arabicTitleFor(rawTitle) || rawTitle);
-    const titleEnglish = parentTitles?.en
-      ? `Edit — ${parentTitles.en}`
-      : (englishTitleFor(rawTitle, slug) || rawTitle);
+    // For synthesized routes (no page in the scan), prefer a caller-supplied title
+    // — e.g. "Edit — Bank Accounts" rather than the ugly path "/treasury/banks/:id/edit".
+    const titleArabic = parentTitles?.ar ?? (arabicTitleFor(rawTitle) || rawTitle);
+    const titleEnglish = parentTitles?.en ?? (englishTitleFor(rawTitle, slug) || rawTitle);
     // The key is namespaced (`pages:…`) so react-i18next looks it up in the
     // generated `pages` namespace instead of the hand-maintained `common`.
     const titleKey = `pages:page.${module}.${slug}.title`;
@@ -547,28 +543,41 @@ function main() {
     report.collapsed_dynamic += 1;
   }
 
-  // ---- Pass 3: implicit edit routes for every doctype-bound list/tree page ----
-  // The scan only contains URLs the crawler actually visited, so doctype edit
-  // routes (`/treasury/banks/:id/edit`) only appear for doctypes the crawler
-  // had records for. Synthesize a `:id/edit` route for every list/tree route
-  // that points at a doctype, so users can always reach the edit form by URL.
+  // ---- Pass 3 & 4: implicit create + edit routes for every doctype-bound list page ----
+  // The scan only contains URLs the crawler actually visited, so create / :id/edit
+  // routes only appear for doctypes the crawler had records for (or buttons it
+  // happened to click). Synthesize them for every list/tree route that points at
+  // a doctype, so users can always reach create + edit forms by URL.
   const listLikeRoutes = written.filter(
     (r) => (r.viewType === 'list' || r.viewType === 'tree') && r.doctype,
   );
   for (const r of listLikeRoutes) {
     const editPath = `${r.path}/:id/edit`;
-    if (seenRoutes.has(editPath)) continue;
-    emitPage({
-      routePath: editPath,
-      page: null,
-      doctype: r.doctype,
-      viewType: 'form',
-      isEdit: true,
-      // Inherit the list page's name so the edit form reads "Edit — Bank Accounts"
-      // instead of a path-based default.
-      parentTitles: { ar: r.titleArabic, en: r.titleEnglish },
-    });
-    report.collapsed_dynamic += 1;
+    if (!seenRoutes.has(editPath)) {
+      emitPage({
+        routePath: editPath,
+        page: null,
+        doctype: r.doctype,
+        viewType: 'form',
+        isEdit: true,
+        // Inherit the list page's name so the edit form reads "Edit — Bank Accounts"
+        // instead of a path-based default.
+        parentTitles: { ar: `تعديل — ${r.titleArabic}`, en: `Edit — ${r.titleEnglish}` },
+      });
+      report.collapsed_dynamic += 1;
+    }
+    const createPath = `${r.path}/create`;
+    if (!seenRoutes.has(createPath)) {
+      emitPage({
+        routePath: createPath,
+        page: null,
+        doctype: r.doctype,
+        viewType: 'form',
+        isEdit: false,
+        parentTitles: { ar: `إضافة — ${r.titleArabic}`, en: `New — ${r.titleEnglish}` },
+      });
+      report.collapsed_dynamic += 1;
+    }
   }
 
   const manifestPath = path.join(OUT_DIR, 'pages.manifest.ts');

@@ -1,0 +1,64 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "deliverable_name",
+    "deliverable_type",
+    "delivered_to",
+    "column_break_1",
+    "delivered_date",
+    "link"
+  ],
+  "fields": [
+    {
+      "fieldname": "deliverable_name",
+      "fieldtype": "Data",
+      "label": "Deliverable",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "deliverable_type",
+      "fieldtype": "Select",
+      "label": "Type",
+      "options": "Raw Photo\nRaw Video\nEdited Photo\nEdited Video\nMarketing Material\nReport\nOther",
+      "default": "Raw Photo",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "delivered_to",
+      "fieldtype": "Data",
+      "label": "Delivered To",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "delivered_date",
+      "fieldtype": "Datetime",
+      "label": "Delivered On"
+    },
+    {
+      "fieldname": "link",
+      "fieldtype": "Data",
+      "label": "Link / Reference"
+    }
+  ],
+  "istable": 1,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Deliverable",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

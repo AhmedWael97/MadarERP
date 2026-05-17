@@ -1,0 +1,94 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "field:venue_name",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "venue_name",
+    "venue_type",
+    "capacity",
+    "column_break_1",
+    "location",
+    "status",
+    "section_notes",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "venue_name",
+      "fieldtype": "Data",
+      "label": "Venue Name",
+      "reqd": 1,
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "venue_type",
+      "fieldtype": "Select",
+      "label": "Type",
+      "options": "Main Hall\nRoom\nWorkshop Area\nOpen Space\nOther",
+      "default": "Main Hall",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "capacity",
+      "fieldtype": "Int",
+      "label": "Capacity",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "location",
+      "fieldtype": "Data",
+      "label": "Location"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Active\nMaintenance\nRetired",
+      "default": "Active"
+    },
+    {
+      "fieldname": "section_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Venue",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "venue_name",
+  "track_changes": 1
+}

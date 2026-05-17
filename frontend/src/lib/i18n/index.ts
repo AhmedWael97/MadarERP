@@ -5,6 +5,10 @@ import enCommon from './locales/en/common.json';
 import arCommon from './locales/ar/common.json';
 import enPages from './locales/en/pages.json';
 import arPages from './locales/ar/pages.json';
+import enForms from './locales/en/forms.json';
+import arForms from './locales/ar/forms.json';
+import enLegacy from './locales/en/legacy.json';
+import arLegacy from './locales/ar/legacy.json';
 
 const STORAGE_KEY = 'madaar.locale';
 
@@ -24,15 +28,16 @@ export function initI18n() {
       lng: detectInitialLocale(),
       fallbackLng: 'ar',
       supportedLngs: ['ar', 'en'],
-      ns: ['common', 'pages'],
+      ns: ['common', 'pages', 'forms', 'legacy'],
       defaultNS: 'common',
       resources: {
-        // The `pages` namespace is rebuilt by scripts/generate-pages.mjs each time the
-        // scan is re-run; it carries one entry per generated route. The runtime looks
-        // up `pages:page.<module>.<slug>.title` against this namespace, falling back
-        // to the `defaultValue` baked into the generated index.tsx when missing.
-        en: { common: enCommon, pages: enPages },
-        ar: { common: arCommon, pages: arPages },
+        // `pages` is rebuilt by scripts/generate-pages.mjs each scan run.
+        // `forms` translates DocType field / section labels.
+        // `legacy` mirrors the reference Laravel `lang/{en,ar}.json` — keys are
+        // Arabic source phrases, values are translations. Use the `tx(ar)`
+        // helper below to look up reference labels verbatim.
+        en: { common: enCommon, pages: enPages, forms: enForms, legacy: enLegacy },
+        ar: { common: arCommon, pages: arPages, forms: arForms, legacy: arLegacy },
       },
       backend: {
         loadPath: '/locales/{{lng}}/{{ns}}.json',
@@ -46,6 +51,23 @@ export function initI18n() {
 export function setLocale(lng: 'ar' | 'en') {
   localStorage.setItem(STORAGE_KEY, lng);
   void i18n.changeLanguage(lng);
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lng;
+    document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
+  }
+}
+
+/**
+ * Look up an Arabic source phrase in the legacy namespace, matching the
+ * Laravel reference's `__('Arabic text')` semantics. Falls back to the
+ * Arabic text itself if no translation exists for the current locale.
+ *
+ * Usage:  tx('فاتورة جديدة')   →  "New Invoice" (en) / "فاتورة جديدة" (ar)
+ */
+export function tx(arabic: string): string {
+  if (!i18n.isInitialized) return arabic;
+  const translated = i18n.t(arabic, { ns: 'legacy', defaultValue: arabic });
+  return translated;
 }
 
 export default i18n;

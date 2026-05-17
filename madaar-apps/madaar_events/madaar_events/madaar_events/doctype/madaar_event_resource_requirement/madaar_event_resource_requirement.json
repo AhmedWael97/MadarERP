@@ -1,0 +1,75 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "resource_type",
+    "quantity",
+    "assigned_team",
+    "column_break_1",
+    "assigned_employee",
+    "status",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "resource_type",
+      "fieldtype": "Select",
+      "label": "Resource Type",
+      "reqd": 1,
+      "options": "Technical Sound\nLight Engineering\nPhotography\nVideography\nDecoration\nStage\nSupport Staff\nOther",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "quantity",
+      "fieldtype": "Int",
+      "label": "Qty",
+      "default": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "assigned_team",
+      "fieldtype": "Link",
+      "label": "Team",
+      "options": "Department",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "assigned_employee",
+      "fieldtype": "Link",
+      "label": "Owner",
+      "options": "Employee"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nAssigned\nReady",
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ],
+  "istable": 1,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Resource Requirement",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

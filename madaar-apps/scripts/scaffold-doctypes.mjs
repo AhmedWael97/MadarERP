@@ -526,6 +526,398 @@ const APPS = [
       },
     ],
   },
+
+  // ---------------------------------------------------------------------------
+  // madaar_events — Culture Wheel: 12-stage event workflow from intake through
+  // post-event closure. Two entry paths (Internal Initiative / External Request)
+  // converge on the same downstream pipeline. See new_module.md for the source
+  // business rules and the diagram. Each stage gets its own DocType for clean
+  // role permissions and audit trail (cf. "Further Considerations" — we took
+  // the separate-DocType branch).
+  // ---------------------------------------------------------------------------
+  {
+    name: 'madaar_events',
+    label: 'Madaar Events',
+    description: 'Culture Wheel — 12-stage event lifecycle (intake, scheduling, contracting, marketing, ops, execution, closure).',
+    doctypes: [
+      // ----- Configuration / lookup -----
+      {
+        name: 'Madaar Event Type',
+        autoname: 'field:event_type',
+        title_field: 'event_type',
+        fields: [
+          ['event_type', 'Data', { reqd: 1, label: 'Event Type', unique: 1, in_list_view: 1 }],
+          ['category', 'Select', { label: 'Category', options: 'Performance\nTalk\nFestival\nSeminar\nWorkshop\nExhibition\nOther', default: 'Performance', in_list_view: 1 }],
+          ['typical_duration_hours', 'Float', { label: 'Typical Duration (hours)' }],
+          ['column_break_1', 'Column Break'],
+          ['requires_ticketing', 'Check', { label: 'Requires Ticketing', default: 0 }],
+          ['requires_rehearsal', 'Check', { label: 'Requires Rehearsal', default: 0 }],
+          ['description', 'Small Text', { label: 'Description' }],
+        ],
+      },
+      {
+        name: 'Madaar Event Venue',
+        autoname: 'field:venue_name',
+        title_field: 'venue_name',
+        fields: [
+          ['venue_name', 'Data', { reqd: 1, label: 'Venue Name', unique: 1, in_list_view: 1 }],
+          ['venue_type', 'Select', { label: 'Type', options: 'Main Hall\nRoom\nWorkshop Area\nOpen Space\nOther', default: 'Main Hall', in_list_view: 1 }],
+          ['capacity', 'Int', { label: 'Capacity', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['location', 'Data', { label: 'Location' }],
+          ['status', 'Select', { label: 'Status', options: 'Active\nMaintenance\nRetired', default: 'Active' }],
+          ['section_notes', 'Section Break', { label: 'Notes' }],
+          ['notes', 'Small Text', { label: 'Notes' }],
+        ],
+      },
+
+      // ----- Stage 1+2+3: Entry / Intake / Initial Communication -----
+      {
+        name: 'Madaar Event Validation Item',
+        istable: 1,
+        fields: [
+          ['item_name', 'Data', { reqd: 1, label: 'Item', in_list_view: 1 }],
+          ['is_complete', 'Check', { label: 'Complete', default: 0, in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['notes', 'Small Text', { label: 'Notes', in_list_view: 1 }],
+        ],
+      },
+      {
+        name: 'Madaar Event Communication Log',
+        istable: 1,
+        fields: [
+          ['communication_date', 'Datetime', { reqd: 1, label: 'When', in_list_view: 1 }],
+          ['channel', 'Select', { label: 'Channel', options: 'Email\nPhone\nMeeting\nWhatsApp\nLetter\nOther', default: 'Email', in_list_view: 1 }],
+          ['direction', 'Select', { label: 'Direction', options: 'Inbound\nOutbound', default: 'Outbound', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['summary', 'Small Text', { label: 'Summary', in_list_view: 1 }],
+          ['logged_by', 'Link', { label: 'Logged By', options: 'User' }],
+        ],
+      },
+      {
+        name: 'Madaar Event Request',
+        autoname: 'EVR-.YYYY.-.#####',
+        title_field: 'event_title',
+        fields: [
+          // --- Identification ---
+          ['event_title', 'Data', { reqd: 1, label: 'Event Title', in_list_view: 1 }],
+          ['source_type', 'Select', { reqd: 1, label: 'Source', options: 'Internal Initiative\nExternal Request', default: 'Internal Initiative', in_list_view: 1 }],
+          ['event_type', 'Link', { label: 'Event Type', options: 'Madaar Event Type', in_list_view: 1 }],
+          ['column_break_id', 'Column Break'],
+          ['workflow_state', 'Select', {
+            label: 'Status',
+            options: 'Draft\nAwaiting Coordinator\nUnder Validation\nIncomplete\nCommunicated\nScheduled\nResource Planned\nContracted\nFinance Cleared\nPublished\nMarketing Active\nOperations Notified\nEvent Day\nClosed\nRejected',
+            default: 'Draft',
+            in_list_view: 1,
+          }],
+          ['coordinator', 'Link', { label: 'Coordinator', options: 'Employee', in_list_view: 1 }],
+          ['assigned_department', 'Link', { label: 'Department', options: 'Department' }],
+
+          // --- Internal initiative details ---
+          ['section_internal', 'Section Break', { label: 'Internal Initiative Details', depends_on: "eval:doc.source_type=='Internal Initiative'" }],
+          ['idea_summary', 'Small Text', { label: 'Idea / Proposal Summary' }],
+          ['initiating_team', 'Link', { label: 'Initiating Team', options: 'Department' }],
+          ['initiating_partner', 'Data', { label: 'Initiating Partner' }],
+
+          // --- External request details ---
+          ['section_external', 'Section Break', { label: 'External Request Details', depends_on: "eval:doc.source_type=='External Request'" }],
+          ['artist_name', 'Data', { label: 'Artist / Group Name' }],
+          ['organization_type', 'Select', { label: 'Organization Type', options: '\nLocal\nInternational\nEmbassy\nIndependent' }],
+          ['artist_bio', 'Text Editor', { label: 'Bio' }],
+          ['column_break_external', 'Column Break'],
+          ['work_samples_url', 'Data', { label: 'Work Samples / Footage URL' }],
+          ['technical_needs', 'Small Text', { label: 'Technical Needs' }],
+
+          // --- Requested dates ---
+          ['section_dates', 'Section Break', { label: 'Requested Dates' }],
+          ['requested_start', 'Datetime', { label: 'Requested Start' }],
+          ['requested_end', 'Datetime', { label: 'Requested End' }],
+          ['column_break_dates', 'Column Break'],
+          ['flexible_dates', 'Check', { label: 'Dates Flexible', default: 0 }],
+
+          // --- Intake validation (Stage 2) ---
+          ['section_validation', 'Section Break', { label: 'Intake Validation' }],
+          ['intake_validation_state', 'Select', { label: 'Validation State', options: 'Pending\nComplete\nIncomplete\nRejected', default: 'Pending' }],
+          ['validation_items', 'Table', { label: 'Validation Checklist', options: 'Madaar Event Validation Item' }],
+          ['rejection_reason', 'Small Text', { label: 'Rejection Reason', depends_on: "eval:doc.intake_validation_state=='Rejected'" }],
+
+          // --- Initial communication (Stage 3) ---
+          ['section_communication', 'Section Break', { label: 'Initial Communication' }],
+          ['initial_contact_sent', 'Check', { label: 'Receipt Confirmed to Requester', default: 0 }],
+          ['missing_info_requested', 'Check', { label: 'Missing Info Requested', default: 0 }],
+          ['column_break_comm', 'Column Break'],
+          ['invitation_confirmed', 'Check', { label: 'Invitation Confirmed', default: 0 }],
+          ['communications', 'Table', { label: 'Communication Log', options: 'Madaar Event Communication Log' }],
+        ],
+      },
+
+      // ----- Stage 4: Availability & Scheduling -----
+      {
+        name: 'Madaar Event Schedule',
+        autoname: 'EVS-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['venue', 'Link', { reqd: 1, label: 'Venue', options: 'Madaar Event Venue', in_list_view: 1 }],
+          ['booking_status', 'Select', { label: 'Booking Status', options: 'Tentative\nConfirmed\nCancelled', default: 'Tentative', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['start_datetime', 'Datetime', { reqd: 1, label: 'Start', in_list_view: 1 }],
+          ['end_datetime', 'Datetime', { reqd: 1, label: 'End', in_list_view: 1 }],
+          ['conflict_checked', 'Check', { label: 'Calendar Conflict Checked', default: 0 }],
+          ['section_notes', 'Section Break', { label: 'Notes' }],
+          ['scheduling_notes', 'Small Text', { label: 'Scheduling Notes' }],
+        ],
+      },
+
+      // ----- Stage 5: Resource Planning -----
+      {
+        name: 'Madaar Event Resource Requirement',
+        istable: 1,
+        fields: [
+          ['resource_type', 'Select', { reqd: 1, label: 'Resource Type', options: 'Technical Sound\nLight Engineering\nPhotography\nVideography\nDecoration\nStage\nSupport Staff\nOther', in_list_view: 1 }],
+          ['quantity', 'Int', { label: 'Qty', default: 1, in_list_view: 1 }],
+          ['assigned_team', 'Link', { label: 'Team', options: 'Department', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['assigned_employee', 'Link', { label: 'Owner', options: 'Employee' }],
+          ['status', 'Select', { label: 'Status', options: 'Pending\nAssigned\nReady', default: 'Pending', in_list_view: 1 }],
+          ['notes', 'Small Text', { label: 'Notes' }],
+        ],
+      },
+      {
+        name: 'Madaar Event Resource Plan',
+        autoname: 'EVRP-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['plan_status', 'Select', { label: 'Plan Status', options: 'Draft\nNotified\nAcknowledged\nReady', default: 'Draft', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['departments_notified_on', 'Datetime', { label: 'Departments Notified On' }],
+          ['section_reqs', 'Section Break', { label: 'Requirements' }],
+          ['requirements', 'Table', { label: 'Requirements', options: 'Madaar Event Resource Requirement' }],
+          ['section_finance', 'Section Break', { label: 'Finance Department Notified' }],
+          ['finance_notified', 'Check', { label: 'Finance Department Notified', default: 0 }],
+        ],
+      },
+
+      // ----- Stage 6: Contracting -----
+      {
+        name: 'Madaar Event Contract',
+        autoname: 'EVC-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['contract_type', 'Select', { reqd: 1, label: 'Contract Type', options: 'General\nEvent-Specific', default: 'Event-Specific', in_list_view: 1 }],
+          ['workflow_state', 'Select', {
+            label: 'Status',
+            options: 'Draft\nHR Pending\nLegal Review\nAwaiting Signature\nSigned\nCancelled',
+            default: 'Draft',
+            in_list_view: 1,
+          }],
+          ['column_break_1', 'Column Break'],
+          ['party_name', 'Data', { label: 'Counterparty (Artist / Group)' }],
+          ['signed_date', 'Date', { label: 'Signed Date' }],
+
+          ['section_terms', 'Section Break', { label: 'Terms' }],
+          ['event_start', 'Datetime', { label: 'Event Start' }],
+          ['event_end', 'Datetime', { label: 'Event End' }],
+          ['rehearsals_required', 'Check', { label: 'Rehearsals Required', default: 0 }],
+          ['column_break_terms', 'Column Break'],
+          ['ticket_price', 'Currency', { label: 'Ticket Price' }],
+          ['team_size', 'Int', { label: 'Team Size' }],
+          ['terms', 'Text Editor', { label: 'Rules & Regulations / Specific Terms' }],
+
+          ['section_gates', 'Section Break', { label: 'Signing Gates' }],
+          ['hr_availability_confirmed', 'Check', { label: 'HR Availability Confirmed', default: 0 }],
+          ['hr_confirmed_on', 'Datetime', { label: 'HR Confirmed On', read_only: 1 }],
+          ['column_break_gates', 'Column Break'],
+          ['legal_reviewed', 'Check', { label: 'Legal Reviewed', default: 0 }],
+          ['legal_reviewed_on', 'Datetime', { label: 'Legal Reviewed On', read_only: 1 }],
+        ],
+      },
+
+      // ----- Stage 7: Finance & Legal -----
+      {
+        name: 'Madaar Event Finance Case',
+        autoname: 'EVF-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['contract', 'Link', { label: 'Contract', options: 'Madaar Event Contract', in_list_view: 1 }],
+          ['compliance_status', 'Select', { label: 'Compliance Status', options: 'Pending\nCleared\nBlocked', default: 'Pending', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['payment_structure', 'Select', { label: 'Payment Structure', options: 'Sales Invoice\nInternal Cost\nNone', default: 'Sales Invoice' }],
+          ['linked_sales_invoice', 'Link', { label: 'Sales Invoice', options: 'Sales Invoice' }],
+
+          ['section_amounts', 'Section Break', { label: 'Amounts' }],
+          ['revenue_amount', 'Currency', { label: 'Expected Revenue' }],
+          ['cost_amount', 'Currency', { label: 'Expected Cost' }],
+          ['column_break_amounts', 'Column Break'],
+          ['currency', 'Link', { label: 'Currency', options: 'Currency', default: 'EGP' }],
+
+          ['section_legal', 'Section Break', { label: 'Legal Documents' }],
+          ['legal_docs_attached', 'Check', { label: 'Legal Docs Attached', default: 0 }],
+          ['legal_notes', 'Small Text', { label: 'Legal Notes' }],
+        ],
+      },
+
+      // ----- Stage 8: Website & Event Creation -----
+      {
+        name: 'Madaar Event Publication',
+        autoname: 'EVP-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['publication_state', 'Select', { label: 'State', options: 'Draft\nReady for Review\nPublished\nUnpublished', default: 'Draft', in_list_view: 1 }],
+          ['published_on', 'Datetime', { label: 'Published On', read_only: 1, in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['ticket_type', 'Select', { label: 'Ticket Type', options: 'Free\nPaid', default: 'Free' }],
+          ['ticket_price', 'Currency', { label: 'Ticket Price', depends_on: "eval:doc.ticket_type=='Paid'" }],
+
+          ['section_profile', 'Section Break', { label: 'Artist / Group Profile' }],
+          ['profile_summary', 'Text Editor', { label: 'Profile' }],
+
+          ['section_details', 'Section Break', { label: 'Event Details' }],
+          ['event_start', 'Datetime', { label: 'Start' }],
+          ['event_end', 'Datetime', { label: 'End' }],
+          ['venue_label', 'Data', { label: 'Venue (display)' }],
+          ['column_break_details', 'Column Break'],
+          ['description', 'Text Editor', { label: 'Description' }],
+
+          ['section_media', 'Section Break', { label: 'Media' }],
+          ['hero_image_url', 'Data', { label: 'Hero Image URL' }],
+          ['media_urls', 'Small Text', { label: 'Additional Media URLs (one per line)' }],
+          ['website_url', 'Data', { label: 'Published URL', read_only: 1 }],
+        ],
+      },
+
+      // ----- Stage 9: Marketing Activation -----
+      {
+        name: 'Madaar Event Marketing Campaign',
+        autoname: 'EVM-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['publication', 'Link', { reqd: 1, label: 'Publication', options: 'Madaar Event Publication', in_list_view: 1 }],
+          ['campaign_status', 'Select', { label: 'Status', options: 'Draft\nActive\nCompleted\nCancelled', default: 'Draft', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['campaign_start', 'Date', { label: 'Campaign Start' }],
+          ['campaign_end', 'Date', { label: 'Campaign End' }],
+
+          ['section_channels', 'Section Break', { label: 'Channels' }],
+          ['social_media', 'Check', { label: 'Social Media', default: 1 }],
+          ['email_campaign', 'Check', { label: 'Email Campaigns', default: 0 }],
+          ['column_break_channels', 'Column Break'],
+          ['ads_promotions', 'Check', { label: 'Ads & Promotions', default: 0 }],
+          ['media_partners', 'Check', { label: 'Media Partners', default: 0 }],
+
+          ['section_assets', 'Section Break', { label: 'Assets & Timeline' }],
+          ['campaign_assets', 'Text Editor', { label: 'Asset List (images, videos, copy)' }],
+          ['key_information', 'Text Editor', { label: 'Key Information' }],
+          ['timeline', 'Text Editor', { label: 'Timeline / Milestones' }],
+        ],
+      },
+
+      // ----- Stage 10: Operations Notification -----
+      {
+        name: 'Madaar Event Ops Notification',
+        autoname: 'EVO-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['ops_status', 'Select', { label: 'Status', options: 'Pending\nNotified\nComplete', default: 'Pending', in_list_view: 1 }],
+          ['notified_on', 'Datetime', { label: 'Notified On', read_only: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['ticket_office_notified', 'Check', { label: 'Ticket Office', default: 0 }],
+          ['call_center_notified', 'Check', { label: 'Call Center', default: 0 }],
+          ['reception_notified', 'Check', { label: 'Reception', default: 0 }],
+
+          ['section_other_teams', 'Section Break' ],
+          ['security_notified', 'Check', { label: 'Door Control / Security', default: 0 }],
+          ['photography_notified', 'Check', { label: 'Photography Department', default: 0 }],
+          ['column_break_other', 'Column Break'],
+          ['housekeeping_notified', 'Check', { label: 'Housekeeping', default: 0 }],
+
+          ['section_updates', 'Section Break', { label: 'Continuous Updates' }],
+          ['continuous_updates', 'Text Editor', { label: 'Updates' }],
+        ],
+      },
+
+      // ----- Stage 11: Event Day Execution -----
+      {
+        name: 'Madaar Event Day Checklist Item',
+        istable: 1,
+        fields: [
+          ['item_name', 'Data', { reqd: 1, label: 'Item', in_list_view: 1 }],
+          ['owner_role', 'Data', { label: 'Owner / Role', in_list_view: 1 }],
+          ['is_done', 'Check', { label: 'Done', default: 0, in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['time_completed', 'Datetime', { label: 'Time Completed' }],
+          ['notes', 'Small Text', { label: 'Notes' }],
+        ],
+      },
+      {
+        name: 'Madaar Event Day Checklist',
+        autoname: 'EVD-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['execution_status', 'Select', { label: 'Execution Status', options: 'Pending\nIn Progress\nSmooth\nIssues', default: 'Pending', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['event_date', 'Date', { label: 'Event Date', in_list_view: 1 }],
+
+          ['section_core', 'Section Break', { label: 'Core Gates' }],
+          ['coordinator_onsite', 'Check', { label: 'Coordinator Onsite', default: 0 }],
+          ['team_attendance', 'Check', { label: 'Team Attendance Confirmed', default: 0 }],
+          ['technical_setup_ready', 'Check', { label: 'Technical Setup Ready', default: 0 }],
+          ['column_break_core', 'Column Break'],
+          ['rehearsals_completed', 'Check', { label: 'Rehearsals Completed', default: 0 }],
+          ['doors_ticketing_ready', 'Check', { label: 'Doors & Ticketing Ready', default: 0 }],
+          ['safety_plan_verified', 'Check', { label: 'Safety & Emergency Plan Verified', default: 0 }],
+
+          ['section_items', 'Section Break', { label: 'Detailed Checklist' }],
+          ['items', 'Table', { label: 'Items', options: 'Madaar Event Day Checklist Item' }],
+          ['section_notes', 'Section Break', { label: 'Notes' }],
+          ['notes', 'Text Editor', { label: 'Onsite Notes' }],
+        ],
+      },
+
+      // ----- Stage 12: Post-Event Process -----
+      {
+        name: 'Madaar Event Deliverable',
+        istable: 1,
+        fields: [
+          ['deliverable_name', 'Data', { reqd: 1, label: 'Deliverable', in_list_view: 1 }],
+          ['deliverable_type', 'Select', { label: 'Type', options: 'Raw Photo\nRaw Video\nEdited Photo\nEdited Video\nMarketing Material\nReport\nOther', default: 'Raw Photo', in_list_view: 1 }],
+          ['delivered_to', 'Data', { label: 'Delivered To', in_list_view: 1 }],
+          ['column_break_1', 'Column Break'],
+          ['delivered_date', 'Datetime', { label: 'Delivered On' }],
+          ['link', 'Data', { label: 'Link / Reference' }],
+        ],
+      },
+      {
+        name: 'Madaar Event Closure',
+        autoname: 'EVCL-.YYYY.-.#####',
+        title_field: 'event_request',
+        fields: [
+          ['event_request', 'Link', { reqd: 1, label: 'Event Request', options: 'Madaar Event Request', in_list_view: 1 }],
+          ['closure_status', 'Select', { label: 'Closure Status', options: 'Pending\nDeliverables Sent\nReport Filed\nClosed', default: 'Pending', in_list_view: 1 }],
+          ['closed_date', 'Date', { label: 'Closed On' }],
+          ['column_break_1', 'Column Break'],
+          ['raw_media_delivered', 'Check', { label: 'Raw Media Delivered to Artist/Group', default: 0 }],
+          ['marketing_materials_delivered', 'Check', { label: 'Marketing Materials Delivered', default: 0 }],
+          ['financial_closure_status', 'Select', { label: 'Financial Closure', options: 'Pending\nClosed', default: 'Pending' }],
+          ['documentation_archived', 'Check', { label: 'Documentation Archived', default: 0 }],
+
+          ['section_deliverables', 'Section Break', { label: 'Deliverables' }],
+          ['deliverables', 'Table', { label: 'Deliverables', options: 'Madaar Event Deliverable' }],
+
+          ['section_report', 'Section Break', { label: 'Internal Reports' }],
+          ['event_report', 'Text Editor', { label: 'Event Report' }],
+          ['performance_review', 'Text Editor', { label: 'Performance Review' }],
+        ],
+      },
+    ],
+  },
 ];
 
 // ---------- File writers ----------

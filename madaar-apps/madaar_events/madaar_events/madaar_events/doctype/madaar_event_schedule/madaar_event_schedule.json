@@ -1,0 +1,105 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVS-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "venue",
+    "booking_status",
+    "column_break_1",
+    "start_datetime",
+    "end_datetime",
+    "conflict_checked",
+    "section_notes",
+    "scheduling_notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "venue",
+      "fieldtype": "Link",
+      "label": "Venue",
+      "reqd": 1,
+      "options": "Madaar Event Venue",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "booking_status",
+      "fieldtype": "Select",
+      "label": "Booking Status",
+      "options": "Tentative\nConfirmed\nCancelled",
+      "default": "Tentative",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "start_datetime",
+      "fieldtype": "Datetime",
+      "label": "Start",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "end_datetime",
+      "fieldtype": "Datetime",
+      "label": "End",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "conflict_checked",
+      "fieldtype": "Check",
+      "label": "Calendar Conflict Checked",
+      "default": 0
+    },
+    {
+      "fieldname": "section_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "scheduling_notes",
+      "fieldtype": "Small Text",
+      "label": "Scheduling Notes"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Schedule",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

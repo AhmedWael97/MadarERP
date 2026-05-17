@@ -70,6 +70,7 @@ MADAAR_APPS_CANDIDATES=(
   madaar_logistics
   madaar_ecommerce
   madaar_egov_tax
+  madaar_events
 )
 MADAAR_APPS=()
 for app in "${MADAAR_APPS_CANDIDATES[@]}"; do

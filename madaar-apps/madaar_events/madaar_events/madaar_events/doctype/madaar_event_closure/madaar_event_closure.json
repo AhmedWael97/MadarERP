@@ -1,0 +1,127 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVCL-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "closure_status",
+    "closed_date",
+    "column_break_1",
+    "raw_media_delivered",
+    "marketing_materials_delivered",
+    "financial_closure_status",
+    "documentation_archived",
+    "section_deliverables",
+    "deliverables",
+    "section_report",
+    "event_report",
+    "performance_review"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "closure_status",
+      "fieldtype": "Select",
+      "label": "Closure Status",
+      "options": "Pending\nDeliverables Sent\nReport Filed\nClosed",
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "closed_date",
+      "fieldtype": "Date",
+      "label": "Closed On"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "raw_media_delivered",
+      "fieldtype": "Check",
+      "label": "Raw Media Delivered to Artist/Group",
+      "default": 0
+    },
+    {
+      "fieldname": "marketing_materials_delivered",
+      "fieldtype": "Check",
+      "label": "Marketing Materials Delivered",
+      "default": 0
+    },
+    {
+      "fieldname": "financial_closure_status",
+      "fieldtype": "Select",
+      "label": "Financial Closure",
+      "options": "Pending\nClosed",
+      "default": "Pending"
+    },
+    {
+      "fieldname": "documentation_archived",
+      "fieldtype": "Check",
+      "label": "Documentation Archived",
+      "default": 0
+    },
+    {
+      "fieldname": "section_deliverables",
+      "fieldtype": "Section Break",
+      "label": "Deliverables"
+    },
+    {
+      "fieldname": "deliverables",
+      "fieldtype": "Table",
+      "label": "Deliverables",
+      "options": "Madaar Event Deliverable"
+    },
+    {
+      "fieldname": "section_report",
+      "fieldtype": "Section Break",
+      "label": "Internal Reports"
+    },
+    {
+      "fieldname": "event_report",
+      "fieldtype": "Text Editor",
+      "label": "Event Report"
+    },
+    {
+      "fieldname": "performance_review",
+      "fieldtype": "Text Editor",
+      "label": "Performance Review"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Closure",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

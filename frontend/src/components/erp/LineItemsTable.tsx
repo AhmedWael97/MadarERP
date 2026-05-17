@@ -4,6 +4,7 @@ import { useFrappeGetCall } from 'frappe-react-sdk';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
 import type { FieldDef } from './FormShell';
+import { translateLabel } from '@/lib/i18n/translateLabel';
 
 interface Props {
   /** Parent DocType — e.g. "Sales Invoice". */
@@ -88,7 +89,7 @@ export function LineItemsTable({ parentField, childDoctype, form, readOnly }: Pr
               <th className="w-8 px-2 py-2 text-start font-medium">#</th>
               {columns.map((f) => (
                 <th key={f.fieldname} className="px-2 py-2 text-start font-medium whitespace-nowrap">
-                  {f.label || f.fieldname}
+                  {translateLabel(t, f.label) || f.label || f.fieldname}
                   {f.reqd ? <em className="ms-1 not-italic text-[color:var(--color-rose-600)]">*</em> : null}
                 </th>
               ))}

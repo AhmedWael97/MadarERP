@@ -1,0 +1,145 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVM-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "publication",
+    "campaign_status",
+    "column_break_1",
+    "campaign_start",
+    "campaign_end",
+    "section_channels",
+    "social_media",
+    "email_campaign",
+    "column_break_channels",
+    "ads_promotions",
+    "media_partners",
+    "section_assets",
+    "campaign_assets",
+    "key_information",
+    "timeline"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "publication",
+      "fieldtype": "Link",
+      "label": "Publication",
+      "reqd": 1,
+      "options": "Madaar Event Publication",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "campaign_status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nActive\nCompleted\nCancelled",
+      "default": "Draft",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "campaign_start",
+      "fieldtype": "Date",
+      "label": "Campaign Start"
+    },
+    {
+      "fieldname": "campaign_end",
+      "fieldtype": "Date",
+      "label": "Campaign End"
+    },
+    {
+      "fieldname": "section_channels",
+      "fieldtype": "Section Break",
+      "label": "Channels"
+    },
+    {
+      "fieldname": "social_media",
+      "fieldtype": "Check",
+      "label": "Social Media",
+      "default": 1
+    },
+    {
+      "fieldname": "email_campaign",
+      "fieldtype": "Check",
+      "label": "Email Campaigns",
+      "default": 0
+    },
+    {
+      "fieldname": "column_break_channels",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "ads_promotions",
+      "fieldtype": "Check",
+      "label": "Ads & Promotions",
+      "default": 0
+    },
+    {
+      "fieldname": "media_partners",
+      "fieldtype": "Check",
+      "label": "Media Partners",
+      "default": 0
+    },
+    {
+      "fieldname": "section_assets",
+      "fieldtype": "Section Break",
+      "label": "Assets & Timeline"
+    },
+    {
+      "fieldname": "campaign_assets",
+      "fieldtype": "Text Editor",
+      "label": "Asset List (images, videos, copy)"
+    },
+    {
+      "fieldname": "key_information",
+      "fieldtype": "Text Editor",
+      "label": "Key Information"
+    },
+    {
+      "fieldname": "timeline",
+      "fieldtype": "Text Editor",
+      "label": "Timeline / Milestones"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Marketing Campaign",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

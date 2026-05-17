@@ -1,0 +1,47 @@
+[
+  {
+    "doctype": "Madaar Event Venue",
+    "venue_name": "Main Hall",
+    "venue_type": "Main Hall",
+    "capacity": 500,
+    "location": "Ground Floor",
+    "status": "Active",
+    "notes": "Primary performance space with full stage rigging."
+  },
+  {
+    "doctype": "Madaar Event Venue",
+    "venue_name": "Studio A",
+    "venue_type": "Room",
+    "capacity": 80,
+    "location": "First Floor — East Wing",
+    "status": "Active",
+    "notes": "Smaller talks, intimate performances, rehearsals."
+  },
+  {
+    "doctype": "Madaar Event Venue",
+    "venue_name": "Studio B",
+    "venue_type": "Room",
+    "capacity": 60,
+    "location": "First Floor — West Wing",
+    "status": "Active",
+    "notes": "Workshops and seminars."
+  },
+  {
+    "doctype": "Madaar Event Venue",
+    "venue_name": "Outdoor Plaza",
+    "venue_type": "Open Space",
+    "capacity": 1000,
+    "location": "Outside main entrance",
+    "status": "Active",
+    "notes": "Weather-dependent open-air venue for festivals."
+  },
+  {
+    "doctype": "Madaar Event Venue",
+    "venue_name": "Workshop Hall",
+    "venue_type": "Workshop Area",
+    "capacity": 40,
+    "location": "Basement",
+    "status": "Active",
+    "notes": "Equipped with tools for hands-on craft workshops."
+  }
+]

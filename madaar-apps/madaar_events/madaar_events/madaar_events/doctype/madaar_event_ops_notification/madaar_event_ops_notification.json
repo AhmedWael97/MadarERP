@@ -1,0 +1,132 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVO-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "ops_status",
+    "notified_on",
+    "column_break_1",
+    "ticket_office_notified",
+    "call_center_notified",
+    "reception_notified",
+    "section_other_teams",
+    "security_notified",
+    "photography_notified",
+    "column_break_other",
+    "housekeeping_notified",
+    "section_updates",
+    "continuous_updates"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "ops_status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending\nNotified\nComplete",
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "notified_on",
+      "fieldtype": "Datetime",
+      "label": "Notified On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "ticket_office_notified",
+      "fieldtype": "Check",
+      "label": "Ticket Office",
+      "default": 0
+    },
+    {
+      "fieldname": "call_center_notified",
+      "fieldtype": "Check",
+      "label": "Call Center",
+      "default": 0
+    },
+    {
+      "fieldname": "reception_notified",
+      "fieldtype": "Check",
+      "label": "Reception",
+      "default": 0
+    },
+    {
+      "fieldname": "section_other_teams",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "security_notified",
+      "fieldtype": "Check",
+      "label": "Door Control / Security",
+      "default": 0
+    },
+    {
+      "fieldname": "photography_notified",
+      "fieldtype": "Check",
+      "label": "Photography Department",
+      "default": 0
+    },
+    {
+      "fieldname": "column_break_other",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "housekeeping_notified",
+      "fieldtype": "Check",
+      "label": "Housekeeping",
+      "default": 0
+    },
+    {
+      "fieldname": "section_updates",
+      "fieldtype": "Section Break",
+      "label": "Continuous Updates"
+    },
+    {
+      "fieldname": "continuous_updates",
+      "fieldtype": "Text Editor",
+      "label": "Updates"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Ops Notification",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

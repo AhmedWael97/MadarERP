@@ -1,0 +1,68 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "communication_date",
+    "channel",
+    "direction",
+    "column_break_1",
+    "summary",
+    "logged_by"
+  ],
+  "fields": [
+    {
+      "fieldname": "communication_date",
+      "fieldtype": "Datetime",
+      "label": "When",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "channel",
+      "fieldtype": "Select",
+      "label": "Channel",
+      "options": "Email\nPhone\nMeeting\nWhatsApp\nLetter\nOther",
+      "default": "Email",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "direction",
+      "fieldtype": "Select",
+      "label": "Direction",
+      "options": "Inbound\nOutbound",
+      "default": "Outbound",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "summary",
+      "fieldtype": "Small Text",
+      "label": "Summary",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "logged_by",
+      "fieldtype": "Link",
+      "label": "Logged By",
+      "options": "User"
+    }
+  ],
+  "istable": 1,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Communication Log",
+  "owner": "Administrator",
+  "permissions": [],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Printer, Send, Undo2 } from 'lucide-react';
 import { ErrorPanel } from './ErrorPanel';
 import { LineItemsTable } from './LineItemsTable';
+import { translateLabel, translateSection } from '@/lib/i18n/translateLabel';
 
 export interface FieldDef {
   fieldname: string;
@@ -302,7 +303,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
         >
           {section.label && (
             <legend className="px-2 text-xs font-semibold uppercase text-[color:var(--color-muted)]">
-              {section.label}
+              {translateSection(t, section.label)}
             </legend>
           )}
           <div className="grid gap-4 md:grid-cols-2">
@@ -434,7 +435,10 @@ function FieldRow({ field, form, doctype, readOnly: parentReadOnly }: FieldRowPr
   const readOnly = !!field.read_only || !!parentReadOnly;
   const isLong = ft === 'Text' || ft === 'Small Text' || ft === 'Long Text' || ft === 'Text Editor';
   const span = isLong ? 'md:col-span-2 block' : 'block';
-  const labelText = field.label || field.fieldname;
+  // Translate the Frappe-supplied English label to the active locale; falls back to the
+  // English label, then to the raw fieldname, so anything missing from forms.json still
+  // renders something readable.
+  const labelText = translateLabel(t, field.label) || field.label || field.fieldname;
   const placeholder = field.description ?? '';
   const err = (form.formState.errors as Record<string, { message?: string }>)[field.fieldname]?.message;
 

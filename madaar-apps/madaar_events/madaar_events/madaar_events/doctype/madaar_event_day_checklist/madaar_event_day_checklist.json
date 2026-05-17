@@ -1,0 +1,146 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVD-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "execution_status",
+    "column_break_1",
+    "event_date",
+    "section_core",
+    "coordinator_onsite",
+    "team_attendance",
+    "technical_setup_ready",
+    "column_break_core",
+    "rehearsals_completed",
+    "doors_ticketing_ready",
+    "safety_plan_verified",
+    "section_items",
+    "items",
+    "section_notes",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "execution_status",
+      "fieldtype": "Select",
+      "label": "Execution Status",
+      "options": "Pending\nIn Progress\nSmooth\nIssues",
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "event_date",
+      "fieldtype": "Date",
+      "label": "Event Date",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_core",
+      "fieldtype": "Section Break",
+      "label": "Core Gates"
+    },
+    {
+      "fieldname": "coordinator_onsite",
+      "fieldtype": "Check",
+      "label": "Coordinator Onsite",
+      "default": 0
+    },
+    {
+      "fieldname": "team_attendance",
+      "fieldtype": "Check",
+      "label": "Team Attendance Confirmed",
+      "default": 0
+    },
+    {
+      "fieldname": "technical_setup_ready",
+      "fieldtype": "Check",
+      "label": "Technical Setup Ready",
+      "default": 0
+    },
+    {
+      "fieldname": "column_break_core",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "rehearsals_completed",
+      "fieldtype": "Check",
+      "label": "Rehearsals Completed",
+      "default": 0
+    },
+    {
+      "fieldname": "doors_ticketing_ready",
+      "fieldtype": "Check",
+      "label": "Doors & Ticketing Ready",
+      "default": 0
+    },
+    {
+      "fieldname": "safety_plan_verified",
+      "fieldtype": "Check",
+      "label": "Safety & Emergency Plan Verified",
+      "default": 0
+    },
+    {
+      "fieldname": "section_items",
+      "fieldtype": "Section Break",
+      "label": "Detailed Checklist"
+    },
+    {
+      "fieldname": "items",
+      "fieldtype": "Table",
+      "label": "Items",
+      "options": "Madaar Event Day Checklist Item"
+    },
+    {
+      "fieldname": "section_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Text Editor",
+      "label": "Onsite Notes"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Day Checklist",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

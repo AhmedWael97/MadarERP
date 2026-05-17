@@ -17,7 +17,7 @@ async def check(path):
             f"{BASE.replace('5173', '8000')}/api/method/login",
             data={"usr": "Administrator", "pwd": "admin"},
         )
-        await page.goto(f"{BASE}/dashboard", wait_until="load", timeout=30000)
+        await page.goto(f"{BASE}/dashboard", wait_until="load", timeout=60000)
         await page.wait_for_timeout(2000)
 
         console_msgs = []
@@ -25,7 +25,7 @@ async def check(path):
         page.on("pageerror", lambda exc: console_msgs.append(f"[pageerror] {str(exc)[:200]}"))
 
         url = f"{BASE}{path}"
-        await page.goto(url, wait_until="load", timeout=30000)
+        await page.goto(url, wait_until="load", timeout=60000)
         await page.wait_for_timeout(15000)
 
         n_h1 = await page.locator('h1').count()

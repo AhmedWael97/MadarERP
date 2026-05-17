@@ -30,3 +30,7 @@ Thumbs.db
 
 # Docker volumes (host-mounted, if any)
 docker/data/
+
+
+
+/scan_output

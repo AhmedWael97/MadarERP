@@ -1,0 +1,134 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVF-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "contract",
+    "compliance_status",
+    "column_break_1",
+    "payment_structure",
+    "linked_sales_invoice",
+    "section_amounts",
+    "revenue_amount",
+    "cost_amount",
+    "column_break_amounts",
+    "currency",
+    "section_legal",
+    "legal_docs_attached",
+    "legal_notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "contract",
+      "fieldtype": "Link",
+      "label": "Contract",
+      "options": "Madaar Event Contract",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "compliance_status",
+      "fieldtype": "Select",
+      "label": "Compliance Status",
+      "options": "Pending\nCleared\nBlocked",
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "payment_structure",
+      "fieldtype": "Select",
+      "label": "Payment Structure",
+      "options": "Sales Invoice\nInternal Cost\nNone",
+      "default": "Sales Invoice"
+    },
+    {
+      "fieldname": "linked_sales_invoice",
+      "fieldtype": "Link",
+      "label": "Sales Invoice",
+      "options": "Sales Invoice"
+    },
+    {
+      "fieldname": "section_amounts",
+      "fieldtype": "Section Break",
+      "label": "Amounts"
+    },
+    {
+      "fieldname": "revenue_amount",
+      "fieldtype": "Currency",
+      "label": "Expected Revenue"
+    },
+    {
+      "fieldname": "cost_amount",
+      "fieldtype": "Currency",
+      "label": "Expected Cost"
+    },
+    {
+      "fieldname": "column_break_amounts",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "options": "Currency",
+      "default": "EGP"
+    },
+    {
+      "fieldname": "section_legal",
+      "fieldtype": "Section Break",
+      "label": "Legal Documents"
+    },
+    {
+      "fieldname": "legal_docs_attached",
+      "fieldtype": "Check",
+      "label": "Legal Docs Attached",
+      "default": 0
+    },
+    {
+      "fieldname": "legal_notes",
+      "fieldtype": "Small Text",
+      "label": "Legal Notes"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Finance Case",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

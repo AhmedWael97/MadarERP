@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:tenant_company",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tenant_section",
+  "tenant_company",
+  "name_ar",
+  "subscription_plan",
+  "column_break_1",
+  "subscription_status",
+  "owner_email",
+  "phone",
+  "subscription_section",
+  "subscription_start_date",
+  "subscription_end_date",
+  "trial_ends_at",
+  "column_break_2",
+  "billing_period",
+  "monthly_amount",
+  "currency",
+  "limits_section",
+  "current_users",
+  "current_branches",
+  "current_warehouses",
+  "current_invoices_this_month",
+  "modules_section",
+  "module_toggles",
+  "notes_section",
+  "notes"
+ ],
+ "fields": [
+  {"fieldname": "tenant_section", "fieldtype": "Section Break", "label": "Tenant"},
+  {"fieldname": "tenant_company", "fieldtype": "Link", "label": "Tenant Company", "options": "Company", "reqd": 1, "unique": 1, "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "name_ar", "fieldtype": "Data", "label": "Arabic Name", "in_list_view": 1},
+  {"fieldname": "subscription_plan", "fieldtype": "Link", "label": "Subscription Plan", "options": "Madaar Subscription Plan", "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "subscription_status", "fieldtype": "Select", "label": "Status", "options": "trial\nactive\nsuspended\ncancelled\nexpired", "default": "trial", "in_list_view": 1, "in_standard_filter": 1, "reqd": 1},
+  {"fieldname": "owner_email", "fieldtype": "Data", "label": "Owner Email", "options": "Email"},
+  {"fieldname": "phone", "fieldtype": "Data", "label": "Phone", "options": "Phone"},
+
+  {"fieldname": "subscription_section", "fieldtype": "Section Break", "label": "Subscription Window"},
+  {"fieldname": "subscription_start_date", "fieldtype": "Date", "label": "Start Date"},
+  {"fieldname": "subscription_end_date", "fieldtype": "Date", "label": "End Date", "in_list_view": 1},
+  {"fieldname": "trial_ends_at", "fieldtype": "Date", "label": "Trial Ends At"},
+  {"fieldname": "column_break_2", "fieldtype": "Column Break"},
+  {"fieldname": "billing_period", "fieldtype": "Select", "label": "Billing Period", "options": "monthly\nyearly", "default": "monthly"},
+  {"fieldname": "monthly_amount", "fieldtype": "Currency", "label": "Monthly Amount", "in_list_view": 1},
+  {"fieldname": "currency", "fieldtype": "Link", "label": "Currency", "options": "Currency", "default": "EGP"},
+
+  {"fieldname": "limits_section", "fieldtype": "Section Break", "label": "Usage Snapshot", "collapsible": 1, "description": "Counters refreshed periodically by a scheduled job."},
+  {"fieldname": "current_users", "fieldtype": "Int", "label": "Current Users", "default": "0", "read_only": 1},
+  {"fieldname": "current_branches", "fieldtype": "Int", "label": "Current Branches", "default": "0", "read_only": 1},
+  {"fieldname": "current_warehouses", "fieldtype": "Int", "label": "Current Warehouses", "default": "0", "read_only": 1},
+  {"fieldname": "current_invoices_this_month", "fieldtype": "Int", "label": "Invoices This Month", "default": "0", "read_only": 1},
+
+  {"fieldname": "modules_section", "fieldtype": "Section Break", "label": "Module Toggles", "description": "Plan-level modules can be overridden here per tenant. Leave empty to inherit the plan."},
+  {"fieldname": "module_toggles", "fieldtype": "Table", "label": "Module Toggles", "options": "Madaar Module Toggle"},
+
+  {"fieldname": "notes_section", "fieldtype": "Section Break", "label": "Notes", "collapsible": 1},
+  {"fieldname": "notes", "fieldtype": "Text Editor", "label": "Internal Notes"}
+ ],
+ "links": [
+  {"group": "Tenant", "link_doctype": "User", "link_fieldname": "company_name", "parent_docfield": null}
+ ],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar Tenant Subscription",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

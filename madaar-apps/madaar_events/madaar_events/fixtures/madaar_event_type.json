@@ -1,0 +1,83 @@
+[
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Music Concert",
+    "category": "Performance",
+    "typical_duration_hours": 3.0,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 1,
+    "description": "Live music performance with audience seating."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Theatre Play",
+    "category": "Performance",
+    "typical_duration_hours": 2.5,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 1,
+    "description": "Stage drama, comedy or experimental theatre."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Dance Performance",
+    "category": "Performance",
+    "typical_duration_hours": 2.0,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 1,
+    "description": "Choreographed dance recital or troupe performance."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Cultural Talk",
+    "category": "Talk",
+    "typical_duration_hours": 1.5,
+    "requires_ticketing": 0,
+    "requires_rehearsal": 0,
+    "description": "Lecture, panel or moderated discussion."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Film Screening",
+    "category": "Performance",
+    "typical_duration_hours": 2.5,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 0,
+    "description": "Curated screening, often with director Q&A."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Art Exhibition Opening",
+    "category": "Exhibition",
+    "typical_duration_hours": 4.0,
+    "requires_ticketing": 0,
+    "requires_rehearsal": 0,
+    "description": "Vernissage for a multi-day exhibition."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Workshop",
+    "category": "Workshop",
+    "typical_duration_hours": 3.0,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 0,
+    "description": "Hands-on session led by an instructor or artist."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Seminar",
+    "category": "Seminar",
+    "typical_duration_hours": 2.0,
+    "requires_ticketing": 0,
+    "requires_rehearsal": 0,
+    "description": "Multi-speaker structured conference session."
+  },
+  {
+    "doctype": "Madaar Event Type",
+    "event_type": "Festival",
+    "category": "Festival",
+    "typical_duration_hours": 8.0,
+    "requires_ticketing": 1,
+    "requires_rehearsal": 1,
+    "description": "Multi-stage day-or-weekend long programmed event."
+  }
+]

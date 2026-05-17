@@ -1,0 +1,259 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVR-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_title",
+    "source_type",
+    "event_type",
+    "column_break_id",
+    "workflow_state",
+    "coordinator",
+    "assigned_department",
+    "section_internal",
+    "idea_summary",
+    "initiating_team",
+    "initiating_partner",
+    "section_external",
+    "artist_name",
+    "organization_type",
+    "artist_bio",
+    "column_break_external",
+    "work_samples_url",
+    "technical_needs",
+    "section_dates",
+    "requested_start",
+    "requested_end",
+    "column_break_dates",
+    "flexible_dates",
+    "section_validation",
+    "intake_validation_state",
+    "validation_items",
+    "rejection_reason",
+    "section_communication",
+    "initial_contact_sent",
+    "missing_info_requested",
+    "column_break_comm",
+    "invitation_confirmed",
+    "communications"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_title",
+      "fieldtype": "Data",
+      "label": "Event Title",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "source_type",
+      "fieldtype": "Select",
+      "label": "Source",
+      "reqd": 1,
+      "options": "Internal Initiative\nExternal Request",
+      "default": "Internal Initiative",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "event_type",
+      "fieldtype": "Link",
+      "label": "Event Type",
+      "options": "Madaar Event Type",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_id",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "workflow_state",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nAwaiting Coordinator\nUnder Validation\nIncomplete\nCommunicated\nScheduled\nResource Planned\nContracted\nFinance Cleared\nPublished\nMarketing Active\nOperations Notified\nEvent Day\nClosed\nRejected",
+      "default": "Draft",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "coordinator",
+      "fieldtype": "Link",
+      "label": "Coordinator",
+      "options": "Employee",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "assigned_department",
+      "fieldtype": "Link",
+      "label": "Department",
+      "options": "Department"
+    },
+    {
+      "fieldname": "section_internal",
+      "fieldtype": "Section Break",
+      "label": "Internal Initiative Details",
+      "depends_on": "eval:doc.source_type=='Internal Initiative'"
+    },
+    {
+      "fieldname": "idea_summary",
+      "fieldtype": "Small Text",
+      "label": "Idea / Proposal Summary"
+    },
+    {
+      "fieldname": "initiating_team",
+      "fieldtype": "Link",
+      "label": "Initiating Team",
+      "options": "Department"
+    },
+    {
+      "fieldname": "initiating_partner",
+      "fieldtype": "Data",
+      "label": "Initiating Partner"
+    },
+    {
+      "fieldname": "section_external",
+      "fieldtype": "Section Break",
+      "label": "External Request Details",
+      "depends_on": "eval:doc.source_type=='External Request'"
+    },
+    {
+      "fieldname": "artist_name",
+      "fieldtype": "Data",
+      "label": "Artist / Group Name"
+    },
+    {
+      "fieldname": "organization_type",
+      "fieldtype": "Select",
+      "label": "Organization Type",
+      "options": "\nLocal\nInternational\nEmbassy\nIndependent"
+    },
+    {
+      "fieldname": "artist_bio",
+      "fieldtype": "Text Editor",
+      "label": "Bio"
+    },
+    {
+      "fieldname": "column_break_external",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "work_samples_url",
+      "fieldtype": "Data",
+      "label": "Work Samples / Footage URL"
+    },
+    {
+      "fieldname": "technical_needs",
+      "fieldtype": "Small Text",
+      "label": "Technical Needs"
+    },
+    {
+      "fieldname": "section_dates",
+      "fieldtype": "Section Break",
+      "label": "Requested Dates"
+    },
+    {
+      "fieldname": "requested_start",
+      "fieldtype": "Datetime",
+      "label": "Requested Start"
+    },
+    {
+      "fieldname": "requested_end",
+      "fieldtype": "Datetime",
+      "label": "Requested End"
+    },
+    {
+      "fieldname": "column_break_dates",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "flexible_dates",
+      "fieldtype": "Check",
+      "label": "Dates Flexible",
+      "default": 0
+    },
+    {
+      "fieldname": "section_validation",
+      "fieldtype": "Section Break",
+      "label": "Intake Validation"
+    },
+    {
+      "fieldname": "intake_validation_state",
+      "fieldtype": "Select",
+      "label": "Validation State",
+      "options": "Pending\nComplete\nIncomplete\nRejected",
+      "default": "Pending"
+    },
+    {
+      "fieldname": "validation_items",
+      "fieldtype": "Table",
+      "label": "Validation Checklist",
+      "options": "Madaar Event Validation Item"
+    },
+    {
+      "fieldname": "rejection_reason",
+      "fieldtype": "Small Text",
+      "label": "Rejection Reason",
+      "depends_on": "eval:doc.intake_validation_state=='Rejected'"
+    },
+    {
+      "fieldname": "section_communication",
+      "fieldtype": "Section Break",
+      "label": "Initial Communication"
+    },
+    {
+      "fieldname": "initial_contact_sent",
+      "fieldtype": "Check",
+      "label": "Receipt Confirmed to Requester",
+      "default": 0
+    },
+    {
+      "fieldname": "missing_info_requested",
+      "fieldtype": "Check",
+      "label": "Missing Info Requested",
+      "default": 0
+    },
+    {
+      "fieldname": "column_break_comm",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "invitation_confirmed",
+      "fieldtype": "Check",
+      "label": "Invitation Confirmed",
+      "default": 0
+    },
+    {
+      "fieldname": "communications",
+      "fieldtype": "Table",
+      "label": "Communication Log",
+      "options": "Madaar Event Communication Log"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Request",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_title",
+  "track_changes": 1
+}

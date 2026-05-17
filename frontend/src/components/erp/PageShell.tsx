@@ -8,15 +8,21 @@ interface Props {
   children: ReactNode;
 }
 
+// Mirrors reference resources/views/components/page-header.blade.php — same
+// flex layout, same Arabic-aware sizing, plus a subtle fade-in.
 export function PageShell({ title, subtitle, actions, children }: Props) {
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-[color:var(--color-muted)]">{subtitle}</p>}
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{title}</h1>
+          {subtitle && (
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{subtitle}</p>
+          )}
         </div>
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && (
+          <div className="flex items-center gap-2 shrink-0">{actions}</div>
+        )}
       </div>
       <div>{children}</div>
     </div>

@@ -28,19 +28,20 @@ const VIEW_LABEL_AR: Record<string, string> = {
   dashboard: 'لوحة',
 };
 
+const VIEW_LABEL_EN: Record<string, string> = {
+  list: 'List',
+  tree: 'Tree',
+  form: 'Create',
+  report: 'Report',
+  detail: 'Detail',
+  dashboard: 'Dashboard',
+};
+
 /**
  * Card grid of routes inside a module — the inner content of <ModuleHub>.
- * Exposed separately so generated dashboard / hub pages can drop it inside
- * the PageShell they already render, without nesting two PageShells.
- *
- * Exclusions:
- *   - legacy per-id edit pages (slug `…--<n>--edit`) — the generator now collapses
- *     these into a single `:id`-parameter route, but be defensive in case stale
- *     output sticks around.
- *   - the collapsed dynamic edit route itself (`…--$id--edit`) — nothing useful
- *     to link to without a concrete id.
- *   - the current page (`currentPath`) so the user doesn't loop back to where
- *     they already are.
+ * Visual mirror of the reference's `<x-stat-card>`-style hover surface: a
+ * white (or slate-900 dark) rounded-2xl card with a coloured icon disc and
+ * an animated chevron on the trailing edge.
  */
 export function ModuleHubCards({ module, currentPath }: { module: string; currentPath?: string }) {
   const { t, i18n } = useTranslation();
@@ -56,34 +57,40 @@ export function ModuleHubCards({ module, currentPath }: { module: string; curren
   });
 
   if (pages.length === 0) {
-    return <p className="text-sm text-[color:var(--color-muted)]">{t('common.empty')}</p>;
+    return (
+      <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 px-6 py-12 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('common.empty')}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {pages.map((p) => {
         const Icon = VIEW_ICON[p.viewType] ?? List;
-        const kindLabel = VIEW_LABEL_AR[p.viewType] ?? '';
+        const kindLabel = isRTL
+          ? VIEW_LABEL_AR[p.viewType] ?? ''
+          : VIEW_LABEL_EN[p.viewType] ?? '';
         return (
           <Link
             key={p.path}
             to={p.path}
-            className="group flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-4 shadow-[var(--shadow-card)] transition-all hover:border-[color:var(--color-primary)] hover:shadow-[var(--shadow-elev)]"
+            className="group flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-[color:var(--color-brand-200)] dark:hover:border-[color:var(--color-brand-500)]/30"
           >
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-input)] bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
-              <Icon size={18} />
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[color:var(--color-brand-100)] dark:bg-[color:var(--color-brand-500)]/10 text-[color:var(--color-brand-600)] dark:text-[color:var(--color-brand-400)]">
+              <Icon size={20} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold">
+              <div className="truncate text-sm font-bold text-slate-800 dark:text-white">
                 {t(p.titleKey, { defaultValue: isRTL ? p.titleArabic : p.titleEnglish })}
               </div>
-              <div className="mt-0.5 truncate text-xs text-[color:var(--color-muted)]">
+              <div className="mt-0.5 truncate text-xs text-slate-400 dark:text-slate-500">
                 {kindLabel}
               </div>
             </div>
             <Chevron
               size={16}
-              className="shrink-0 text-[color:var(--color-muted)] transition-colors group-hover:text-[color:var(--color-primary)]"
+              className="shrink-0 text-slate-300 dark:text-slate-600 transition-colors group-hover:text-[color:var(--color-brand-500)]"
             />
           </Link>
         );
@@ -92,7 +99,7 @@ export function ModuleHubCards({ module, currentPath }: { module: string; curren
   );
 }
 
-/** Lists every generated route inside a module as a card grid in Arabic. */
+/** Lists every generated route inside a module as a card grid. */
 export function ModuleHub({ module, titleKey, defaultTitle }: Props) {
   const { t } = useTranslation();
   return (

@@ -1,0 +1,93 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "autoname": "EVRP-.YYYY.-.#####",
+  "creation": "2026-05-16 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "event_request",
+    "plan_status",
+    "column_break_1",
+    "departments_notified_on",
+    "section_reqs",
+    "requirements",
+    "section_finance",
+    "finance_notified"
+  ],
+  "fields": [
+    {
+      "fieldname": "event_request",
+      "fieldtype": "Link",
+      "label": "Event Request",
+      "reqd": 1,
+      "options": "Madaar Event Request",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "plan_status",
+      "fieldtype": "Select",
+      "label": "Plan Status",
+      "options": "Draft\nNotified\nAcknowledged\nReady",
+      "default": "Draft",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "departments_notified_on",
+      "fieldtype": "Datetime",
+      "label": "Departments Notified On"
+    },
+    {
+      "fieldname": "section_reqs",
+      "fieldtype": "Section Break",
+      "label": "Requirements"
+    },
+    {
+      "fieldname": "requirements",
+      "fieldtype": "Table",
+      "label": "Requirements",
+      "options": "Madaar Event Resource Requirement"
+    },
+    {
+      "fieldname": "section_finance",
+      "fieldtype": "Section Break",
+      "label": "Finance Department Notified"
+    },
+    {
+      "fieldname": "finance_notified",
+      "fieldtype": "Check",
+      "label": "Finance Department Notified",
+      "default": 0
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-16 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Events",
+  "name": "Madaar Event Resource Plan",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "event_request",
+  "track_changes": 1
+}

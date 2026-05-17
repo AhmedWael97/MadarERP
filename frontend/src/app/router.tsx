@@ -8,6 +8,13 @@ import { ModuleHub } from '../components/erp/ModuleHub';
 const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+const Settings = lazy(() => import('../pages/Settings'));
+const SettingsSection = lazy(() => import('../pages/SettingsSection'));
+const Events = lazy(() => import('../pages/Events'));
+const EventsList = lazy(() => import('../pages/EventsList'));
+const EventsForm = lazy(() => import('../pages/EventsForm'));
+const SuperAdmin = lazy(() => import('../pages/SuperAdmin'));
+const SuperAdminList = lazy(() => import('../pages/SuperAdmin').then((m) => ({ default: m.SuperAdminList })));
 
 const Loading = (
   <div className="grid min-h-[40vh] place-items-center text-(--color-muted)">…</div>
@@ -56,6 +63,8 @@ const generated = generatedRoutes
   .filter((r) => r.path !== '/dashboard')
   // Don't shadow our hand-written module hubs.
   .filter((r) => !MODULES.some((m) => r.path === `/${m.key}`))
+  // Don't shadow the hand-written /settings hub (the generated one is just a module hub).
+  .filter((r) => r.path !== '/settings')
   .map((r) => ({
     path: r.path.replace(/^\//, ''),
     lazy: async () => {
@@ -96,6 +105,80 @@ export const router = createBrowserRouter([
         ),
       },
       ...moduleHubRoutes,
+      {
+        path: 'settings',
+        element: (
+          <Suspense fallback={Loading}>
+            <Settings />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'settings/:section',
+        element: (
+          <Suspense fallback={Loading}>
+            <SettingsSection />
+          </Suspense>
+        ),
+      },
+      // --- Super Admin panel — hand-written, mirrors the reference's super-admin/* views ---
+      {
+        path: 'super-admin',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdmin />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/:section',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminList />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/:section/:id',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminList />
+          </Suspense>
+        ),
+      },
+      // --- Events (Culture Wheel) — hand-written, not auto-generated from a scan ---
+      {
+        path: 'events',
+        element: (
+          <Suspense fallback={Loading}>
+            <Events />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'events/:section',
+        element: (
+          <Suspense fallback={Loading}>
+            <EventsList />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'events/:section/create',
+        element: (
+          <Suspense fallback={Loading}>
+            <EventsForm />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'events/:section/:id/edit',
+        element: (
+          <Suspense fallback={Loading}>
+            <EventsForm />
+          </Suspense>
+        ),
+      },
       ...generated,
       {
         path: '*',

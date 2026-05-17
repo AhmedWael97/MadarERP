@@ -21,12 +21,13 @@ COPY --chown=frappe:frappe madaar-apps/madaar_restaurant /home/frappe/frappe-ben
 COPY --chown=frappe:frappe madaar-apps/madaar_logistics /home/frappe/frappe-bench/apps/madaar_logistics
 COPY --chown=frappe:frappe madaar-apps/madaar_ecommerce /home/frappe/frappe-bench/apps/madaar_ecommerce
 COPY --chown=frappe:frappe madaar-apps/madaar_egov_tax /home/frappe/frappe-bench/apps/madaar_egov_tax
+COPY --chown=frappe:frappe madaar-apps/madaar_events /home/frappe/frappe-bench/apps/madaar_events
 
 # Install every madaar_* app into the bench virtualenv. The entrypoint will
 # self-heal sites/apps.txt at boot — we don't write to it from the Dockerfile
 # because the entrypoint's logic is authoritative (it only registers apps
 # whose pip install actually succeeded).
-RUN for app in madaar_core madaar_construction madaar_fleet madaar_workshop madaar_restaurant madaar_logistics madaar_ecommerce madaar_egov_tax; do \
+RUN for app in madaar_core madaar_construction madaar_fleet madaar_workshop madaar_restaurant madaar_logistics madaar_ecommerce madaar_egov_tax madaar_events; do \
       /home/frappe/frappe-bench/env/bin/pip install --no-cache-dir -e "/home/frappe/frappe-bench/apps/${app}" || \
         { echo "pip install ${app} FAILED at build time"; exit 1; }; \
     done

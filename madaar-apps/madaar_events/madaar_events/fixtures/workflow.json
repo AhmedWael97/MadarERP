@@ -1,0 +1,70 @@
+[
+  {
+    "doctype": "Workflow",
+    "name": "Madaar Event Request Workflow",
+    "workflow_name": "Madaar Event Request Workflow",
+    "document_type": "Madaar Event Request",
+    "workflow_state_field": "workflow_state",
+    "is_active": 1,
+    "send_email_alert": 0,
+    "override_status": 0,
+    "states": [
+      { "state": "Draft",                "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Draft" },
+      { "state": "Awaiting Coordinator", "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Awaiting Coordinator" },
+      { "state": "Under Validation",     "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Under Validation" },
+      { "state": "Incomplete",           "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Incomplete" },
+      { "state": "Communicated",         "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Communicated" },
+      { "state": "Scheduled",            "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Scheduled" },
+      { "state": "Resource Planned",     "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Resource Planned" },
+      { "state": "Contracted",           "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Contracted" },
+      { "state": "Finance Cleared",      "doc_status": "0", "allow_edit": "Event Finance",      "update_field": "workflow_state", "update_value": "Finance Cleared" },
+      { "state": "Published",            "doc_status": "0", "allow_edit": "Event Marketing",    "update_field": "workflow_state", "update_value": "Published" },
+      { "state": "Marketing Active",     "doc_status": "0", "allow_edit": "Event Marketing",    "update_field": "workflow_state", "update_value": "Marketing Active" },
+      { "state": "Operations Notified",  "doc_status": "0", "allow_edit": "Event Operations",   "update_field": "workflow_state", "update_value": "Operations Notified" },
+      { "state": "Event Day",            "doc_status": "0", "allow_edit": "Event Operations",   "update_field": "workflow_state", "update_value": "Event Day" },
+      { "state": "Closed",               "doc_status": "0", "allow_edit": "Event Coordinator",  "update_field": "workflow_state", "update_value": "Closed" },
+      { "state": "Rejected",             "doc_status": "0", "allow_edit": "Event Dept Head",    "update_field": "workflow_state", "update_value": "Rejected" }
+    ],
+    "transitions": [
+      { "state": "Draft",                "action": "Event Assign Coordinator", "next_state": "Awaiting Coordinator", "allowed": "Event Coordinator" },
+      { "state": "Awaiting Coordinator", "action": "Event Start Validation",   "next_state": "Under Validation",     "allowed": "Event Coordinator" },
+      { "state": "Under Validation",     "action": "Event Mark Communicated",  "next_state": "Communicated",         "allowed": "Event Coordinator" },
+      { "state": "Under Validation",     "action": "Event Mark Incomplete",    "next_state": "Incomplete",           "allowed": "Event Coordinator" },
+      { "state": "Under Validation",     "action": "Event Reject",             "next_state": "Rejected",             "allowed": "Event Dept Head"   },
+      { "state": "Incomplete",           "action": "Event Start Validation",   "next_state": "Under Validation",     "allowed": "Event Coordinator" },
+      { "state": "Scheduled",            "action": "Event Plan Resources",     "next_state": "Resource Planned",     "allowed": "Event Coordinator" },
+      { "state": "Contracted",           "action": "Event Clear Finance",      "next_state": "Finance Cleared",      "allowed": "Event Finance"     },
+      { "state": "Marketing Active",     "action": "Event Notify Operations",  "next_state": "Operations Notified",  "allowed": "Event Coordinator" },
+      { "state": "Operations Notified",  "action": "Event Mark Event Day",     "next_state": "Event Day",            "allowed": "Event Operations"  },
+      { "state": "Event Day",            "action": "Event Close",              "next_state": "Closed",               "allowed": "Event Coordinator" }
+    ]
+  },
+  {
+    "doctype": "Workflow",
+    "name": "Madaar Event Contract Workflow",
+    "workflow_name": "Madaar Event Contract Workflow",
+    "document_type": "Madaar Event Contract",
+    "workflow_state_field": "workflow_state",
+    "is_active": 1,
+    "send_email_alert": 0,
+    "override_status": 0,
+    "states": [
+      { "state": "Draft",              "doc_status": "0", "allow_edit": "Event Coordinator", "update_field": "workflow_state", "update_value": "Draft" },
+      { "state": "HR Pending",         "doc_status": "0", "allow_edit": "Event HR",          "update_field": "workflow_state", "update_value": "HR Pending" },
+      { "state": "Legal Review",       "doc_status": "0", "allow_edit": "Event Legal",       "update_field": "workflow_state", "update_value": "Legal Review" },
+      { "state": "Awaiting Signature", "doc_status": "0", "allow_edit": "Event Coordinator", "update_field": "workflow_state", "update_value": "Awaiting Signature" },
+      { "state": "Signed",             "doc_status": "0", "allow_edit": "Event Coordinator", "update_field": "workflow_state", "update_value": "Signed" },
+      { "state": "Cancelled",          "doc_status": "0", "allow_edit": "Event Coordinator", "update_field": "workflow_state", "update_value": "Cancelled" }
+    ],
+    "transitions": [
+      { "state": "Draft",              "action": "Event Contract Send To HR",     "next_state": "HR Pending",         "allowed": "Event Coordinator" },
+      { "state": "HR Pending",         "action": "Event Contract Send To Legal",  "next_state": "Legal Review",       "allowed": "Event HR"          },
+      { "state": "Legal Review",       "action": "Event Contract Ready To Sign",  "next_state": "Awaiting Signature", "allowed": "Event Legal"       },
+      { "state": "Awaiting Signature", "action": "Event Contract Sign",           "next_state": "Signed",             "allowed": "Event Coordinator" },
+      { "state": "Draft",              "action": "Event Contract Cancel",         "next_state": "Cancelled",          "allowed": "Event Coordinator" },
+      { "state": "HR Pending",         "action": "Event Contract Cancel",         "next_state": "Cancelled",          "allowed": "Event Coordinator" },
+      { "state": "Legal Review",       "action": "Event Contract Cancel",         "next_state": "Cancelled",          "allowed": "Event Coordinator" },
+      { "state": "Awaiting Signature", "action": "Event Contract Cancel",         "next_state": "Cancelled",          "allowed": "Event Coordinator" }
+    ]
+  }
+]
