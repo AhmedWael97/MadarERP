@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar VAT Return real fields: period_start/period_end, input_vat,
+// output_vat, net_payable, filed_date, status.
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,14 +11,15 @@ export default function Page() {
         basePath: '/tax/returns',
         newLabel: 'إقرار جديد',
         searchField: 'name',
-        dateField: 'period_from',
+        dateField: 'period_start',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'period_from', header: 'من' },
-          { fieldname: 'period_to', header: 'إلى' },
-          { fieldname: 'output_tax', header: 'الضريبة المستحقة', numeric: true, ltr: true },
-          { fieldname: 'input_tax', header: 'الضريبة المخصومة', numeric: true, ltr: true },
-          { fieldname: 'net_tax', header: 'الصافي', numeric: true, ltr: true },
+          { fieldname: 'period_start', header: 'من' },
+          { fieldname: 'period_end', header: 'إلى' },
+          { fieldname: 'output_vat', header: 'الضريبة المستحقة', numeric: true, ltr: true },
+          { fieldname: 'input_vat', header: 'الضريبة المخصومة', numeric: true, ltr: true },
+          { fieldname: 'net_payable', header: 'الصافي', numeric: true, ltr: true },
+          { fieldname: 'filed_date', header: 'تاريخ التقديم' },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

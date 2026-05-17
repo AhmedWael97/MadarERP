@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar EInvoice Bulk Batch: invoice_count (not total_invoices). No
+// accepted_count / rejected_count fields on the doctype.
 export default function Page() {
   return (
     <FleetEntityList
@@ -13,13 +15,12 @@ export default function Page() {
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'batch_date', header: 'التاريخ' },
-          { fieldname: 'total_invoices', header: 'عدد الفواتير', numeric: true, ltr: true },
-          { fieldname: 'accepted_count', header: 'مقبولة', numeric: true, ltr: true },
-          { fieldname: 'rejected_count', header: 'مرفوضة', numeric: true, ltr: true },
+          { fieldname: 'invoice_count', header: 'عدد الفواتير', numeric: true, ltr: true },
+          { fieldname: 'notes', header: 'ملاحظات' },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {
-          Draft:      { label: 'مسودة',      cls: 'bg-amber-100 text-amber-700' },
+          Draft:      { label: 'مسودة',       cls: 'bg-amber-100 text-amber-700' },
           Processing: { label: 'جاري التنفيذ', cls: 'bg-blue-100 text-blue-700' },
           Completed:  { label: 'مكتمل',       cls: 'bg-emerald-100 text-emerald-700' },
           Failed:     { label: 'فشل',          cls: 'bg-red-100 text-red-700' },

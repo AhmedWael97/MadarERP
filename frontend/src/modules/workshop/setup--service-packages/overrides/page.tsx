@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Maintenance Package: package_name, description, total_price (not
+// `price`). No duration_months on the doctype.
 export default function Page() {
   return (
     <FleetEntityList
@@ -12,8 +14,8 @@ export default function Page() {
         columns: [
           { fieldname: 'name', header: 'الكود' },
           { fieldname: 'package_name', header: 'اسم الباقة' },
-          { fieldname: 'duration_months', header: 'المدة (أشهر)', numeric: true, ltr: true },
-          { fieldname: 'price', header: 'السعر', numeric: true, ltr: true },
+          { fieldname: 'description', header: 'الوصف' },
+          { fieldname: 'total_price', header: 'السعر الإجمالي', numeric: true, ltr: true },
         ],
       }}
     />

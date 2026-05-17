@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Modifier Group: group_name, min_selections, max_selections. No
+// is_required field on this doctype (selection min/max conveys that).
 export default function Page() {
   return (
     <FleetEntityList
@@ -12,14 +14,9 @@ export default function Page() {
         columns: [
           { fieldname: 'name', header: 'الكود' },
           { fieldname: 'group_name', header: 'اسم المجموعة' },
-          { fieldname: 'is_required', header: 'إلزامي', isBadge: true },
           { fieldname: 'min_selections', header: 'الحد الأدنى', numeric: true, ltr: true },
           { fieldname: 'max_selections', header: 'الحد الأقصى', numeric: true, ltr: true },
         ],
-        badgeMap: {
-          '1': { label: 'إلزامي',    cls: 'bg-red-100 text-red-700' },
-          '0': { label: 'اختياري',   cls: 'bg-emerald-100 text-emerald-700' },
-        },
       }}
     />
   );

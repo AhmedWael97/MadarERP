@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Banner: banner_name (autoname, not title), position is an integer
+// sort order.
 export default function Page() {
   return (
     <FleetEntityList
@@ -8,11 +10,12 @@ export default function Page() {
         subtitle: 'بانرات الصفحة الرئيسية للمتجر',
         basePath: '/ecommerce/banners',
         newLabel: 'بانر جديد',
-        searchField: 'title',
+        searchField: 'banner_name',
         columns: [
           { fieldname: 'name', header: 'الكود' },
-          { fieldname: 'title', header: 'العنوان' },
-          { fieldname: 'position', header: 'الموقع' },
+          { fieldname: 'banner_name', header: 'الاسم' },
+          { fieldname: 'link_url', header: 'الرابط', mono: true, ltr: true },
+          { fieldname: 'position', header: 'الترتيب', numeric: true, ltr: true },
           { fieldname: 'start_date', header: 'البداية' },
           { fieldname: 'end_date', header: 'النهاية' },
           { fieldname: 'is_active', header: 'الحالة', isBadge: true },

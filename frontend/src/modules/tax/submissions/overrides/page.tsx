@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar EInvoice Submission: status (not submission_status), last_attempt
+// (not submission_date). uuid + long_id are real fields.
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,13 +11,14 @@ export default function Page() {
         basePath: '/tax/submissions',
         newLabel: 'إرسال جديد',
         searchField: 'invoice',
-        dateField: 'submission_date',
+        dateField: 'last_attempt',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'submission_date', header: 'تاريخ الإرسال' },
+          { fieldname: 'last_attempt', header: 'آخر محاولة' },
           { fieldname: 'invoice', header: 'الفاتورة' },
           { fieldname: 'uuid', header: 'UUID', mono: true, ltr: true },
-          { fieldname: 'submission_status', header: 'الحالة', isBadge: true },
+          { fieldname: 'retry_count', header: 'محاولات', numeric: true, ltr: true },
+          { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {
           Pending:    { label: 'بانتظار الإرسال', cls: 'bg-amber-100 text-amber-700' },

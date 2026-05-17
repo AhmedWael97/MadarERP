@@ -1,4 +1,7 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Trip actual fields: start_date, end_date, route, driver, purpose,
+// start_odometer, end_odometer, distance_km, status. No origin/destination/
+// trip_date — those were wrong guesses.
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,14 +12,14 @@ export default function Page() {
         basePath: '/fleet/trips',
         newLabel: 'رحلة جديدة',
         searchField: 'name',
-        dateField: 'trip_date',
+        dateField: 'start_date',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'trip_date', header: 'التاريخ' },
-          { fieldname: 'vehicle', header: 'المركبة' },
+          { fieldname: 'start_date', header: 'البداية' },
+          { fieldname: 'end_date', header: 'النهاية' },
+          { fieldname: 'route', header: 'المسار' },
           { fieldname: 'driver', header: 'السائق' },
-          { fieldname: 'origin', header: 'من' },
-          { fieldname: 'destination', header: 'إلى' },
+          { fieldname: 'purpose', header: 'الغرض' },
           { fieldname: 'distance_km', header: 'المسافة (كم)', numeric: true, ltr: true },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],

@@ -1,4 +1,6 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar CMS Page: page_slug (autoname, not `slug`). Title + content +
+// is_published + published_date are real fields.
 export default function Page() {
   return (
     <FleetEntityList
@@ -11,8 +13,9 @@ export default function Page() {
         searchField: 'title',
         columns: [
           { fieldname: 'name', header: 'الكود' },
+          { fieldname: 'page_slug', header: 'الرابط', mono: true, ltr: true },
           { fieldname: 'title', header: 'العنوان' },
-          { fieldname: 'slug', header: 'الرابط', mono: true, ltr: true },
+          { fieldname: 'published_date', header: 'تاريخ النشر' },
           { fieldname: 'is_published', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

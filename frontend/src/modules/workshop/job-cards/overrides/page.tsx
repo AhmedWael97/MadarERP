@@ -1,4 +1,7 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Vehicle Job Card real fields: customer, license_plate, vehicle_make,
+// vehicle_model, complaint, assigned_technician, total_cost, status. No
+// posting_date / vehicle / service_type / technician / total_amount.
 export default function Page() {
   return (
     <FleetEntityList
@@ -8,16 +11,15 @@ export default function Page() {
         subtitle: 'أوامر شغل الورشة وحالاتها',
         basePath: '/workshop/job-cards',
         newLabel: 'بطاقة جديدة',
-        searchField: 'name',
-        dateField: 'posting_date',
+        searchField: 'customer',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'posting_date', header: 'التاريخ' },
-          { fieldname: 'vehicle', header: 'المركبة' },
           { fieldname: 'customer', header: 'العميل' },
-          { fieldname: 'technician', header: 'الفني' },
-          { fieldname: 'service_type', header: 'الخدمة' },
-          { fieldname: 'total_amount', header: 'الإجمالي', numeric: true, ltr: true },
+          { fieldname: 'license_plate', header: 'اللوحة', mono: true },
+          { fieldname: 'vehicle_make', header: 'الصانع' },
+          { fieldname: 'vehicle_model', header: 'الموديل' },
+          { fieldname: 'assigned_technician', header: 'الفني' },
+          { fieldname: 'total_cost', header: 'الإجمالي', numeric: true, ltr: true },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

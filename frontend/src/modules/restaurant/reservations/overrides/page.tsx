@@ -1,4 +1,7 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Reservation: reservation_datetime (single field, not date+time),
+// customer_phone (not phone), party_size (not guests_count), table_link
+// (not table).
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,15 +12,15 @@ export default function Page() {
         basePath: '/restaurant/reservations',
         newLabel: 'حجز جديد',
         searchField: 'customer_name',
-        dateField: 'reservation_date',
+        dateField: 'reservation_datetime',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
           { fieldname: 'customer_name', header: 'العميل' },
-          { fieldname: 'phone', header: 'الهاتف', mono: true, ltr: true },
-          { fieldname: 'reservation_date', header: 'التاريخ' },
-          { fieldname: 'reservation_time', header: 'الوقت', ltr: true },
-          { fieldname: 'guests_count', header: 'عدد الضيوف', numeric: true, ltr: true },
-          { fieldname: 'table', header: 'الطاولة' },
+          { fieldname: 'customer_phone', header: 'الهاتف', mono: true, ltr: true },
+          { fieldname: 'reservation_datetime', header: 'الموعد' },
+          { fieldname: 'party_size', header: 'عدد الضيوف', numeric: true, ltr: true },
+          { fieldname: 'hall', header: 'الصالة' },
+          { fieldname: 'table_link', header: 'الطاولة' },
           { fieldname: 'status', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

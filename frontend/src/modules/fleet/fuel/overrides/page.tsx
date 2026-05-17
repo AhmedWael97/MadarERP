@@ -1,4 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Fuel Log: date (not fuel_date), quantity (not liters).
 export default function Page() {
   return (
     <FleetEntityList
@@ -9,13 +10,15 @@ export default function Page() {
         basePath: '/fleet/fuel',
         newLabel: 'تعبئة جديدة',
         searchField: 'name',
-        dateField: 'fuel_date',
+        dateField: 'date',
         columns: [
           { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'fuel_date', header: 'التاريخ' },
+          { fieldname: 'date', header: 'التاريخ' },
           { fieldname: 'vehicle', header: 'المركبة' },
           { fieldname: 'driver', header: 'السائق' },
-          { fieldname: 'liters', header: 'اللترات', numeric: true, ltr: true },
+          { fieldname: 'fuel_type', header: 'نوع الوقود' },
+          { fieldname: 'quantity', header: 'الكمية (لتر)', numeric: true, ltr: true },
+          { fieldname: 'unit_price', header: 'سعر اللتر', numeric: true, ltr: true },
           { fieldname: 'odometer', header: 'العداد (كم)', numeric: true, ltr: true },
           { fieldname: 'total_cost', header: 'التكلفة', numeric: true, ltr: true },
         ],
