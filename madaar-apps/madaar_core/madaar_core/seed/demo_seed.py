@@ -360,8 +360,17 @@ def _seed_lms_chain() -> list[str]:
         "is_active": 1,
     }))
     batch = _first("Madaar LMS Batch")
-    # Enrollment requires a "student" — pick an Employee or User as fallback.
-    student = _first("Employee") or "Administrator"
+    # Madaar LMS Enrollment.student is a Link to the ERPNext "Student"
+    # doctype (Education module). Skip the enrollment seed if Student isn't
+    # installed on this site — Course/Lesson/Batch already gives the LMS
+    # lists something to render.
+    if not frappe.db.exists("DocType", "Student"):
+        out.append("  ⊘  Madaar LMS Enrollment: ERPNext Student doctype not installed, skipped")
+        return out
+    student = _first("Student")
+    if not student:
+        out.append("  ⊘  Madaar LMS Enrollment: no Student record to link, skipped")
+        return out
     out.append(_seed("Madaar LMS Enrollment", {
         "student": student,
         "course": course,
