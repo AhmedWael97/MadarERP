@@ -245,13 +245,15 @@ function indexTpl({ doctype, viewType, columnsImport, fieldsImport, titleArabic,
     return `<ModuleHubCards module={meta.module} currentPath={meta.routePath} />`;
   })();
 
-  // Build the actions slot: a "Create new" button on list/tree pages, a "Back" link on forms.
+  // Build the actions slot. Matches the reference Laravel x-page-header pattern:
+  //   • list/tree: emerald "+ Add new" pill
+  //   • form     : slate "Back" pill with an arrow icon
   const actionsExpr = (() => {
     if ((viewType === 'list' || viewType === 'tree') && createPath) {
-      return `actions={<Link to=${JSON.stringify(createPath)} className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] bg-[color:var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"><Plus size={16} />{t('action.create')}</Link>}`;
+      return `actions={<Link to=${JSON.stringify(createPath)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-sm"><Plus size={16} />{t('action.create')}</Link>}`;
     }
     if (viewType === 'form') {
-      return `actions={<button type="button" onClick={() => navigate(-1)} className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-app px-4 py-2 text-sm font-medium hover:bg-[color:var(--color-card)]"><ArrowRight size={16} />{t('action.back')}</button>}`;
+      return `actions={<button type="button" onClick={() => navigate(-1)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-600 text-white text-sm font-bold rounded-xl hover:bg-slate-500 transition-all shadow-sm"><ArrowRight size={16} />{t('action.back')}</button>}`;
     }
     return '';
   })();

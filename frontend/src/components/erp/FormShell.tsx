@@ -13,6 +13,7 @@ import { Printer, Send, Undo2 } from 'lucide-react';
 import { ErrorPanel } from './ErrorPanel';
 import { LineItemsTable } from './LineItemsTable';
 import { translateLabel, translateSection } from '@/lib/i18n/translateLabel';
+import { FIELD_INPUT_CLASS, FormSubmit } from './FormField';
 
 export interface FieldDef {
   fieldname: string;
@@ -295,30 +296,16 @@ export function FormShell<T extends FieldValues = FieldValues>({
         </div>
       )}
 
-      {sections.map((section, sIdx) => (
-        <fieldset
-          key={sIdx}
-          className="rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-5 shadow-[var(--shadow-card)]"
-          disabled={formReadOnly}
-        >
-          {section.label && (
-            <legend className="px-2 text-xs font-semibold uppercase text-[color:var(--color-muted)]">
-              {translateSection(t, section.label)}
-            </legend>
-          )}
-          <div className="grid gap-4 md:grid-cols-2">
-            {section.fields.map((f) => (
-              <FieldRow
-                key={f.fieldname}
-                field={f}
-                form={form}
-                doctype={doctype}
-                readOnly={formReadOnly}
-              />
-            ))}
-          </div>
-        </fieldset>
-      ))}
+      <FormTabs
+        sections={sections}
+        formReadOnly={formReadOnly}
+        form={form}
+        doctype={doctype}
+        t={t}
+      />
+      {/* The FormTabs render the section title bar + body inside the same
+       *  rounded card so the visual mirrors the reference layout while reusing
+       *  the auto-discovered Section-Break grouping. */}
 
       {submitError && (
         <div className="rounded-[var(--radius-card)] border border-[color:var(--color-rose-600)]/20 bg-[color:var(--color-rose-600)]/10 px-4 py-3 text-sm text-[color:var(--color-rose-600)]">
@@ -326,15 +313,48 @@ export function FormShell<T extends FieldValues = FieldValues>({
         </div>
       )}
 
-      {/* Action bar — Save / Submit / Cancel / Print, gated by docstatus + is_submittable.
-          Always shown so users have one consistent place to act on the doc. */}
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        {/* Print is available as soon as the doc has a name (i.e. has been saved at least once). */}
+      {/* Action bar — reference style: emerald primary, slate secondary,
+          icons match the reference create.blade.php footer row. */}
+      <div className="flex flex-wrap items-center gap-3 mt-2">
+        {/* Save — emerald with check icon (matches reference's primary action). */}
+        {!formReadOnly && (
+          <FormSubmit loading={saving}>
+            {saving ? t('common.loading') : t('action.save')}
+          </FormSubmit>
+        )}
+
+        {/* Submit — only on submittable doctypes that are still drafts. */}
+        {isEdit && isSubmittable && !isSubmitted && !isCancelled && (
+          <button
+            type="button"
+            onClick={handleSubmitDoc}
+            disabled={submitting || saving}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-500 transition-all shadow-sm disabled:opacity-60"
+          >
+            <Send size={15} />
+            {submitting ? t('common.loading') : t('action.submit', { defaultValue: 'Submit' })}
+          </button>
+        )}
+
+        {/* Cancel-doc (submitted → cancelled). */}
+        {isEdit && isSubmittable && isSubmitted && (
+          <button
+            type="button"
+            onClick={handleCancelDoc}
+            disabled={cancelling}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-rose-600 text-white text-sm font-bold rounded-xl hover:bg-rose-500 transition-all shadow-sm disabled:opacity-60"
+          >
+            <Undo2 size={15} />
+            {cancelling ? t('common.loading') : t('action.cancel_doc', { defaultValue: 'Cancel' })}
+          </button>
+        )}
+
+        {/* Print — available once the doc has been saved. */}
         {isEdit && (
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] px-4 py-2 text-sm font-medium text-[color:var(--color-slate-700)] hover:bg-[color:var(--color-app-bg)]"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-slate-600 text-white text-sm font-bold rounded-xl hover:bg-slate-500 transition-all shadow-sm"
             title={t('action.print')}
           >
             <Printer size={15} />
@@ -342,55 +362,92 @@ export function FormShell<T extends FieldValues = FieldValues>({
           </button>
         )}
 
-        {/* Cancel-doc (docstatus 1 → 2) — submittable, currently submitted. */}
-        {isEdit && isSubmittable && isSubmitted && (
-          <button
-            type="button"
-            onClick={handleCancelDoc}
-            disabled={cancelling}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] border border-[color:var(--color-rose-600)]/30 bg-[color:var(--color-rose-100)] px-4 py-2 text-sm font-medium text-[color:var(--color-rose-700)] hover:bg-[color:var(--color-rose-200)] disabled:opacity-60"
-          >
-            <Undo2 size={15} />
-            {cancelling ? t('common.loading') : t('action.cancel_doc', { defaultValue: 'Cancel' })}
-          </button>
-        )}
-
-        {/* Reset — only available while the form is editable. */}
+        {/* Reset — slate secondary, same visual weight as the reference's Cancel button. */}
         {!formReadOnly && (
           <button
             type="button"
             onClick={() => form.reset(initialValues)}
-            className="rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-app px-4 py-2 text-sm font-medium hover:bg-[color:var(--color-card)]"
+            className="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
           >
             {t('action.reset', { defaultValue: 'Reset' })}
           </button>
         )}
-
-        {/* Save — always available unless the doc is read-only (submitted/cancelled). */}
-        {!formReadOnly && (
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-[var(--radius-input)] bg-[color:var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60"
-          >
-            {saving ? t('common.loading') : t('action.save')}
-          </button>
-        )}
-
-        {/* Submit — submittable doctype + doc exists + still a draft. */}
-        {isEdit && isSubmittable && !isSubmitted && !isCancelled && (
-          <button
-            type="button"
-            onClick={handleSubmitDoc}
-            disabled={submitting || saving}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] bg-[color:var(--color-emerald-600)] px-4 py-2 text-sm font-medium text-white hover:bg-[color:var(--color-emerald-700)] disabled:opacity-60"
-          >
-            <Send size={15} />
-            {submitting ? t('common.loading') : t('action.submit', { defaultValue: 'Submit' })}
-          </button>
-        )}
       </div>
     </form>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// FormTabs — the section breaks of the underlying DocType become tabs, with
+// the active tab's fields rendered below the tab bar. Mirrors the visual
+// rhythm of the reference forms but consolidated into a single card so the
+// UX stays close to a Frappe Desk form.
+// ────────────────────────────────────────────────────────────────────────────
+interface FormTabsProps {
+  sections: Section[];
+  formReadOnly: boolean;
+  form: ReturnType<typeof useForm<any>>;
+  doctype: string;
+  t: ReturnType<typeof useTranslation>['t'];
+}
+function FormTabs({ sections, formReadOnly, form, doctype, t }: FormTabsProps) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  // Guard: keep the index in range when the sections change shape (e.g. when
+  // meta is loading and we briefly drop to 0 sections, then re-hydrate).
+  const safeIdx = Math.min(activeIdx, Math.max(0, sections.length - 1));
+
+  if (sections.length === 0) return null;
+
+  const onlyOneUnnamed = sections.length === 1 && !sections[0].label;
+
+  return (
+    <fieldset
+      disabled={formReadOnly}
+      className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 animate-slide-up overflow-hidden"
+    >
+      {!onlyOneUnnamed && (
+        <div className="border-b border-slate-100 dark:border-white/5 overflow-x-auto">
+          <nav className="flex items-center gap-1 px-2 sm:px-4 min-w-max">
+            {sections.map((s, i) => {
+              const label = s.label ? translateSection(t, s.label) : t('common.general', { defaultValue: 'General' });
+              const active = i === safeIdx;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActiveIdx(i)}
+                  className={[
+                    'relative px-4 py-3 text-sm font-bold transition-colors whitespace-nowrap',
+                    active
+                      ? 'text-[color:var(--color-brand-600)] dark:text-[color:var(--color-brand-400)]'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
+                  ].join(' ')}
+                >
+                  {label}
+                  {active && (
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[color:var(--color-brand-500)]" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+
+      <div className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {sections[safeIdx]?.fields.map((f) => (
+            <FieldRow
+              key={f.fieldname}
+              field={f}
+              form={form}
+              doctype={doctype}
+              readOnly={formReadOnly}
+            />
+          ))}
+        </div>
+      </div>
+    </fieldset>
   );
 }
 
@@ -443,15 +500,14 @@ function FieldRow({ field, form, doctype, readOnly: parentReadOnly }: FieldRowPr
   const err = (form.formState.errors as Record<string, { message?: string }>)[field.fieldname]?.message;
 
   const commonProps = {
-    className:
-      'w-full rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-app px-3 py-2 text-sm outline-none focus:ring-2 ring-primary disabled:opacity-60',
+    className: FIELD_INPUT_CLASS + ' disabled:opacity-60',
     disabled: readOnly,
     placeholder,
   };
 
   return (
     <label className={span}>
-      <span className="mb-1 inline-block text-xs font-medium text-[color:var(--color-muted)]">
+      <span className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
         {labelText}
         {reqd && <em className="ms-1 not-italic text-[color:var(--color-rose-600)]">*</em>}
       </span>
@@ -597,7 +653,7 @@ function LinkPicker({ doctype, value, onChange, placeholder, disabled }: LinkPic
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         disabled={disabled || !doctype}
         placeholder={placeholder ?? doctype}
-        className="w-full rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-app px-3 py-2 text-sm outline-none focus:ring-2 ring-primary disabled:opacity-60"
+        className={FIELD_INPUT_CLASS + ' disabled:opacity-60'}
       />
       {open && doctype && results.length > 0 && (
         <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] shadow-[var(--shadow-elev)]">
