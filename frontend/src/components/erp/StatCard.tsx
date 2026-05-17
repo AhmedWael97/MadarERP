@@ -3,15 +3,18 @@ import { ReactNode } from 'react';
 // Tailwind colour family — used both for the icon disc bg and the icon ink.
 // Mirrors reference resources/views/components/stat-card.blade.php where the
 // `color` prop drives a `bg-{color}-100` disc and `text-{color}-600` icon.
-type Color = 'brand' | 'teal' | 'emerald' | 'amber' | 'rose' | 'violet' | 'blue' | 'cyan' | 'orange' | 'pink' | 'sky' | 'slate';
+type Color = 'brand' | 'teal' | 'emerald' | 'amber' | 'yellow' | 'rose' | 'red' | 'violet' | 'purple' | 'blue' | 'cyan' | 'orange' | 'pink' | 'sky' | 'slate';
 
 const DISC_BG: Record<Color, string> = {
   brand:   'bg-[color:var(--color-brand-100)] dark:bg-[color:var(--color-brand-500)]/10',
   teal:    'bg-teal-100 dark:bg-teal-500/10',
   emerald: 'bg-emerald-100 dark:bg-emerald-500/10',
   amber:   'bg-amber-100 dark:bg-amber-500/10',
+  yellow:  'bg-yellow-100 dark:bg-yellow-500/10',
   rose:    'bg-rose-100 dark:bg-rose-500/10',
+  red:     'bg-red-100 dark:bg-red-500/10',
   violet:  'bg-violet-100 dark:bg-violet-500/10',
+  purple:  'bg-purple-100 dark:bg-purple-500/10',
   blue:    'bg-blue-100 dark:bg-blue-500/10',
   cyan:    'bg-cyan-100 dark:bg-cyan-500/10',
   orange:  'bg-orange-100 dark:bg-orange-500/10',
@@ -24,8 +27,11 @@ const DISC_INK: Record<Color, string> = {
   teal:    'text-teal-600 dark:text-teal-400',
   emerald: 'text-emerald-600 dark:text-emerald-400',
   amber:   'text-amber-600 dark:text-amber-400',
+  yellow:  'text-yellow-600 dark:text-yellow-400',
   rose:    'text-rose-600 dark:text-rose-400',
+  red:     'text-red-600 dark:text-red-400',
   violet:  'text-violet-600 dark:text-violet-400',
+  purple:  'text-purple-600 dark:text-purple-400',
   blue:    'text-blue-600 dark:text-blue-400',
   cyan:    'text-cyan-600 dark:text-cyan-400',
   orange:  'text-orange-600 dark:text-orange-400',

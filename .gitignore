@@ -13,6 +13,11 @@ yarn-error.log
 # Generated frontend artifacts
 frontend/src/_generated/
 
+# TypeScript / Vite incremental build outputs (next to vite.config.ts)
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
 # Python
 __pycache__/
 *.pyc
