@@ -1,0 +1,33 @@
+﻿{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["course", "title", "column_break_1", "sort_order", "duration_min", "body_section", "body", "video_url", "attachment", "naming_series"],
+ "fields": [
+  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "title", "fieldtype": "Data", "label": "Title", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "sort_order", "fieldtype": "Int", "label": "Order", "default": "0", "in_list_view": 1},
+  {"fieldname": "duration_min", "fieldtype": "Int", "label": "Duration (min)"},
+  {"fieldname": "body_section", "fieldtype": "Section Break", "label": "Body"},
+  {"fieldname": "body", "fieldtype": "Text Editor", "label": "Body"},
+  {"fieldname": "video_url", "fieldtype": "Data", "label": "Video URL", "options": "URL"},
+  {"fieldname": "attachment", "fieldtype": "Attach", "label": "Attachment"},
+  {"fieldname": "naming_series", "fieldtype": "Data", "label": "Naming Series", "default": "LSN-.YYYY.-.#####", "hidden": 1}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Lesson",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

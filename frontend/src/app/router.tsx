@@ -15,6 +15,14 @@ const EventsList = lazy(() => import('../pages/EventsList'));
 const EventsForm = lazy(() => import('../pages/EventsForm'));
 const SuperAdmin = lazy(() => import('../pages/SuperAdmin'));
 const SuperAdminList = lazy(() => import('../pages/SuperAdmin').then((m) => ({ default: m.SuperAdminList })));
+const SuperAdminCompanies = lazy(() => import('../pages/SuperAdminCompanies'));
+const SuperAdminCompanyForm = lazy(() => import('../pages/SuperAdminCompanies').then((m) => ({ default: m.SuperAdminCompanyForm })));
+const SuperAdminPlans = lazy(() => import('../pages/SuperAdminPlans'));
+const SuperAdminPlanForm = lazy(() => import('../pages/SuperAdminPlans').then((m) => ({ default: m.SuperAdminPlanForm })));
+const EmployeeCustody = lazy(() => import('../pages/EmployeeCustody'));
+const LMS = lazy(() => import('../pages/LMS'));
+const LMSList = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSList })));
+const LMSForm = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSForm })));
 
 const Loading = (
   <div className="grid min-h-[40vh] place-items-center text-(--color-muted)">…</div>
@@ -130,6 +138,57 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      // --- Super Admin: Companies CRUD ---
+      {
+        path: 'super-admin/companies',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminCompanies />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/companies/create',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminCompanyForm />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/companies/:name/edit',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminCompanyForm />
+          </Suspense>
+        ),
+      },
+      // --- Super Admin: Plans CRUD ---
+      {
+        path: 'super-admin/plans',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminPlans />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/plans/create',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminPlanForm />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'super-admin/plans/:name/edit',
+        element: (
+          <Suspense fallback={Loading}>
+            <SuperAdminPlanForm />
+          </Suspense>
+        ),
+      },
+      // --- Super Admin: remaining stub sections (modules/users/settings/letterheads) ---
       {
         path: 'super-admin/:section',
         element: (
@@ -143,6 +202,56 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={Loading}>
             <SuperAdminList />
+          </Suspense>
+        ),
+      },
+      // --- LMS — Madaar Learning Management System (Course/Lesson/Batch/Enrollment) ---
+      {
+        path: 'lms',
+        element: (
+          <Suspense fallback={Loading}>
+            <LMS />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'lms/:section',
+        element: (
+          <Suspense fallback={Loading}>
+            <LMSList />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'lms/:section/create',
+        element: (
+          <Suspense fallback={Loading}>
+            <LMSForm />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'lms/:section/:name/edit',
+        element: (
+          <Suspense fallback={Loading}>
+            <LMSForm />
+          </Suspense>
+        ),
+      },
+      // --- Employee Custody (HR) — wraps ERPNext Employee Advance / Expense Claim ---
+      {
+        path: 'hr/employee-custody',
+        element: (
+          <Suspense fallback={Loading}>
+            <EmployeeCustody />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'hr/employee-custody/:section',
+        element: (
+          <Suspense fallback={Loading}>
+            <EmployeeCustody />
           </Suspense>
         ),
       },

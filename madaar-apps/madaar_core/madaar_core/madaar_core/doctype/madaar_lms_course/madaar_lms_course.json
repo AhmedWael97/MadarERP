@@ -1,0 +1,37 @@
+﻿{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:course_code",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["identity_section", "course_code", "title_en", "title_ar", "column_break_1", "instructor", "is_published", "details_section", "description", "duration_hours", "column_break_2", "price", "currency", "image"],
+ "fields": [
+  {"fieldname": "identity_section", "fieldtype": "Section Break", "label": "Identity"},
+  {"fieldname": "course_code", "fieldtype": "Data", "label": "Course Code", "reqd": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "title_en", "fieldtype": "Data", "label": "Title (English)", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "title_ar", "fieldtype": "Data", "label": "Title (Arabic)", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "instructor", "fieldtype": "Link", "label": "Instructor", "options": "User", "in_list_view": 1},
+  {"fieldname": "is_published", "fieldtype": "Check", "label": "Published", "default": "0", "in_list_view": 1},
+  {"fieldname": "details_section", "fieldtype": "Section Break", "label": "Details"},
+  {"fieldname": "description", "fieldtype": "Text Editor", "label": "Description"},
+  {"fieldname": "duration_hours", "fieldtype": "Float", "label": "Duration (hours)"},
+  {"fieldname": "column_break_2", "fieldtype": "Column Break"},
+  {"fieldname": "price", "fieldtype": "Currency", "label": "Price"},
+  {"fieldname": "currency", "fieldtype": "Link", "label": "Currency", "options": "Currency", "default": "EGP"},
+  {"fieldname": "image", "fieldtype": "Attach Image", "label": "Cover Image"}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Course",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

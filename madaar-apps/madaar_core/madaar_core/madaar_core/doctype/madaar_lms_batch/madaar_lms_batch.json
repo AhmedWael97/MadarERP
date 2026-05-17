@@ -1,0 +1,31 @@
+﻿{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:batch_code",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["batch_code", "course", "instructor", "column_break_1", "start_date", "end_date", "max_seats", "is_active"],
+ "fields": [
+  {"fieldname": "batch_code", "fieldtype": "Data", "label": "Batch Code", "reqd": 1, "unique": 1, "in_list_view": 1},
+  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "instructor", "fieldtype": "Link", "label": "Instructor", "options": "User", "in_list_view": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "start_date", "fieldtype": "Date", "label": "Start Date", "in_list_view": 1},
+  {"fieldname": "end_date", "fieldtype": "Date", "label": "End Date", "in_list_view": 1},
+  {"fieldname": "max_seats", "fieldtype": "Int", "label": "Max Seats", "default": "30"},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Active", "default": "1", "in_list_view": 1}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Batch",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
