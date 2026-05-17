@@ -215,7 +215,7 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
     # ── Workshop / Restaurant masters ───────────────────────────────────────
     plan.append((
         "Madaar Service Type",
-        {"service_name": "صيانة دورية", "base_price": 500},
+        {"service_type": "صيانة دورية", "description": "Demo service type", "standard_price": 500, "standard_duration_minutes": 60},
     ))
     plan.append((
         "Madaar Maintenance Package",
@@ -248,15 +248,8 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
             "source": "Walk In",
         },
     ))
-    plan.append((
-        "Opportunity",
-        {
-            "opportunity_from": "Lead",
-            "party_name": _first("Lead") or "demo",  # may need a lead first
-            "opportunity_type": "Sales",
-            "status": "Open",
-        },
-    ))
+    # Opportunity is resolved lazily — see _seed_opportunity below — because
+    # the Lead it references may not exist until *after* its plan entry runs.
 
     # ── Fixed Assets ────────────────────────────────────────────────────────
     plan.append((
@@ -277,11 +270,13 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
     ))
     plan.append((
         "Madaar Banner",
-        {"title": "بانر ترحيبي", "position": "Hero", "is_active": 1, "start_date": "2024-01-01", "end_date": "2030-12-31"},
+        # Note: actual field is `banner_name` (autoname) + numeric `position` (sort order, not a string slot).
+        {"banner_name": "بانر ترحيبي", "position": 1, "is_active": 1, "start_date": "2024-01-01", "end_date": "2030-12-31"},
     ))
     plan.append((
         "Madaar CMS Page",
-        {"title": "من نحن", "slug": "about", "is_published": 1, "content": "<p>صفحة تجريبية</p>"},
+        # Slug is the autoname field (`page_slug`), title is a separate required Data field.
+        {"page_slug": "about", "title": "من نحن", "is_published": 1, "content": "<p>صفحة تجريبية</p>"},
     ))
     plan.append((
         "Coupon Code",
@@ -304,16 +299,40 @@ def _seed_plan() -> list[tuple[str, dict[str, Any]]]:
 # ─── public entry point ──────────────────────────────────────────────────────
 
 
+def _seed_opportunity() -> str:
+    """Special-case Opportunity: needs a Lead that was created earlier in the
+    same run, so we look it up at call time (not at plan-build time)."""
+    if not frappe.db.exists("DocType", "Opportunity"):
+        return "  ⊘  Opportunity: doctype not installed, skipped"
+    if _has_rows("Opportunity"):
+        return "  •  Opportunity: already has data, skipped"
+    lead = _first("Lead")
+    if not lead:
+        return "  ⊘  Opportunity: no Lead to link, skipped"
+    return _seed(
+        "Opportunity",
+        {
+            "opportunity_from": "Lead",
+            "party_name": lead,
+            "opportunity_type": "Sales",
+            "status": "Open",
+        },
+    )
+
+
 def run() -> None:
     """Seed one row per empty master doctype. Safe to re-run."""
     print("Madaar demo-seed — starting")
     print(f"Site: {frappe.local.site}")
 
     plan = _seed_plan()
-    print(f"Plan: {len(plan)} doctypes to consider")
+    print(f"Plan: {len(plan)} doctypes to consider (+1 deferred: Opportunity)")
 
     for doctype, doc in plan:
         print(_seed(doctype, doc))
+
+    # Deferred seeds — these depend on other seeds in this same run.
+    print(_seed_opportunity())
 
     frappe.db.commit()
     print("Madaar demo-seed — done")
