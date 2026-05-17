@@ -20,6 +20,13 @@ const SuperAdminCompanyForm = lazy(() => import('../pages/SuperAdminCompanies').
 const SuperAdminPlans = lazy(() => import('../pages/SuperAdminPlans'));
 const SuperAdminPlanForm = lazy(() => import('../pages/SuperAdminPlans').then((m) => ({ default: m.SuperAdminPlanForm })));
 const EmployeeCustody = lazy(() => import('../pages/EmployeeCustody'));
+const CustomerDetail = lazy(() => import('../modules/customers/CustomerDetail'));
+const CustomerStatement = lazy(() => import('../modules/customers/CustomerStatement'));
+const SupplierDetail = lazy(() => import('../modules/suppliers/SupplierDetail'));
+const SupplierStatement = lazy(() => import('../modules/suppliers/SupplierStatement'));
+const JournalEntryDetail = lazy(() => import('../modules/accounting/JournalEntryDetail'));
+const SalesDocumentDetail = lazy(() => import('../modules/sales/SalesDocumentDetail'));
+const PurchaseDocumentDetail = lazy(() => import('../modules/purchases/PurchaseDocumentDetail'));
 const LMS = lazy(() => import('../pages/LMS'));
 const LMSList = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSList })));
 const LMSForm = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSForm })));
@@ -237,6 +244,79 @@ export const router = createBrowserRouter([
             <LMSForm />
           </Suspense>
         ),
+      },
+      // --- Customers: detail + account statement (not in the URL scan, hand-wired here) ---
+      {
+        path: 'customers/:id',
+        element: (
+          <Suspense fallback={Loading}>
+            <CustomerDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'customers/:id/statement',
+        element: (
+          <Suspense fallback={Loading}>
+            <CustomerStatement />
+          </Suspense>
+        ),
+      },
+      // --- Suppliers: detail + account statement (mirrors customer routes) ---
+      {
+        path: 'suppliers/:id',
+        element: (
+          <Suspense fallback={Loading}>
+            <SupplierDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'suppliers/:id/statement',
+        element: (
+          <Suspense fallback={Loading}>
+            <SupplierStatement />
+          </Suspense>
+        ),
+      },
+      // --- Accounting: Journal Entry detail (show page) ---
+      {
+        path: 'accounting/journal-entries/:id',
+        element: (
+          <Suspense fallback={Loading}>
+            <JournalEntryDetail />
+          </Suspense>
+        ),
+      },
+      // --- Sales: detail pages for invoice/order/quotation/return ---
+      {
+        path: 'sales/invoices/:id',
+        element: (<Suspense fallback={Loading}><SalesDocumentDetail variant="invoice" /></Suspense>),
+      },
+      {
+        path: 'sales/orders/:id',
+        element: (<Suspense fallback={Loading}><SalesDocumentDetail variant="order" /></Suspense>),
+      },
+      {
+        path: 'sales/quotations/:id',
+        element: (<Suspense fallback={Loading}><SalesDocumentDetail variant="quotation" /></Suspense>),
+      },
+      {
+        path: 'sales/returns/:id',
+        element: (<Suspense fallback={Loading}><SalesDocumentDetail variant="return" /></Suspense>),
+      },
+      // --- Purchases: detail pages for invoice/order/return ---
+      {
+        path: 'purchases/invoices/:id',
+        element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="invoice" /></Suspense>),
+      },
+      {
+        path: 'purchases/orders/:id',
+        element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="order" /></Suspense>),
+      },
+      {
+        path: 'purchases/returns/:id',
+        element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="return" /></Suspense>),
       },
       // --- Employee Custody (HR) — wraps ERPNext Employee Advance / Expense Claim ---
       {

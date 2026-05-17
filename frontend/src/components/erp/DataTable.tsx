@@ -3,6 +3,7 @@ import { useFrappeGetCall, useFrappeGetDocList } from 'frappe-react-sdk';
 import { useTranslation } from 'react-i18next';
 import { resolveColumns, translateHeader, MetaField } from './columnMapping';
 import { ErrorPanel } from './ErrorPanel';
+import { DataTableToolbar, type ToolbarColumn } from './DataTableToolbar';
 
 export interface ColumnDef {
   /** Field name on the DocType, or a synthetic id for computed columns. */
@@ -61,6 +62,10 @@ function formatCellValue(value: unknown, fieldtype?: string, locale = 'en'): Rea
 export function DataTable({ doctype, columns: passedColumns, filters, orderBy, pageSize = 20 }: Props) {
   const { t, i18n } = useTranslation();
   const [page, setPage] = useState(0);
+  // Per-table column visibility. Lazy default: every column visible. Tracking
+  // it here so the toolbar's "Columns ▾" menu can hide cells without unmounting
+  // the column definition.
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
   // Always fetch DocType meta — we need it to (a) resolve scanned headers to real fields,
   // (b) format cells correctly by fieldtype, (c) fall back when no columns are passed.
@@ -136,85 +141,143 @@ export function DataTable({ doctype, columns: passedColumns, filters, orderBy, p
 
   const loading = isLoading || metaLoading;
 
-  return (
-    <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] shadow-[var(--shadow-card)]">
-      <table className="w-full text-sm">
-        <thead className="bg-app text-xs uppercase text-[color:var(--color-muted)]">
-          <tr>
-            {columns.map((c) => {
-              const raw = c.header ?? (c.headerKey ? t(c.headerKey) : c.id);
-              const display = translateHeader(raw, i18n.language);
-              return (
-                <th
-                  key={c.id}
-                  className="px-3 py-2 text-start font-medium"
-                  style={c.width ? { width: c.width } : undefined}
-                >
-                  {display}
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {loading && (
-            <tr>
-              <td colSpan={columns.length} className="px-3 py-6 text-center text-[color:var(--color-muted)]">
-                {t('common.loading')}
-              </td>
-            </tr>
-          )}
-          {!loading && data?.length === 0 && (
-            <tr>
-              <td colSpan={columns.length} className="px-3 py-6 text-center text-[color:var(--color-muted)]">
-                {t('common.empty')}
-              </td>
-            </tr>
-          )}
-          {!loading &&
-            data?.map((row, i) => (
-              <tr
-                key={(row.name as string) ?? i}
-                className="border-t border-[color:var(--color-border)] hover:bg-app"
-              >
-                {columns.map((c) => {
-                  let cell: React.ReactNode;
-                  if (c.render) cell = c.render(row);
-                  else if (isSyntheticCol(c.id)) {
-                    cell = c.id === '__row_index' ? page * pageSize + i + 1 : '—';
-                  } else {
-                    cell = formatCellValue(row[c.id], fieldTypeByName[c.id], i18n.language);
-                  }
-                  return (
-                    <td key={c.id} className="px-3 py-2 align-top">
-                      {cell}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-        </tbody>
-      </table>
+  // Columns shown right now (hiding survives sort/page changes by virtue of being
+  // a Set of ids rather than indices).
+  const visibleColumns = useMemo(
+    () => columns.filter((c) => !hiddenIds.has(c.id)),
+    [columns, hiddenIds],
+  );
 
-      <div className="flex items-center justify-between border-t border-[color:var(--color-border)] px-3 py-2 text-xs text-[color:var(--color-muted)]">
-        <span>{data?.length ?? 0}</span>
-        <div className="flex gap-1">
-          <button
-            type="button"
-            className="rounded px-2 py-1 hover:bg-app disabled:opacity-40"
-            disabled={page === 0}
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-          >
-            «
-          </button>
-          <button
-            type="button"
-            className="rounded px-2 py-1 hover:bg-app disabled:opacity-40"
-            disabled={(data?.length ?? 0) < pageSize}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            »
-          </button>
+  // Toolbar consumes the human-facing header — keep this in sync with the
+  // <thead> render below so what you see in the menu matches what you see
+  // in the column header.
+  const toolbarColumns: ToolbarColumn[] = useMemo(
+    () =>
+      columns.map((c) => {
+        const raw = c.header ?? (c.headerKey ? t(c.headerKey) : c.id);
+        return { id: c.id, header: translateHeader(raw, i18n.language) };
+      }),
+    [columns, t, i18n.language],
+  );
+
+  // Pre-formatted rows for export. We push the same display string the cell
+  // would render, so "1500" doesn't suddenly become "1,500" only in the table.
+  // For columns with custom renderers we fall back to the raw value — the
+  // toolbar isn't going to invoke arbitrary React to make a CSV cell.
+  const exportRows = useMemo(() => {
+    return (data ?? []).map((row) => {
+      const out: Record<string, unknown> = {};
+      for (const c of columns) {
+        if (isSyntheticCol(c.id)) continue;
+        const v = row[c.id];
+        if (v === null || v === undefined) {
+          out[c.id] = '';
+        } else {
+          out[c.id] = v;
+        }
+      }
+      return out;
+    });
+  }, [data, columns]);
+
+  const visibleIds = useMemo(
+    () => new Set(columns.filter((c) => !hiddenIds.has(c.id)).map((c) => c.id)),
+    [columns, hiddenIds],
+  );
+
+  return (
+    <div className="space-y-3">
+      <DataTableToolbar
+        doctype={doctype}
+        columns={toolbarColumns}
+        rows={exportRows}
+        visibleColumnIds={visibleIds}
+        onVisibleColumnsChange={(next) => {
+          const allIds = columns.map((c) => c.id);
+          const nextHidden = new Set(allIds.filter((id) => !next.has(id)));
+          setHiddenIds(nextHidden);
+        }}
+      />
+
+      <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] shadow-[var(--shadow-card)]">
+        <table className="w-full text-sm">
+          <thead className="bg-app text-xs uppercase text-[color:var(--color-muted)]">
+            <tr>
+              {visibleColumns.map((c) => {
+                const raw = c.header ?? (c.headerKey ? t(c.headerKey) : c.id);
+                const display = translateHeader(raw, i18n.language);
+                return (
+                  <th
+                    key={c.id}
+                    className="px-3 py-2 text-start font-medium"
+                    style={c.width ? { width: c.width } : undefined}
+                  >
+                    {display}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={visibleColumns.length} className="px-3 py-6 text-center text-[color:var(--color-muted)]">
+                  {t('common.loading')}
+                </td>
+              </tr>
+            )}
+            {!loading && data?.length === 0 && (
+              <tr>
+                <td colSpan={visibleColumns.length} className="px-3 py-6 text-center text-[color:var(--color-muted)]">
+                  {t('common.empty')}
+                </td>
+              </tr>
+            )}
+            {!loading &&
+              data?.map((row, i) => (
+                <tr
+                  key={(row.name as string) ?? i}
+                  className="border-t border-[color:var(--color-border)] hover:bg-app"
+                >
+                  {visibleColumns.map((c) => {
+                    let cell: React.ReactNode;
+                    if (c.render) cell = c.render(row);
+                    else if (isSyntheticCol(c.id)) {
+                      cell = c.id === '__row_index' ? page * pageSize + i + 1 : '—';
+                    } else {
+                      cell = formatCellValue(row[c.id], fieldTypeByName[c.id], i18n.language);
+                    }
+                    return (
+                      <td key={c.id} className="px-3 py-2 align-top">
+                        {cell}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+
+        <div className="flex items-center justify-between border-t border-[color:var(--color-border)] px-3 py-2 text-xs text-[color:var(--color-muted)]">
+          <span>{data?.length ?? 0}</span>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              className="rounded px-2 py-1 hover:bg-app disabled:opacity-40"
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              «
+            </button>
+            <button
+              type="button"
+              className="rounded px-2 py-1 hover:bg-app disabled:opacity-40"
+              disabled={(data?.length ?? 0) < pageSize}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              »
+            </button>
+          </div>
         </div>
       </div>
     </div>

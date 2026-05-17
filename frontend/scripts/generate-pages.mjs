@@ -458,6 +458,13 @@ function main() {
     const metaPath = path.join(targetDir, 'meta.ts');
     const i18nPath = path.join(targetDir, 'i18n.json');
 
+    // Override mechanism: if a hand-written page exists at
+    //   src/modules/<module>/<slug>/overrides/page.tsx
+    // emit a thin re-export instead of the default scaffold. The override path is
+    // resolved via the @/ alias so it survives the slug's `$id` → `:id` mapping.
+    const overrideFsPath = path.join(ROOT, 'src', 'modules', module, slug, 'overrides', 'page.tsx');
+    const overrideExists = existsSync(overrideFsPath);
+
     // meta.ts ALWAYS exports `columns` and `fields` (possibly as empty arrays).
     // Importing unconditionally is the simplest way to avoid the
     // `ReferenceError: columns is not defined` we used to hit on pages where the scan
@@ -467,17 +474,23 @@ function main() {
       : '';
     const fieldsImport = '';
 
-    const indexSrc = indexTpl({
-      doctype,
-      viewType,
-      columnsImport,
-      fieldsImport,
-      titleArabic,
-      titleEnglish,
-      createPath,
-      isEdit,
-      listPath,
-    });
+    const indexSrc = overrideExists
+      ? `// OVERRIDDEN by src/modules/${module}/${slug}/overrides/page.tsx.\n` +
+        `// The generator (scripts/generate-pages.mjs) detected that file and emitted\n` +
+        `// this thin re-export instead of the default scaffold.\n` +
+        `export { default } from '@/modules/${module}/${slug}/overrides/page';\n`
+      : indexTpl({
+          doctype,
+          viewType,
+          columnsImport,
+          fieldsImport,
+          titleArabic,
+          titleEnglish,
+          createPath,
+          isEdit,
+          listPath,
+        });
+    if (overrideExists) report.skipped_override += 1;
     const metaSrc = metaTpl({
       routePath,
       titleKey,
