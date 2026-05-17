@@ -1,0 +1,31 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "LMS-QZ-.#####",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["title", "course", "chapter", "time_limit_min", "total_marks", "pass_mark", "is_published", "description"],
+ "fields": [
+  {"fieldname": "title", "fieldtype": "Data", "label": "Quiz Title", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "chapter", "fieldtype": "Link", "label": "Chapter", "options": "Madaar LMS Chapter"},
+  {"fieldname": "time_limit_min", "fieldtype": "Int", "label": "Time Limit (min)", "default": "30"},
+  {"fieldname": "total_marks", "fieldtype": "Int", "label": "Total Marks", "default": "100", "in_list_view": 1},
+  {"fieldname": "pass_mark", "fieldtype": "Int", "label": "Pass Mark", "default": "60"},
+  {"fieldname": "is_published", "fieldtype": "Check", "label": "Published", "default": "0", "in_list_view": 1},
+  {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Quiz",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

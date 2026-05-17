@@ -654,11 +654,7 @@ const SECTIONS: Section[] = [
     ],
   },
 
-  // ── 8b. LMS (Madaar LMS — Courses / Lessons / Batches / Enrollments) ─────
-  // Only sections backed by the Madaar LMS doctypes that actually exist in
-  // SECTIONS in src/pages/LMS.tsx. Earlier we listed programs/quizzes/grades/…
-  // here, but those pages would render the "قسم غير معروف" empty state and
-  // (worse) trigger a Rules-of-Hooks crash on the list page.
+  // ── 8b. LMS (Madaar LMS — 16 sections backed by Madaar LMS * doctypes) ───
   {
     headerAr: 'التعليم والتدريب',
     items: [
@@ -668,13 +664,41 @@ const SECTIONS: Section[] = [
         icon: GraduationCap,
         accent: 'cyan',
         groups: [
+          { leaves: [{ to: '/lms', labelAr: 'لوحة التحكم' }] },
           {
+            headerAr: 'المحتوى الدراسي',
             leaves: [
-              { to: '/lms',             labelAr: 'لوحة التحكم' },
+              { to: '/lms/programs',    labelAr: 'البرامج التعليمية' },
               { to: '/lms/courses',     labelAr: 'الدورات' },
+              { to: '/lms/chapters',    labelAr: 'الفصول' },
               { to: '/lms/lessons',     labelAr: 'الدروس' },
-              { to: '/lms/batches',     labelAr: 'الدفعات' },
+              { to: '/lms/quizzes',     labelAr: 'الاختبارات' },
+              { to: '/lms/assignments', labelAr: 'المهام والواجبات' },
+            ],
+          },
+          {
+            headerAr: 'المستخدمون',
+            leaves: [
+              { to: '/lms/students',    labelAr: 'الطلاب' },
+              { to: '/lms/instructors', labelAr: 'المدرسين' },
               { to: '/lms/enrollments', labelAr: 'التسجيلات' },
+              { to: '/lms/batches',     labelAr: 'الدفعات' },
+            ],
+          },
+          {
+            headerAr: 'التقييم والتقدم',
+            leaves: [
+              { to: '/lms/grades',       labelAr: 'الدرجات' },
+              { to: '/lms/certificates', labelAr: 'الشهادات' },
+              { to: '/lms/progress',     labelAr: 'متابعة التقدم' },
+            ],
+          },
+          {
+            headerAr: 'التشغيل',
+            leaves: [
+              { to: '/lms/schedule',   labelAr: 'الجدول الزمني' },
+              { to: '/lms/attendance', labelAr: 'الحضور' },
+              { to: '/lms/payments',   labelAr: 'الرسوم والمدفوعات' },
             ],
           },
         ],

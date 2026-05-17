@@ -1,0 +1,30 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "LMS-PRG-.#####",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["student", "course", "completion_pct", "lessons_completed", "total_lessons", "last_activity_on", "status"],
+ "fields": [
+  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Madaar LMS Student", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "completion_pct", "fieldtype": "Percent", "label": "Completion %", "default": "0", "in_list_view": 1},
+  {"fieldname": "lessons_completed", "fieldtype": "Int", "label": "Lessons Completed", "default": "0"},
+  {"fieldname": "total_lessons", "fieldtype": "Int", "label": "Total Lessons", "default": "0"},
+  {"fieldname": "last_activity_on", "fieldtype": "Datetime", "label": "Last Activity", "in_list_view": 1},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Not Started\nIn Progress\nCompleted\nStalled", "default": "Not Started", "in_list_view": 1}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Progress",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

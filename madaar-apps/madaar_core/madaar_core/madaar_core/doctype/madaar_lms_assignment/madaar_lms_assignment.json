@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "LMS-ASN-.#####",
+ "creation": "2026-05-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["title", "course", "due_date", "max_marks", "is_published", "description"],
+ "fields": [
+  {"fieldname": "title", "fieldtype": "Data", "label": "Assignment Title", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "due_date", "fieldtype": "Date", "label": "Due Date", "in_list_view": 1},
+  {"fieldname": "max_marks", "fieldtype": "Int", "label": "Max Marks", "default": "100"},
+  {"fieldname": "is_published", "fieldtype": "Check", "label": "Published", "default": "0", "in_list_view": 1},
+  {"fieldname": "description", "fieldtype": "Text Editor", "label": "Description"}
+ ],
+ "links": [],
+ "modified": "2026-05-17 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Core",
+ "name": "Madaar LMS Assignment",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

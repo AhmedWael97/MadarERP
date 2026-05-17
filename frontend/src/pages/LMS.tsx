@@ -8,7 +8,7 @@ import {
   useFrappeUpdateDoc,
   useFrappeGetDoc,
 } from 'frappe-react-sdk';
-import { Plus, GraduationCap, Users, BookOpen, BadgeCheck, Search, Edit3, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, GraduationCap, Users, BookOpen, BadgeCheck, Search, Edit3, ChevronLeft, ChevronRight, Layers, FileCheck2, Award, BarChart3, CalendarDays, CheckSquare, CreditCard, UserCheck, BookMarked, FilePlus2 } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 import { StatCard } from '../components/erp/StatCard';
 import { FormCard } from '../components/erp/FormCard';
@@ -23,7 +23,17 @@ interface LmsSection {
   titleEn: string;
   fields: string[];
   columns: Array<{ id: string; ar: string; en: string; render?: (v: any) => React.ReactNode }>;
-  createForm?: 'course' | 'lesson' | 'enrollment' | 'batch';
+  createForm?: 'course' | 'lesson' | 'enrollment' | 'batch' | 'auto';
+  /** Used by the generic 'auto' form: list of editable fields with optional input hints. */
+  formFields?: Array<{
+    name: string;
+    ar: string;
+    en: string;
+    type?: 'text' | 'number' | 'date' | 'time' | 'datetime' | 'checkbox' | 'textarea' | 'select';
+    options?: string[];
+    required?: boolean;
+    span?: 'full';
+  }>;
 }
 
 const SECTIONS: Record<string, LmsSection> = {
@@ -75,6 +85,271 @@ const SECTIONS: Record<string, LmsSection> = {
                      { id: 'is_active',  ar: 'نشطة', en: 'Active', render: (v) => v ? '✓' : '—' },
                    ],
                    createForm: 'batch' },
+
+  // ── Phase 2 — generic 'auto' sections backed by 12 new doctypes ────────────
+  'programs':    { key: 'programs', doctype: 'Madaar LMS Program',
+                   titleAr: 'البرامج التعليمية', titleEn: 'Programs',
+                   fields: ['name', 'program_code', 'title_ar', 'title_en', 'coordinator', 'duration_months', 'price', 'is_published'],
+                   columns: [
+                     { id: 'program_code', ar: 'الكود', en: 'Code' },
+                     { id: 'title_ar', ar: 'العنوان', en: 'Title' },
+                     { id: 'coordinator', ar: 'المنسق', en: 'Coordinator' },
+                     { id: 'duration_months', ar: 'المدة (شهر)', en: 'Months' },
+                     { id: 'price', ar: 'السعر', en: 'Price', render: (v) => Number(v ?? 0).toLocaleString() },
+                     { id: 'is_published', ar: 'منشور', en: 'Published', render: (v) => v ? '✓' : '—' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'program_code', ar: 'كود البرنامج', en: 'Program Code', required: true },
+                     { name: 'title_ar', ar: 'العنوان بالعربية', en: 'Title (Arabic)', required: true },
+                     { name: 'title_en', ar: 'العنوان بالإنجليزية', en: 'Title (English)', required: true },
+                     { name: 'coordinator', ar: 'المنسق (بريد المستخدم)', en: 'Coordinator (user email)' },
+                     { name: 'duration_months', ar: 'المدة (أشهر)', en: 'Duration (months)', type: 'number' },
+                     { name: 'price', ar: 'السعر', en: 'Price', type: 'number' },
+                     { name: 'currency', ar: 'العملة', en: 'Currency' },
+                     { name: 'is_published', ar: 'منشور', en: 'Published', type: 'checkbox' },
+                     { name: 'description', ar: 'الوصف', en: 'Description', type: 'textarea', span: 'full' },
+                   ] },
+
+  'chapters':    { key: 'chapters', doctype: 'Madaar LMS Chapter',
+                   titleAr: 'الفصول', titleEn: 'Chapters',
+                   fields: ['name', 'course', 'title', 'sort_order'],
+                   columns: [
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'title', ar: 'العنوان', en: 'Title' },
+                     { id: 'sort_order', ar: 'الترتيب', en: 'Order' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'title', ar: 'العنوان', en: 'Title', required: true },
+                     { name: 'sort_order', ar: 'الترتيب', en: 'Sort Order', type: 'number' },
+                     { name: 'summary', ar: 'ملخص', en: 'Summary', type: 'textarea', span: 'full' },
+                   ] },
+
+  'quizzes':     { key: 'quizzes', doctype: 'Madaar LMS Quiz',
+                   titleAr: 'الاختبارات', titleEn: 'Quizzes',
+                   fields: ['name', 'title', 'course', 'time_limit_min', 'total_marks', 'pass_mark', 'is_published'],
+                   columns: [
+                     { id: 'title', ar: 'العنوان', en: 'Title' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'total_marks', ar: 'الدرجة الكلية', en: 'Total' },
+                     { id: 'time_limit_min', ar: 'المدة (د)', en: 'Time (min)' },
+                     { id: 'is_published', ar: 'منشور', en: 'Published', render: (v) => v ? '✓' : '—' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'title', ar: 'العنوان', en: 'Title', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'chapter', ar: 'الفصل', en: 'Chapter' },
+                     { name: 'time_limit_min', ar: 'المدة (دقيقة)', en: 'Time Limit (min)', type: 'number' },
+                     { name: 'total_marks', ar: 'الدرجة الكلية', en: 'Total Marks', type: 'number' },
+                     { name: 'pass_mark', ar: 'درجة النجاح', en: 'Pass Mark', type: 'number' },
+                     { name: 'is_published', ar: 'منشور', en: 'Published', type: 'checkbox' },
+                     { name: 'description', ar: 'الوصف', en: 'Description', type: 'textarea', span: 'full' },
+                   ] },
+
+  'assignments': { key: 'assignments', doctype: 'Madaar LMS Assignment',
+                   titleAr: 'المهام والواجبات', titleEn: 'Assignments',
+                   fields: ['name', 'title', 'course', 'due_date', 'max_marks', 'is_published'],
+                   columns: [
+                     { id: 'title', ar: 'العنوان', en: 'Title' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'due_date', ar: 'تاريخ التسليم', en: 'Due Date' },
+                     { id: 'max_marks', ar: 'الدرجة العظمى', en: 'Max' },
+                     { id: 'is_published', ar: 'منشور', en: 'Published', render: (v) => v ? '✓' : '—' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'title', ar: 'العنوان', en: 'Title', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'due_date', ar: 'تاريخ التسليم', en: 'Due Date', type: 'date' },
+                     { name: 'max_marks', ar: 'الدرجة العظمى', en: 'Max Marks', type: 'number' },
+                     { name: 'is_published', ar: 'منشور', en: 'Published', type: 'checkbox' },
+                     { name: 'description', ar: 'الوصف', en: 'Description', type: 'textarea', span: 'full' },
+                   ] },
+
+  'students':    { key: 'students', doctype: 'Madaar LMS Student',
+                   titleAr: 'الطلاب', titleEn: 'Students',
+                   fields: ['name', 'student_id', 'full_name', 'email', 'phone', 'joined_on', 'status'],
+                   columns: [
+                     { id: 'student_id', ar: 'الكود', en: 'ID' },
+                     { id: 'full_name', ar: 'الاسم', en: 'Name' },
+                     { id: 'email', ar: 'البريد', en: 'Email' },
+                     { id: 'joined_on', ar: 'تاريخ الانضمام', en: 'Joined' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'student_id', ar: 'كود الطالب', en: 'Student ID', required: true },
+                     { name: 'full_name', ar: 'الاسم الكامل', en: 'Full Name', required: true },
+                     { name: 'email', ar: 'البريد الإلكتروني', en: 'Email' },
+                     { name: 'phone', ar: 'الهاتف', en: 'Phone' },
+                     { name: 'national_id', ar: 'الرقم القومي', en: 'National ID' },
+                     { name: 'birth_date', ar: 'تاريخ الميلاد', en: 'Date of Birth', type: 'date' },
+                     { name: 'gender', ar: 'النوع', en: 'Gender', type: 'select', options: ['', 'Male', 'Female'] },
+                     { name: 'joined_on', ar: 'تاريخ الانضمام', en: 'Joined On', type: 'date' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Active', 'Graduated', 'Dropped', 'Suspended'] },
+                     { name: 'notes', ar: 'ملاحظات', en: 'Notes', type: 'textarea', span: 'full' },
+                   ] },
+
+  'instructors': { key: 'instructors', doctype: 'Madaar LMS Instructor',
+                   titleAr: 'المدرسين', titleEn: 'Instructors',
+                   fields: ['name', 'instructor_code', 'full_name', 'email', 'specialty', 'is_active'],
+                   columns: [
+                     { id: 'instructor_code', ar: 'الكود', en: 'Code' },
+                     { id: 'full_name', ar: 'الاسم', en: 'Name' },
+                     { id: 'email', ar: 'البريد', en: 'Email' },
+                     { id: 'specialty', ar: 'التخصص', en: 'Specialty' },
+                     { id: 'is_active', ar: 'نشط', en: 'Active', render: (v) => v ? '✓' : '—' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'instructor_code', ar: 'كود المدرس', en: 'Instructor Code', required: true },
+                     { name: 'full_name', ar: 'الاسم الكامل', en: 'Full Name', required: true },
+                     { name: 'user', ar: 'حساب المستخدم', en: 'Linked User' },
+                     { name: 'email', ar: 'البريد', en: 'Email' },
+                     { name: 'phone', ar: 'الهاتف', en: 'Phone' },
+                     { name: 'specialty', ar: 'التخصص', en: 'Specialty' },
+                     { name: 'hourly_rate', ar: 'سعر الساعة', en: 'Hourly Rate', type: 'number' },
+                     { name: 'currency', ar: 'العملة', en: 'Currency' },
+                     { name: 'is_active', ar: 'نشط', en: 'Active', type: 'checkbox' },
+                     { name: 'bio', ar: 'السيرة', en: 'Biography', type: 'textarea', span: 'full' },
+                   ] },
+
+  'grades':      { key: 'grades', doctype: 'Madaar LMS Grade',
+                   titleAr: 'الدرجات', titleEn: 'Grades',
+                   fields: ['name', 'student', 'course', 'assessment_type', 'marks', 'grade_letter'],
+                   columns: [
+                     { id: 'student', ar: 'الطالب', en: 'Student' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'assessment_type', ar: 'النوع', en: 'Type' },
+                     { id: 'marks', ar: 'الدرجة', en: 'Marks' },
+                     { id: 'grade_letter', ar: 'التقدير', en: 'Grade' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'student', ar: 'الطالب', en: 'Student', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'assessment_type', ar: 'نوع التقييم', en: 'Assessment Type', type: 'select', options: ['Quiz', 'Assignment', 'Midterm', 'Final', 'Project'] },
+                     { name: 'marks', ar: 'الدرجة', en: 'Marks', type: 'number' },
+                     { name: 'max_marks', ar: 'الدرجة العظمى', en: 'Max Marks', type: 'number' },
+                     { name: 'grade_letter', ar: 'التقدير', en: 'Grade', type: 'select', options: ['', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D', 'F'] },
+                     { name: 'graded_on', ar: 'تاريخ التقدير', en: 'Graded On', type: 'date' },
+                     { name: 'graded_by', ar: 'بواسطة', en: 'Graded By' },
+                     { name: 'notes', ar: 'ملاحظات', en: 'Notes', type: 'textarea', span: 'full' },
+                   ] },
+
+  'certificates':{ key: 'certificates', doctype: 'Madaar LMS Certificate',
+                   titleAr: 'الشهادات', titleEn: 'Certificates',
+                   fields: ['name', 'certificate_no', 'student', 'course', 'issued_on', 'status'],
+                   columns: [
+                     { id: 'certificate_no', ar: 'رقم الشهادة', en: 'Cert. No' },
+                     { id: 'student', ar: 'الطالب', en: 'Student' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'issued_on', ar: 'تاريخ الإصدار', en: 'Issued' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'certificate_no', ar: 'رقم الشهادة', en: 'Certificate No', required: true },
+                     { name: 'student', ar: 'الطالب', en: 'Student', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'issued_on', ar: 'تاريخ الإصدار', en: 'Issued On', type: 'date' },
+                     { name: 'expires_on', ar: 'ينتهي في', en: 'Expires On', type: 'date' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Issued', 'Revoked', 'Expired'] },
+                     { name: 'verification_url', ar: 'رابط التحقق', en: 'Verification URL' },
+                     { name: 'issued_by', ar: 'صادرة من', en: 'Issued By' },
+                     { name: 'notes', ar: 'ملاحظات', en: 'Notes', type: 'textarea', span: 'full' },
+                   ] },
+
+  'progress':    { key: 'progress', doctype: 'Madaar LMS Progress',
+                   titleAr: 'متابعة التقدم', titleEn: 'Progress',
+                   fields: ['name', 'student', 'course', 'completion_pct', 'last_activity_on', 'status'],
+                   columns: [
+                     { id: 'student', ar: 'الطالب', en: 'Student' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'completion_pct', ar: 'التقدم', en: 'Progress', render: (v) => `${Number(v ?? 0).toFixed(0)}%` },
+                     { id: 'last_activity_on', ar: 'آخر نشاط', en: 'Last Activity' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'student', ar: 'الطالب', en: 'Student', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course', required: true },
+                     { name: 'completion_pct', ar: 'نسبة الإنجاز %', en: 'Completion %', type: 'number' },
+                     { name: 'lessons_completed', ar: 'الدروس المنجزة', en: 'Lessons Completed', type: 'number' },
+                     { name: 'total_lessons', ar: 'إجمالي الدروس', en: 'Total Lessons', type: 'number' },
+                     { name: 'last_activity_on', ar: 'آخر نشاط', en: 'Last Activity', type: 'datetime' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Not Started', 'In Progress', 'Completed', 'Stalled'] },
+                   ] },
+
+  'schedule':    { key: 'schedule', doctype: 'Madaar LMS Schedule',
+                   titleAr: 'الجدول الزمني', titleEn: 'Schedule',
+                   fields: ['name', 'class_date', 'start_time', 'course', 'batch', 'status'],
+                   columns: [
+                     { id: 'class_date', ar: 'التاريخ', en: 'Date' },
+                     { id: 'start_time', ar: 'الوقت', en: 'Time' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'batch', ar: 'الدفعة', en: 'Batch' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'class_date', ar: 'تاريخ الحصة', en: 'Class Date', type: 'date', required: true },
+                     { name: 'start_time', ar: 'وقت البداية', en: 'Start Time', type: 'time' },
+                     { name: 'end_time', ar: 'وقت النهاية', en: 'End Time', type: 'time' },
+                     { name: 'course', ar: 'الدورة', en: 'Course' },
+                     { name: 'batch', ar: 'الدفعة', en: 'Batch' },
+                     { name: 'instructor', ar: 'المدرس', en: 'Instructor' },
+                     { name: 'room', ar: 'القاعة', en: 'Room' },
+                     { name: 'topic', ar: 'الموضوع', en: 'Topic' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Scheduled', 'In Progress', 'Completed', 'Cancelled'] },
+                   ] },
+
+  'attendance':  { key: 'attendance', doctype: 'Madaar LMS Attendance',
+                   titleAr: 'الحضور', titleEn: 'Attendance',
+                   fields: ['name', 'student', 'batch', 'class_date', 'status'],
+                   columns: [
+                     { id: 'student', ar: 'الطالب', en: 'Student' },
+                     { id: 'batch', ar: 'الدفعة', en: 'Batch' },
+                     { id: 'class_date', ar: 'التاريخ', en: 'Date' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'student', ar: 'الطالب', en: 'Student', required: true },
+                     { name: 'class_date', ar: 'تاريخ الحصة', en: 'Class Date', type: 'date', required: true },
+                     { name: 'batch', ar: 'الدفعة', en: 'Batch' },
+                     { name: 'schedule', ar: 'الجلسة', en: 'Schedule' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Present', 'Absent', 'Late', 'Excused'] },
+                     { name: 'notes', ar: 'ملاحظات', en: 'Notes', type: 'textarea', span: 'full' },
+                   ] },
+
+  'payments':    { key: 'payments', doctype: 'Madaar LMS Payment',
+                   titleAr: 'الرسوم والمدفوعات', titleEn: 'Payments',
+                   fields: ['name', 'student', 'course', 'amount', 'payment_date', 'method', 'status'],
+                   columns: [
+                     { id: 'student', ar: 'الطالب', en: 'Student' },
+                     { id: 'course', ar: 'الدورة', en: 'Course' },
+                     { id: 'amount', ar: 'المبلغ', en: 'Amount', render: (v) => Number(v ?? 0).toLocaleString() },
+                     { id: 'payment_date', ar: 'تاريخ الدفع', en: 'Date' },
+                     { id: 'method', ar: 'الوسيلة', en: 'Method' },
+                     { id: 'status', ar: 'الحالة', en: 'Status' },
+                   ],
+                   createForm: 'auto',
+                   formFields: [
+                     { name: 'student', ar: 'الطالب', en: 'Student', required: true },
+                     { name: 'course', ar: 'الدورة', en: 'Course' },
+                     { name: 'enrollment', ar: 'التسجيل', en: 'Enrollment' },
+                     { name: 'amount', ar: 'المبلغ', en: 'Amount', type: 'number', required: true },
+                     { name: 'currency', ar: 'العملة', en: 'Currency' },
+                     { name: 'payment_date', ar: 'تاريخ الدفع', en: 'Payment Date', type: 'date' },
+                     { name: 'method', ar: 'وسيلة الدفع', en: 'Method', type: 'select', options: ['Cash', 'Bank Transfer', 'Card', 'Mobile Wallet', 'Other'] },
+                     { name: 'reference_no', ar: 'رقم المرجع', en: 'Reference No' },
+                     { name: 'status', ar: 'الحالة', en: 'Status', type: 'select', options: ['Paid', 'Pending', 'Refunded', 'Failed'] },
+                     { name: 'notes', ar: 'ملاحظات', en: 'Notes', type: 'textarea', span: 'full' },
+                   ] },
 };
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -364,6 +639,52 @@ export function LMSForm() {
         </div>
       );
     }
+    if (cfg.createForm === 'auto' && cfg.formFields) {
+      // Generic renderer: one FormField per declared field. Used by every section
+      // beyond course/lesson/batch/enrollment so we don't hand-write 12 forms.
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {cfg.formFields.map((f) => {
+            const val = form[f.name];
+            const label = isAr ? f.ar : f.en;
+            const setVal = (v: any) => setForm({ ...form, [f.name]: v });
+            const common = { className: FIELD_INPUT_CLASS };
+            let input: React.ReactNode;
+            if (f.type === 'checkbox') {
+              input = (
+                <label className="inline-flex items-center gap-2 mt-2">
+                  <input type="checkbox" checked={!!val} onChange={(e) => setVal(e.target.checked ? 1 : 0)} />
+                  <span className="text-xs text-slate-600 dark:text-slate-400">{label}</span>
+                </label>
+              );
+            } else if (f.type === 'textarea') {
+              input = <textarea rows={4} value={val ?? ''} onChange={(e) => setVal(e.target.value)} {...common} />;
+            } else if (f.type === 'select') {
+              input = (
+                <select value={val ?? f.options?.[0] ?? ''} onChange={(e) => setVal(e.target.value)} {...common}>
+                  {(f.options ?? []).map((o) => <option key={o} value={o}>{o || '—'}</option>)}
+                </select>
+              );
+            } else if (f.type === 'number') {
+              input = <input type="number" step="any" value={val ?? ''} onChange={(e) => setVal(e.target.value === '' ? null : parseFloat(e.target.value))} required={f.required} {...common} />;
+            } else if (f.type === 'date') {
+              input = <input type="date" value={val ?? ''} onChange={(e) => setVal(e.target.value)} required={f.required} {...common} />;
+            } else if (f.type === 'time') {
+              input = <input type="time" value={val ?? ''} onChange={(e) => setVal(e.target.value)} required={f.required} {...common} />;
+            } else if (f.type === 'datetime') {
+              input = <input type="datetime-local" value={val ?? ''} onChange={(e) => setVal(e.target.value)} required={f.required} {...common} />;
+            } else {
+              input = <input value={val ?? ''} onChange={(e) => setVal(e.target.value)} required={f.required} {...common} />;
+            }
+            return (
+              <FormField key={f.name} label={label} required={f.required} span={f.span}>
+                {input}
+              </FormField>
+            );
+          })}
+        </div>
+      );
+    }
     if (cfg.createForm === 'enrollment') {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -396,7 +717,11 @@ export function LMSForm() {
     return null;
   }
 
-  const color = cfg.createForm === 'course' ? 'brand' : cfg.createForm === 'enrollment' ? 'emerald' : cfg.createForm === 'batch' ? 'violet' : 'amber';
+  const color = cfg.createForm === 'course' ? 'brand'
+              : cfg.createForm === 'enrollment' ? 'emerald'
+              : cfg.createForm === 'batch' ? 'violet'
+              : cfg.createForm === 'auto' ? 'cyan'
+              : 'amber';
 
   return (
     <PageShell
