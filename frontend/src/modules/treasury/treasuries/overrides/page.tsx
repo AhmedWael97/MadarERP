@@ -1,4 +1,9 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
+// Madaar Treasury actual fields (per doctype JSON):
+//   treasury_name (autoname, reqd), company (Link Company, reqd),
+//   branch (Link Branch), account (Link Account, reqd), currency (Link Currency),
+//   is_active (Check). There is NO `balance` field — that was a wrong guess and
+//   it made the API reject the list query as "Field not permitted: balance".
 export default function Page() {
   return (
     <FleetEntityList
@@ -13,8 +18,9 @@ export default function Page() {
           { fieldname: 'name', header: 'الكود' },
           { fieldname: 'treasury_name', header: 'الاسم' },
           { fieldname: 'company', header: 'الشركة' },
+          { fieldname: 'branch', header: 'الفرع' },
+          { fieldname: 'account', header: 'الحساب', mono: true },
           { fieldname: 'currency', header: 'العملة' },
-          { fieldname: 'balance', header: 'الرصيد', numeric: true, ltr: true },
           { fieldname: 'is_active', header: 'الحالة', isBadge: true },
         ],
         badgeMap: {
