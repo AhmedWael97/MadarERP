@@ -43,10 +43,14 @@ def _collect_override_files(root: str) -> list[str]:
     return out
 
 
-def run() -> None:
+def run(modules_dir: str | None = None) -> None:
+    # The backend container can't see the frontend bind-mount by default, so
+    # callers do `docker compose cp frontend/src/modules backend:/tmp/modules`
+    # and then pass `--kwargs '{"modules_dir": "/tmp/modules"}'`.
+    root = modules_dir or MODULES_DIR
     print("Madaar override-fields audit")
-    print(f"Scanning {MODULES_DIR}")
-    files = _collect_override_files(MODULES_DIR)
+    print(f"Scanning {root}")
+    files = _collect_override_files(root)
     print(f"Found {len(files)} override page.tsx files")
 
     ok: list[str] = []
@@ -54,7 +58,7 @@ def run() -> None:
     bad: list[tuple[str, str, str, list[str]]] = []
 
     for p in files:
-        rel = p.replace(MODULES_DIR, "").lstrip(os.sep).replace(os.sep, "/")
+        rel = p.replace(root, "").lstrip(os.sep).replace(os.sep, "/")
         src = open(p, encoding="utf-8").read()
         m_dt = DOCTYPE_RE.search(src)
         if not m_dt:
