@@ -1,18 +1,18 @@
 [
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Assign Coordinator" },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Start Validation"    },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Mark Communicated"   },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Mark Incomplete"     },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Reject"              },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Plan Resources"      },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Clear Finance"       },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Notify Operations"   },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Mark Event Day"      },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Close"               },
+  { "doctype": "Workflow Action Master", "name": "Event Assign Coordinator", "workflow_action_name": "Event Assign Coordinator" },
+  { "doctype": "Workflow Action Master", "name": "Event Start Validation",    "workflow_action_name": "Event Start Validation"    },
+  { "doctype": "Workflow Action Master", "name": "Event Mark Communicated",   "workflow_action_name": "Event Mark Communicated"   },
+  { "doctype": "Workflow Action Master", "name": "Event Mark Incomplete",     "workflow_action_name": "Event Mark Incomplete"     },
+  { "doctype": "Workflow Action Master", "name": "Event Reject",              "workflow_action_name": "Event Reject"              },
+  { "doctype": "Workflow Action Master", "name": "Event Plan Resources",      "workflow_action_name": "Event Plan Resources"      },
+  { "doctype": "Workflow Action Master", "name": "Event Clear Finance",       "workflow_action_name": "Event Clear Finance"       },
+  { "doctype": "Workflow Action Master", "name": "Event Notify Operations",   "workflow_action_name": "Event Notify Operations"   },
+  { "doctype": "Workflow Action Master", "name": "Event Mark Event Day",      "workflow_action_name": "Event Mark Event Day"      },
+  { "doctype": "Workflow Action Master", "name": "Event Close",               "workflow_action_name": "Event Close"               },
 
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Contract Send To HR"     },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Contract Send To Legal" },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Contract Ready To Sign" },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Contract Sign"          },
-  { "doctype": "Workflow Action Master", "workflow_action_name": "Event Contract Cancel"        }
+  { "doctype": "Workflow Action Master", "name": "Event Contract Send To HR",     "workflow_action_name": "Event Contract Send To HR"     },
+  { "doctype": "Workflow Action Master", "name": "Event Contract Send To Legal", "workflow_action_name": "Event Contract Send To Legal" },
+  { "doctype": "Workflow Action Master", "name": "Event Contract Ready To Sign", "workflow_action_name": "Event Contract Ready To Sign" },
+  { "doctype": "Workflow Action Master", "name": "Event Contract Sign",          "workflow_action_name": "Event Contract Sign"          },
+  { "doctype": "Workflow Action Master", "name": "Event Contract Cancel",        "workflow_action_name": "Event Contract Cancel"        }
 ]

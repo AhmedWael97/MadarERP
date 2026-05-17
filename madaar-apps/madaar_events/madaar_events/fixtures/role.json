@@ -1,51 +1,9 @@
 [
-  {
-    "doctype": "Role",
-    "role_name": "Event Coordinator",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event Dept Head",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event Marketing",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event Operations",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event Finance",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event Legal",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  },
-  {
-    "doctype": "Role",
-    "role_name": "Event HR",
-    "desk_access": 1,
-    "disabled": 0,
-    "is_custom": 1
-  }
+  { "doctype": "Role", "name": "Event Coordinator", "role_name": "Event Coordinator", "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event Dept Head",   "role_name": "Event Dept Head",   "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event Marketing",   "role_name": "Event Marketing",   "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event Operations",  "role_name": "Event Operations",  "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event Finance",     "role_name": "Event Finance",     "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event Legal",       "role_name": "Event Legal",       "desk_access": 1, "disabled": 0, "is_custom": 1 },
+  { "doctype": "Role", "name": "Event HR",          "role_name": "Event HR",          "desk_access": 1, "disabled": 0, "is_custom": 1 }
 ]

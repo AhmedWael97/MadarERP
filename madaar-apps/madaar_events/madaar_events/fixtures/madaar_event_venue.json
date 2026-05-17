@@ -1,6 +1,7 @@
 [
   {
     "doctype": "Madaar Event Venue",
+    "name": "Main Hall",
     "venue_name": "Main Hall",
     "venue_type": "Main Hall",
     "capacity": 500,
@@ -10,6 +11,7 @@
   },
   {
     "doctype": "Madaar Event Venue",
+    "name": "Studio A",
     "venue_name": "Studio A",
     "venue_type": "Room",
     "capacity": 80,
@@ -19,6 +21,7 @@
   },
   {
     "doctype": "Madaar Event Venue",
+    "name": "Studio B",
     "venue_name": "Studio B",
     "venue_type": "Room",
     "capacity": 60,
@@ -28,6 +31,7 @@
   },
   {
     "doctype": "Madaar Event Venue",
+    "name": "Outdoor Plaza",
     "venue_name": "Outdoor Plaza",
     "venue_type": "Open Space",
     "capacity": 1000,
@@ -37,6 +41,7 @@
   },
   {
     "doctype": "Madaar Event Venue",
+    "name": "Workshop Hall",
     "venue_name": "Workshop Hall",
     "venue_type": "Workshop Area",
     "capacity": 40,
