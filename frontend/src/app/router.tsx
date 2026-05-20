@@ -319,6 +319,14 @@ export const router = createBrowserRouter([
           return { Component: mod.default };
         },
       },
+      // --- Treasury: Exchange Rate Periods (Madaar Currency Rate Period) ---
+      {
+        path: 'treasury/exchange-rates',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/exchange-rates/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Sales: detail pages for invoice/order/quotation/return ---
       {
         path: 'sales/invoices/:id',
