@@ -1,0 +1,16 @@
+// AUTO-GENERATED.
+import type { ColumnDef } from '@/components/erp/DataTable';
+import type { FieldDef } from '@/components/erp/FormShell';
+
+const meta = {
+  "routePath": "/workshop/reports/job-card-summary",
+  "titleKey": "pages:page.workshop.reports--job-card-summary.title",
+  "doctype": null,
+  "viewType": "report",
+  "module": "workshop",
+  "screenshot": "screenshots\\194_Work-Orders-Summary.png"
+} as const;
+
+export default meta;
+export const columns: ColumnDef[] = [];
+export const fields: FieldDef[] = [];

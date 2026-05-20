@@ -1,0 +1,13 @@
+{
+  "pages:page.fleet.routes.title": "إدارة المسارات",
+  "page..col.0": "#",
+  "page..col.1": "الكود",
+  "page..col.2": "اسم المسار",
+  "page..col.3": "من",
+  "page..col.4": "إلى",
+  "page..col.5": "المسافة (كم)",
+  "page..col.6": "الوقت (ساعة)",
+  "page..col.7": "رحلات",
+  "page..col.8": "الحالة",
+  "page..col.9": "إجراءات"
+}

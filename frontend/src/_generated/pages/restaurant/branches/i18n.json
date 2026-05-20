@@ -1,0 +1,10 @@
+{
+  "pages:page.restaurant.branches.title": "إدارة الفروع",
+  "page.export-data.col.0": "Branch",
+  "page.export-data.col.1": "Type",
+  "page.export-data.col.2": "Halls",
+  "page.export-data.col.3": "Tables",
+  "page.export-data.col.4": "Orders",
+  "page.export-data.col.5": "Status",
+  "page.export-data.col.6": "Actions"
+}

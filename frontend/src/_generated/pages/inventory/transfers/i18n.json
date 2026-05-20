@@ -1,0 +1,10 @@
+{
+  "pages:page.inventory.transfers.title": "تحويلات المخزون",
+  "page..col.0": "رقم التحويل",
+  "page..col.1": "من مخزن",
+  "page..col.2": "إلى مخزن",
+  "page..col.3": "التاريخ",
+  "page..col.4": "الأصناف",
+  "page..col.5": "الحالة",
+  "page..col.6": "إجراءات"
+}

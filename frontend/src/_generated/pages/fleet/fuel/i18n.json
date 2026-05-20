@@ -1,0 +1,14 @@
+{
+  "pages:page.fleet.fuel.title": "سجل الوقود",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "التاريخ",
+  "page..col.3": "المركبة",
+  "page..col.4": "السائق",
+  "page..col.5": "النوع",
+  "page..col.6": "الكمية",
+  "page..col.7": "السعر",
+  "page..col.8": "المبلغ",
+  "page..col.9": "العداد",
+  "page..col.10": "إجراءات"
+}

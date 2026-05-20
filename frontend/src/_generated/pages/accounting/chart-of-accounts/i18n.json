@@ -1,0 +1,11 @@
+{
+  "pages:page.accounting.chart-of-accounts.title": "دليل الحسابات",
+  "page..col.0": "الكود",
+  "page..col.1": "اسم الحساب",
+  "page..col.2": "النوع",
+  "page..col.3": "الطبيعة",
+  "page..col.4": "المستوى",
+  "page..col.5": "الحالة",
+  "page..col.6": "الرصيد",
+  "page..col.7": "إجراءات"
+}

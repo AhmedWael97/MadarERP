@@ -1,0 +1,13 @@
+{
+  "pages:page.fleet.vehicles.title": "إدارة المركبات",
+  "page..col.0": "#",
+  "page..col.1": "الكود",
+  "page..col.2": "اللوحة",
+  "page..col.3": "الاسم",
+  "page..col.4": "النوع",
+  "page..col.5": "الماركة / الموديل",
+  "page..col.6": "السائق",
+  "page..col.7": "العداد",
+  "page..col.8": "الحالة",
+  "page..col.9": "إجراءات"
+}

@@ -1,0 +1,9 @@
+{
+  "pages:page.tax.audit-log.title": "سجل تدقيق الضرائب",
+  "page.tax-audit-log.col.0": "Date",
+  "page.tax-audit-log.col.1": "Operation",
+  "page.tax-audit-log.col.2": "User",
+  "page.tax-audit-log.col.3": "Hash",
+  "page.tax-audit-log.col.4": "IP",
+  "page.tax-audit-log.col.5": "Details"
+}

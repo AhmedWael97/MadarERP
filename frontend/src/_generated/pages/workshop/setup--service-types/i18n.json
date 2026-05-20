@@ -1,0 +1,11 @@
+{
+  "pages:page.workshop.setup--service-types.title": "أنواع الخدمات",
+  "page.service-types.col.0": "Code",
+  "page.service-types.col.1": "Name",
+  "page.service-types.col.2": "English Name",
+  "page.service-types.col.3": "Category",
+  "page.service-types.col.4": "Time",
+  "page.service-types.col.5": "Labor Rate",
+  "page.service-types.col.6": "Status",
+  "page.service-types.col.7": "Actions"
+}

@@ -1,0 +1,14 @@
+{
+  "pages:page.fleet.trips.title": "إدارة الرحلات",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "التاريخ",
+  "page..col.3": "النوع",
+  "page..col.4": "المسار",
+  "page..col.5": "المركبة",
+  "page..col.6": "السائق",
+  "page..col.7": "المسافة",
+  "page..col.8": "الإيراد",
+  "page..col.9": "الحالة",
+  "page..col.10": "إجراءات"
+}

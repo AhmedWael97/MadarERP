@@ -1,0 +1,10 @@
+{
+  "pages:page.core.sales-reps.title": "مندوبي المبيعات",
+  "page.export-data.col.0": "Name",
+  "page.export-data.col.1": "Phone",
+  "page.export-data.col.2": "Commission Type",
+  "page.export-data.col.3": "Rate / Value",
+  "page.export-data.col.4": "Target",
+  "page.export-data.col.5": "Status",
+  "page.export-data.col.6": "Actions"
+}

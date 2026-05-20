@@ -1,0 +1,10 @@
+{
+  "pages:page.logistics.shipments.title": "إدارة الشحنات",
+  "page.export-data.col.0": "Shipment Number",
+  "page.export-data.col.1": "and Transport",
+  "page.export-data.col.2": "Vehicle",
+  "page.export-data.col.3": "Driver",
+  "page.export-data.col.4": "Load",
+  "page.export-data.col.5": "Status",
+  "page.export-data.col.6": "Profit"
+}

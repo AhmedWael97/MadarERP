@@ -1,0 +1,10 @@
+{
+  "pages:page.workshop.job-cards.title": "بطاقات العمل",
+  "page.job-cards.col.0": "رقم أمر الشغل",
+  "page.job-cards.col.1": "Customer",
+  "page.job-cards.col.2": "Vehicle",
+  "page.job-cards.col.3": "Type",
+  "page.job-cards.col.4": "Priority",
+  "page.job-cards.col.5": "Status",
+  "page.job-cards.col.6": "Date"
+}

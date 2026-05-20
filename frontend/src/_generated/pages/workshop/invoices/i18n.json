@@ -1,0 +1,11 @@
+{
+  "pages:page.workshop.invoices.title": "فواتير الورشة",
+  "page.export-data.col.0": "Invoice Number",
+  "page.export-data.col.1": "Customer",
+  "page.export-data.col.2": "Vehicle",
+  "page.export-data.col.3": "Total",
+  "page.export-data.col.4": "Paid Amount",
+  "page.export-data.col.5": "Balance",
+  "page.export-data.col.6": "Status",
+  "page.export-data.col.7": "Date"
+}

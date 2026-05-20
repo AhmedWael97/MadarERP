@@ -1,0 +1,11 @@
+{
+  "pages:page.restaurant.reservations.title": "إدارة الحجوزات",
+  "page.export-data.col.0": "Number",
+  "page.export-data.col.1": "Customer",
+  "page.export-data.col.2": "Date",
+  "page.export-data.col.3": "Time",
+  "page.export-data.col.4": "Guests",
+  "page.export-data.col.5": "Branch",
+  "page.export-data.col.6": "Status",
+  "page.export-data.col.7": "Actions"
+}

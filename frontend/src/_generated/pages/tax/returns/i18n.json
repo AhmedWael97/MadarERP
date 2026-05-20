@@ -1,0 +1,10 @@
+{
+  "pages:page.tax.returns.title": "الإقرارات الضريبية",
+  "page.export-data.col.0": "Return Number",
+  "page.export-data.col.1": "Type",
+  "page.export-data.col.2": "Period",
+  "page.export-data.col.3": "Output Tax",
+  "page.export-data.col.4": "Input Tax",
+  "page.export-data.col.5": "Net Tax",
+  "page.export-data.col.6": "Status"
+}

@@ -1,0 +1,13 @@
+{
+  "pages:page.fleet.billing.title": "المستخلصات التشغيلية",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "العقد",
+  "page..col.3": "العميل",
+  "page..col.4": "الفترة",
+  "page..col.5": "المبلغ",
+  "page..col.6": "الخصومات",
+  "page..col.7": "الصافي",
+  "page..col.8": "الحالة",
+  "page..col.9": "إجراءات"
+}

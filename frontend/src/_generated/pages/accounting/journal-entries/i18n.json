@@ -1,0 +1,11 @@
+{
+  "pages:page.accounting.journal-entries.title": "القيود اليومية",
+  "page..col.0": "رقم القيد",
+  "page..col.1": "التاريخ",
+  "page..col.2": "الوصف",
+  "page..col.3": "المدين",
+  "page..col.4": "الدائن",
+  "page..col.5": "الحالة",
+  "page..col.6": "المصدر",
+  "page..col.7": "إجراءات"
+}

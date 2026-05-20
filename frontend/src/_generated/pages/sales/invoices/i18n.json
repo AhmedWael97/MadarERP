@@ -1,0 +1,13 @@
+{
+  "pages:page.sales.invoices.title": "فواتير المبيعات",
+  "page.sales-invoices.col.0": "#",
+  "page.sales-invoices.col.1": "INVOICE NUMBER",
+  "page.sales-invoices.col.2": "DATE",
+  "page.sales-invoices.col.3": "CUSTOMER",
+  "page.sales-invoices.col.4": "REPRESENTATIVE",
+  "page.sales-invoices.col.5": "TOTAL",
+  "page.sales-invoices.col.6": "PAID",
+  "page.sales-invoices.col.7": "DUE",
+  "page.sales-invoices.col.8": "STATUS",
+  "page.sales-invoices.col.9": "ACTIONS"
+}

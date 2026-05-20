@@ -1,0 +1,57 @@
+// AUTO-GENERATED.
+import type { ColumnDef } from '@/components/erp/DataTable';
+import type { FieldDef } from '@/components/erp/FormShell';
+
+const meta = {
+  "routePath": "/fixed-assets/assets",
+  "titleKey": "pages:page.fixed-assets.assets.title",
+  "doctype": "Asset",
+  "viewType": "list",
+  "module": "fixed-assets",
+  "screenshot": "screenshots\\064_قائمة-الأصول-الثابتة.png"
+} as const;
+
+export default meta;
+export const columns: ColumnDef[] = [
+  {
+    "id": "col_0",
+    "header": "الكود",
+    "headerKey": "page..col.0"
+  },
+  {
+    "id": "col_1",
+    "header": "الأصل",
+    "headerKey": "page..col.1"
+  },
+  {
+    "id": "col_2",
+    "header": "التصنيف",
+    "headerKey": "page..col.2"
+  },
+  {
+    "id": "col_3",
+    "header": "تكلفة الشراء",
+    "headerKey": "page..col.3"
+  },
+  {
+    "id": "col_4",
+    "header": "القيمة الدفترية",
+    "headerKey": "page..col.4"
+  },
+  {
+    "id": "col_5",
+    "header": "الإهلاك %",
+    "headerKey": "page..col.5"
+  },
+  {
+    "id": "col_6",
+    "header": "الحالة",
+    "headerKey": "page..col.6"
+  },
+  {
+    "id": "col_7",
+    "header": "إجراءات",
+    "headerKey": "page..col.7"
+  }
+];
+export const fields: FieldDef[] = [];

@@ -1,0 +1,12 @@
+{
+  "pages:page.fleet.violations.title": "سجل المخالفات",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "التاريخ",
+  "page..col.3": "المركبة",
+  "page..col.4": "السائق",
+  "page..col.5": "النوع",
+  "page..col.6": "المبلغ",
+  "page..col.7": "السداد",
+  "page..col.8": "إجراءات"
+}

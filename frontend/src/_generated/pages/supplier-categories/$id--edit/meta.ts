@@ -1,0 +1,16 @@
+// AUTO-GENERATED.
+import type { ColumnDef } from '@/components/erp/DataTable';
+import type { FieldDef } from '@/components/erp/FormShell';
+
+const meta = {
+  "routePath": "/supplier-categories/:id/edit",
+  "titleKey": "pages:page.supplier-categories.$id--edit.title",
+  "doctype": "Supplier Group",
+  "viewType": "form",
+  "module": "supplier-categories",
+  "screenshot": null
+} as const;
+
+export default meta;
+export const columns: ColumnDef[] = [];
+export const fields: FieldDef[] = [];

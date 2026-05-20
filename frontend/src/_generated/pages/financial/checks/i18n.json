@@ -1,0 +1,11 @@
+{
+  "pages:page.financial.checks.title": "الشيكات",
+  "page..col.0": "رقم الشيك",
+  "page..col.1": "النوع",
+  "page..col.2": "تاريخ الإصدار",
+  "page..col.3": "الاستحقاق",
+  "page..col.4": "البنك",
+  "page..col.5": "المبلغ",
+  "page..col.6": "الحالة",
+  "page..col.7": "الإجراءات"
+}

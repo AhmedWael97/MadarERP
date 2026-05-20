@@ -1,0 +1,11 @@
+{
+  "pages:page.restaurant.shifts.title": "إدارة الشيفتات",
+  "page.shift-log.col.0": "Number",
+  "page.shift-log.col.1": "Branch",
+  "page.shift-log.col.2": "Cashier",
+  "page.shift-log.col.3": "Open",
+  "page.shift-log.col.4": "Close",
+  "page.shift-log.col.5": "Sales",
+  "page.shift-log.col.6": "Difference",
+  "page.shift-log.col.7": "Status"
+}

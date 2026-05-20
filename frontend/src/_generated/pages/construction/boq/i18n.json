@@ -1,0 +1,12 @@
+{
+  "pages:page.construction.boq.title": "جدول الكميات (BOQ)",
+  "page.boq.col.0": "رقم البند",
+  "page.boq.col.1": "الوصف",
+  "page.boq.col.2": "الوحدة",
+  "page.boq.col.3": "الكمية",
+  "page.boq.col.4": "السعر",
+  "page.boq.col.5": "الإجمالي",
+  "page.boq.col.6": "المنفذ",
+  "page.boq.col.7": "نسبة التنفيذ",
+  "page.boq.col.8": "إجراءات"
+}

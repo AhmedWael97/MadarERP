@@ -1,0 +1,11 @@
+{
+  "pages:page.sales.orders.title": "أوامر البيع",
+  "page.sales-orders.col.0": "#",
+  "page.sales-orders.col.1": "NUMBER",
+  "page.sales-orders.col.2": "DATE",
+  "page.sales-orders.col.3": "DELIVERY DATE",
+  "page.sales-orders.col.4": "CUSTOMER",
+  "page.sales-orders.col.5": "TOTAL",
+  "page.sales-orders.col.6": "STATUS",
+  "page.sales-orders.col.7": "ACTIONS"
+}

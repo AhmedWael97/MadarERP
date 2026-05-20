@@ -1,0 +1,11 @@
+{
+  "pages:page.logistics.deliveries.title": "إدارة التوصيل",
+  "page.export-data.col.0": "Number Delivery",
+  "page.export-data.col.1": "Order",
+  "page.export-data.col.2": "Customer",
+  "page.export-data.col.3": "Driver",
+  "page.export-data.col.4": "and",
+  "page.export-data.col.5": "COD",
+  "page.export-data.col.6": "Status",
+  "page.export-data.col.7": "Proof"
+}

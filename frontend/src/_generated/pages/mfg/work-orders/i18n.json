@@ -1,0 +1,10 @@
+{
+  "pages:page.mfg.work-orders.title": "or Production / أوامر الإنتاج",
+  "page.export-data.col.0": "Number",
+  "page.export-data.col.1": "Product",
+  "page.export-data.col.2": "Quantity",
+  "page.export-data.col.3": "Status",
+  "page.export-data.col.4": "Priority",
+  "page.export-data.col.5": "Cost",
+  "page.export-data.col.6": "Actions"
+}

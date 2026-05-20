@@ -1,0 +1,11 @@
+{
+  "pages:page.restaurant.orders.title": "إدارة الطلبات",
+  "page.export-data.col.0": "Order Number",
+  "page.export-data.col.1": "Type",
+  "page.export-data.col.2": "Branch",
+  "page.export-data.col.3": "Status",
+  "page.export-data.col.4": "Total",
+  "page.export-data.col.5": "Payment",
+  "page.export-data.col.6": "Time",
+  "page.export-data.col.7": "Actions"
+}

@@ -1,0 +1,12 @@
+{
+  "pages:page.sales.quotations.title": "عروض الأسعار",
+  "page.quotations.col.0": "#",
+  "page.quotations.col.1": "NUMBER VIEW",
+  "page.quotations.col.2": "DATE",
+  "page.quotations.col.3": "VALID UNTIL",
+  "page.quotations.col.4": "CUSTOMER",
+  "page.quotations.col.5": "REPRESENTATIVE",
+  "page.quotations.col.6": "TOTAL",
+  "page.quotations.col.7": "STATUS",
+  "page.quotations.col.8": "ACTIONS"
+}

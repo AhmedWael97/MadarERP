@@ -1,0 +1,9 @@
+{
+  "pages:page.logistics.cod.title": "تسوية الدفع عند الاستلام",
+  "page.cod-orders.col.0": "Order Number",
+  "page.cod-orders.col.1": "Customer",
+  "page.cod-orders.col.2": "COD Amount",
+  "page.cod-orders.col.3": "Collected",
+  "page.cod-orders.col.4": "Settled",
+  "page.cod-orders.col.5": "Status"
+}

@@ -1,0 +1,11 @@
+{
+  "pages:page.purchases.invoices.title": "فواتير المشتريات",
+  "page.purchase-invoices.col.0": "INVOICE NUMBER",
+  "page.purchase-invoices.col.1": "DATE",
+  "page.purchase-invoices.col.2": "SUPPLIER",
+  "page.purchase-invoices.col.3": "TOTAL",
+  "page.purchase-invoices.col.4": "PAID",
+  "page.purchase-invoices.col.5": "DUE",
+  "page.purchase-invoices.col.6": "STATUS",
+  "page.purchase-invoices.col.7": "ACTIONS"
+}

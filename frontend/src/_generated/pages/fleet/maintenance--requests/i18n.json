@@ -1,0 +1,10 @@
+{
+  "pages:page.fleet.maintenance--requests.title": "طلبات الصيانة",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "التاريخ",
+  "page..col.3": "المركبة",
+  "page..col.4": "المشكلة",
+  "page..col.5": "الأولوية",
+  "page..col.6": "الحالة"
+}

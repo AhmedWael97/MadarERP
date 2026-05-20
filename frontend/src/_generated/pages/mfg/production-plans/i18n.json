@@ -1,0 +1,11 @@
+{
+  "pages:page.mfg.production-plans.title": "الإنتاج / خطط الإنتاج",
+  "page.export-data.col.0": "Number Plan",
+  "page.export-data.col.1": "Name",
+  "page.export-data.col.2": "Product",
+  "page.export-data.col.3": "Quantity Expected",
+  "page.export-data.col.4": "Planned",
+  "page.export-data.col.5": "Product Actual",
+  "page.export-data.col.6": "Status",
+  "page.export-data.col.7": "Actions"
+}

@@ -1,0 +1,8 @@
+{
+  "pages:page.tax.submissions--bulk.title": "إرسال مجمع للفواتير",
+  "page.bulk-invoice-submission.col.0": "Invoice Number",
+  "page.bulk-invoice-submission.col.1": "Customer",
+  "page.bulk-invoice-submission.col.2": "Amount",
+  "page.bulk-invoice-submission.col.3": "Tax",
+  "page.bulk-invoice-submission.col.4": "Date"
+}

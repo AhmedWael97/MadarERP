@@ -1,0 +1,10 @@
+{
+  "pages:page.workshop.setup--technicians.title": "الفنيون",
+  "page.technicians.col.0": "Code",
+  "page.technicians.col.1": "Name",
+  "page.technicians.col.2": "Specialty",
+  "page.technicians.col.3": "Level",
+  "page.technicians.col.4": "Department",
+  "page.technicians.col.5": "Hourly Rate",
+  "page.technicians.col.6": "Status"
+}

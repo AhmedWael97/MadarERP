@@ -1,0 +1,11 @@
+{
+  "pages:page.user-management.users.title": "لوحة التحكم",
+  "page.export-data.col.0": "USER",
+  "page.export-data.col.1": "EMAIL / PHONE",
+  "page.export-data.col.2": "BRANCH",
+  "page.export-data.col.3": "ROLES",
+  "page.export-data.col.4": "TYPE",
+  "page.export-data.col.5": "STATUS",
+  "page.export-data.col.6": "LAST LOGIN",
+  "page.export-data.col.7": "ACTIONS"
+}

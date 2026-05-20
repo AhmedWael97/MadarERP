@@ -4,4 +4,4 @@ dist/
 *.log
 .env
 .env.local
-src/_generated/
+# src/_generated/ — tracked in git so server gets generated pages on pull

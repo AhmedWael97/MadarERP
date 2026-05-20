@@ -1,0 +1,10 @@
+{
+  "pages:page.inventory.movements.title": "حركات المخزون",
+  "page..col.0": "التاريخ",
+  "page..col.1": "المنتج",
+  "page..col.2": "المخزن",
+  "page..col.3": "النوع",
+  "page..col.4": "الكمية",
+  "page..col.5": "التكلفة",
+  "page..col.6": "الرصيد بعد"
+}

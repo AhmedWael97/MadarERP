@@ -1,0 +1,13 @@
+{
+  "pages:page.core.suppliers.title": "الموردون",
+  "page.suppliers.col.0": "CODE",
+  "page.suppliers.col.1": "SUPPLIER",
+  "page.suppliers.col.2": "PHONE",
+  "page.suppliers.col.3": "EMAIL",
+  "page.suppliers.col.4": "TYPE",
+  "page.suppliers.col.5": "CATEGORY",
+  "page.suppliers.col.6": "OPENING BALANCE",
+  "page.suppliers.col.7": "BALANCE",
+  "page.suppliers.col.8": "STATUS",
+  "page.suppliers.col.9": "ACTIONS"
+}

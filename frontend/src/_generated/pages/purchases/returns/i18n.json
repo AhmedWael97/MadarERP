@@ -1,0 +1,10 @@
+{
+  "pages:page.purchases.returns.title": "مرتجعات المشتريات",
+  "page.export-data.col.0": "Number Return",
+  "page.export-data.col.1": "Supplier",
+  "page.export-data.col.2": "Invoice Number",
+  "page.export-data.col.3": "Date",
+  "page.export-data.col.4": "Total",
+  "page.export-data.col.5": "Status",
+  "page.export-data.col.6": "Actions"
+}

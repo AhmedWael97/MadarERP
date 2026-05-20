@@ -1,0 +1,11 @@
+{
+  "pages:page.fixed-assets.assets.title": "قائمة الأصول الثابتة",
+  "page..col.0": "الكود",
+  "page..col.1": "الأصل",
+  "page..col.2": "التصنيف",
+  "page..col.3": "تكلفة الشراء",
+  "page..col.4": "القيمة الدفترية",
+  "page..col.5": "الإهلاك %",
+  "page..col.6": "الحالة",
+  "page..col.7": "إجراءات"
+}

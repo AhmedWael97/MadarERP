@@ -1,0 +1,10 @@
+{
+  "pages:page.financial.payment-vouchers.title": "سندات الصرف",
+  "page..col.0": "رقم السند",
+  "page..col.1": "التاريخ",
+  "page..col.2": "المورد / المصروف إليه",
+  "page..col.3": "المبلغ",
+  "page..col.4": "طريقة الدفع",
+  "page..col.5": "الحالة",
+  "page..col.6": "الإجراءات"
+}

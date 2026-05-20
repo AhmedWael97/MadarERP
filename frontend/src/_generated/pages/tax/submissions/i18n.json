@@ -1,0 +1,9 @@
+{
+  "pages:page.tax.submissions.title": "تتبع الفواتير المُرسلة",
+  "page.export-data.col.0": "Invoice Number",
+  "page.export-data.col.1": "Type",
+  "page.export-data.col.2": "ETA UUID",
+  "page.export-data.col.3": "Status",
+  "page.export-data.col.4": "Submission Date",
+  "page.export-data.col.5": "and"
+}

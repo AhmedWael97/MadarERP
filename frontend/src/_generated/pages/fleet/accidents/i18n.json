@@ -1,0 +1,13 @@
+{
+  "pages:page.fleet.accidents.title": "سجل الحوادث",
+  "page..col.0": "#",
+  "page..col.1": "الرقم",
+  "page..col.2": "التاريخ",
+  "page..col.3": "المركبة",
+  "page..col.4": "السائق",
+  "page..col.5": "النوع",
+  "page..col.6": "الموقع",
+  "page..col.7": "مستوى الضرر",
+  "page..col.8": "التكلفة",
+  "page..col.9": "إجراءات"
+}

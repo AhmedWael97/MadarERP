@@ -1,0 +1,10 @@
+{
+  "pages:page.restaurant.recipes.title": "الوصفات والتكلفة",
+  "page.export-data.col.0": "Item",
+  "page.export-data.col.1": "Ingredients",
+  "page.export-data.col.2": "Cost Materials",
+  "page.export-data.col.3": "Cost Per",
+  "page.export-data.col.4": "Selling Price",
+  "page.export-data.col.5": "Profit Margin",
+  "page.export-data.col.6": "Actions"
+}

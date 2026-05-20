@@ -1,0 +1,9 @@
+{
+  "pages:page.workshop.setup--service-packages.title": "باقات الصيانة",
+  "page.maintenance-packages.col.0": "Name",
+  "page.maintenance-packages.col.1": "Price",
+  "page.maintenance-packages.col.2": "Discount",
+  "page.maintenance-packages.col.3": "Time",
+  "page.maintenance-packages.col.4": "Items Count",
+  "page.maintenance-packages.col.5": "Status"
+}
