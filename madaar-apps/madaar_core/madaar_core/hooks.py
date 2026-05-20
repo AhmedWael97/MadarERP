@@ -64,6 +64,9 @@ fixtures = [
                 "Supplier-madaar_supplier_group",
                 "Item-madaar_product_category",
                 "Item-madaar_product_group",
+                # Payment Entry: free-text payee name for vouchers issued
+                # to someone who isn't a registered Supplier/Customer.
+                "Payment Entry-custom_payee_name",
             ]],
         ],
     },
