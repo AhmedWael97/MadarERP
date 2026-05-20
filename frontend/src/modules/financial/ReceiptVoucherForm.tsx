@@ -11,6 +11,7 @@ import {
   useFrappeGetDoc,
   useFrappeGetDocList,
   useFrappeUpdateDoc,
+  useSWRConfig,
 } from 'frappe-react-sdk';
 import { toast } from 'sonner';
 import { ArrowRight, Home } from 'lucide-react';
@@ -168,7 +169,19 @@ function Body({
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
+  const { mutate: mutateCache } = useSWRConfig();
   const saving = creating || updating || submitting;
+
+  // After save/submit the user navigates back to the list. SWR caches the list
+  // under keys derived from the doctype + args, so invalidating every key that
+  // mentions 'Payment Entry' forces the list page to refetch on mount.
+  function invalidateListCaches() {
+    mutateCache(
+      (key: unknown) => typeof key === 'string' && key.includes('Payment Entry'),
+      undefined,
+      { revalidate: true },
+    );
+  }
 
   function set<K extends keyof PEDoc>(key: K, val: PEDoc[K]) {
     setDoc((prev) => ({ ...prev, [key]: val }));
@@ -258,6 +271,7 @@ function Body({
         }
       }
 
+      invalidateListCaches();
       onDone();
     } catch (e: any) {
       const msg =

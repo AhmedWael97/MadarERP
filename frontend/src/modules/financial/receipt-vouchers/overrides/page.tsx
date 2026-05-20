@@ -1,8 +1,10 @@
-/** Receipt Vouchers (سندات القبض) list — with filters and export buttons */
+/** Receipt Vouchers (سندات القبض) list — filter card + totals + auto-refresh.
+ *  Refetches on mount and on window focus so a voucher just created from any
+ *  form (this app, dashboard, or ERPNext desk) shows up immediately. */
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFrappeGetDocList } from 'frappe-react-sdk';
-import { Plus, Search, Eye, FileDown, FileText } from 'lucide-react';
+import { ArrowDownToLine, Calendar, CreditCard, Eye, FileDown, FileText, Filter, Plus, RefreshCcw, Search, TrendingUp, Users, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -24,7 +26,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 };
 
 function fmtAmt(n?: number) {
-  if (!n) return '—';
+  if (!n) return '0';
   return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n);
 }
 
@@ -33,13 +35,11 @@ function exportCSV(rows: PERow[]) {
   const lines = rows.map((r) =>
     [r.name, r.posting_date ?? '', r.custom_payee_name || r.party || '—', r.paid_amount ?? 0, r.mode_of_payment ?? '', STATUS[String(r.docstatus ?? 0)]?.label ?? ''].join(','),
   );
-  const blob = new Blob(['\uFEFF' + [header, ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob(['﻿' + [header, ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'receipt-vouchers.csv'; a.click();
   URL.revokeObjectURL(url);
 }
-
-function printPDF() { window.print(); }
 
 export default function Page() {
   return (
@@ -48,7 +48,7 @@ export default function Page() {
         title="سندات القبض"
         subtitle="إدارة سندات القبض وتسجيل المدفوعات الواردة"
         actions={
-          <Link to="/financial/receipt-vouchers/create" className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all shadow-sm">
+          <Link to="/financial/receipt-vouchers/create" className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-emerald-500/20">
             <Plus size={16} /> سند قبض جديد
           </Link>
         }
@@ -80,16 +80,21 @@ function Body() {
     return f;
   }, [fromDate, toDate, mop, statusFilter, partyTypeFilter, partyFilter]);
 
-  const { data: rows, isLoading } = useFrappeGetDocList<PERow>('Payment Entry', {
-    fields: ['name', 'posting_date', 'party_type', 'party', 'custom_payee_name', 'paid_amount', 'mode_of_payment', 'docstatus'],
-    filters: filters as any,
-    limit: 200,
-    orderBy: { field: 'posting_date', order: 'desc' },
-  });
+  // revalidateOnMount + revalidateOnFocus = the new row from a sister page or
+  // desk shows up the instant the user returns to this tab.
+  const { data: rows, isLoading, mutate: refresh } = useFrappeGetDocList<PERow>(
+    'Payment Entry',
+    {
+      fields: ['name', 'posting_date', 'party_type', 'party', 'custom_payee_name', 'paid_amount', 'mode_of_payment', 'docstatus'],
+      filters: filters as any,
+      limit: 200,
+      orderBy: { field: 'posting_date', order: 'desc' },
+    },
+    undefined,
+    { revalidateOnMount: true, revalidateOnFocus: true, revalidateIfStale: true } as any,
+  );
 
   const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 50 });
-  // Party dropdowns — only populated for the chosen partyTypeFilter to keep
-  // the list short and the UI dynamic.
   const { data: customers } = useFrappeGetDocList<{ name: string; customer_name?: string }>(
     'Customer',
     { fields: ['name', 'customer_name'], limit: 300 },
@@ -119,60 +124,158 @@ function Body() {
     );
   }, [rows, search]);
 
+  const totals = useMemo(() => {
+    const all = filtered;
+    const total = all.reduce((s, r) => s + Number(r.paid_amount ?? 0), 0);
+    const submitted = all.filter((r) => r.docstatus === 1).reduce((s, r) => s + Number(r.paid_amount ?? 0), 0);
+    const draft = all.filter((r) => r.docstatus === 0).length;
+    return { total, submitted, draft, count: all.length };
+  }, [filtered]);
+
+  const activeFilterCount =
+    (fromDate ? 1 : 0) + (toDate ? 1 : 0) + (mop ? 1 : 0) + (statusFilter ? 1 : 0) + (partyTypeFilter ? 1 : 0) + (partyFilter ? 1 : 0);
+
+  function clearFilters() {
+    setFromDate(''); setToDate(''); setMop(''); setStatusFilter(''); setPartyTypeFilter(''); setPartyFilter('');
+  }
+
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-white/5 p-3 shadow-sm">
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative flex-1 min-w-[180px]">
-            <Search size={15} className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="بحث برقم السند أو الجهة..." className="w-full ps-3 pe-9 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg" />
+    <div className="space-y-5">
+      {/* Stats strip */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Stat icon={<TrendingUp size={18} />} label="إجمالي المحصّل" value={`${fmtAmt(totals.submitted)}`} tone="emerald" />
+        <Stat icon={<ArrowDownToLine size={18} />} label="إجمالي السندات" value={`${fmtAmt(totals.total)}`} tone="blue" />
+        <Stat icon={<CreditCard size={18} />} label="عدد السندات" value={String(totals.count)} tone="violet" />
+        <Stat icon={<Filter size={18} />} label="مسودات" value={String(totals.draft)} tone="amber" />
+      </div>
+
+      {/* Filter card */}
+      <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden">
+        <div className="px-5 py-3 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Filter size={15} className="text-slate-400" />
+            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">الفلاتر</h3>
+            {activeFilterCount > 0 && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                {activeFilterCount} نشط
+              </span>
+            )}
           </div>
-          <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg" title="من تاريخ" />
-          <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg" title="إلى تاريخ" />
-          <select value={mop} onChange={(e) => setMop(e.target.value)} className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg">
-            <option value="">كل طرق الدفع</option>
-            {(mopList ?? []).map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
-          </select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg">
-            <option value="">كل الحالات</option>
-            <option value="0">مسودة</option>
-            <option value="1">مرحّل</option>
-            <option value="2">ملغى</option>
-          </select>
-          <select
-            value={partyTypeFilter}
-            onChange={(e) => { setPartyTypeFilter(e.target.value); setPartyFilter(''); }}
-            className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg"
-            title="نوع الجهة"
-          >
-            <option value="">كل الجهات</option>
-            <option value="Customer">عملاء</option>
-            <option value="Supplier">موردين</option>
-            <option value="Employee">موظفين</option>
-          </select>
-          {partyTypeFilter && (
-            <select
-              value={partyFilter}
-              onChange={(e) => setPartyFilter(e.target.value)}
-              className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg min-w-[180px]"
-              title="الجهة"
-            >
-              <option value="">— الكل —</option>
-              {partyOpts.map((p) => <option key={p.v} value={p.v}>{p.l}</option>)}
-            </select>
-          )}
+          <div className="flex items-center gap-2">
+            {activeFilterCount > 0 && (
+              <button onClick={clearFilters} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-rose-600 transition">
+                <X size={12} /> مسح الفلاتر
+              </button>
+            )}
+            <button onClick={() => refresh()} className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 rounded-lg transition">
+              <RefreshCcw size={12} /> تحديث
+            </button>
+          </div>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {/* Row 1: search (wide) */}
+          <div>
+            <Label icon={<Search size={13} />}>بحث</Label>
+            <div className="relative">
+              <Search size={15} className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="رقم السند، اسم العميل، أو المستلم منه..."
+                className="w-full ps-3 pe-9 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              />
+            </div>
+          </div>
+
+          {/* Row 2: dates + payment method + status */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <Label icon={<Calendar size={13} />}>من تاريخ</Label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              />
+            </div>
+            <div>
+              <Label icon={<Calendar size={13} />}>إلى تاريخ</Label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              />
+            </div>
+            <div>
+              <Label icon={<CreditCard size={13} />}>طريقة الدفع</Label>
+              <select
+                value={mop}
+                onChange={(e) => setMop(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              >
+                <option value="">كل الطرق</option>
+                {(mopList ?? []).map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label>الحالة</Label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              >
+                <option value="">الكل</option>
+                <option value="0">مسودة</option>
+                <option value="1">مرحّل</option>
+                <option value="2">ملغى</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Row 3: party type + party (conditional) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <Label icon={<Users size={13} />}>نوع الجهة</Label>
+              <select
+                value={partyTypeFilter}
+                onChange={(e) => { setPartyTypeFilter(e.target.value); setPartyFilter(''); }}
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+              >
+                <option value="">كل الجهات</option>
+                <option value="Customer">عملاء</option>
+                <option value="Supplier">موردين</option>
+                <option value="Employee">موظفين</option>
+              </select>
+            </div>
+            {partyTypeFilter && (
+              <div className="md:col-span-3">
+                <Label icon={<Users size={13} />}>
+                  {partyTypeFilter === 'Customer' ? 'العميل' : partyTypeFilter === 'Supplier' ? 'المورد' : 'الموظف'}
+                </Label>
+                <select
+                  value={partyFilter}
+                  onChange={(e) => setPartyFilter(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition"
+                >
+                  <option value="">— الكل —</option>
+                  {partyOpts.map((p) => <option key={p.v} value={p.v}>{p.l}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Export bar */}
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-500">{filtered.length} سند</span>
+        <span className="text-sm text-slate-500">{filtered.length} سند معروض</span>
         <div className="flex gap-2">
-          <button onClick={() => exportCSV(filtered)} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all">
+          <button onClick={() => exportCSV(filtered)} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all shadow-sm">
             <FileDown size={15} /> تحميل Excel
           </button>
-          <button onClick={printPDF} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all">
+          <button onClick={() => window.print()} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all shadow-sm">
             <FileText size={15} /> تحميل PDF
           </button>
         </div>
@@ -198,21 +301,28 @@ function Body() {
                 <tr><td colSpan={7} className="px-5 py-12 text-center text-slate-400">جاري التحميل...</td></tr>
               )}
               {!isLoading && filtered.length === 0 && (
-                <tr><td colSpan={7} className="px-5 py-12 text-center text-slate-400">لا توجد سندات</td></tr>
+                <tr>
+                  <td colSpan={7} className="px-5 py-12 text-center">
+                    <p className="text-slate-400 mb-3">لا توجد سندات مطابقة</p>
+                    <button onClick={() => refresh()} className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 hover:text-emerald-700">
+                      <RefreshCcw size={14} /> إعادة المحاولة
+                    </button>
+                  </td>
+                </tr>
               )}
               {filtered.map((r) => {
                 const st = STATUS[String(r.docstatus ?? 0)] ?? STATUS['0'];
                 const party = r.custom_payee_name || r.party || '—';
                 return (
                   <tr key={r.name} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
-                    <td className="px-5 py-3 font-mono text-sm font-semibold text-indigo-600 dark:text-indigo-400">{r.name}</td>
+                    <td className="px-5 py-3 font-mono text-sm font-semibold text-emerald-600 dark:text-emerald-400">{r.name}</td>
                     <td className="px-5 py-3 text-slate-600 dark:text-slate-400">{r.posting_date ?? '—'}</td>
                     <td className="px-5 py-3 text-slate-800 dark:text-white">{party}</td>
                     <td className="px-5 py-3 font-mono font-semibold text-emerald-600">{fmtAmt(r.paid_amount)}</td>
                     <td className="px-5 py-3 text-slate-600 dark:text-slate-400">{r.mode_of_payment ?? '—'}</td>
                     <td className="px-5 py-3"><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${st.cls}`}>{st.label}</span></td>
                     <td className="px-5 py-3">
-                      <button onClick={() => navigate(`/financial/receipt-vouchers/${encodeURIComponent(r.name)}/edit`)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 hover:text-indigo-600 transition-all">
+                      <button onClick={() => navigate(`/financial/receipt-vouchers/${encodeURIComponent(r.name)}/edit`)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 hover:text-emerald-600 transition-all">
                         <Eye size={16} />
                       </button>
                     </td>
@@ -221,6 +331,35 @@ function Body() {
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Label({ icon, children }: { icon?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">
+      {icon}
+      <span>{children}</span>
+    </label>
+  );
+}
+
+function Stat({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: string; tone: 'emerald' | 'blue' | 'violet' | 'amber' }) {
+  const toneCls = {
+    emerald: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+    blue:    'bg-blue-50    text-blue-700    dark:bg-blue-500/10    dark:text-blue-400',
+    violet:  'bg-violet-50  text-violet-700  dark:bg-violet-500/10  dark:text-violet-400',
+    amber:   'bg-amber-50   text-amber-700   dark:bg-amber-500/10   dark:text-amber-400',
+  }[tone];
+  return (
+    <div className="rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-white/5 shadow-sm p-4">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-xl grid place-items-center ${toneCls}`}>{icon}</div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+          <p className="text-lg font-bold text-slate-800 dark:text-white font-mono truncate">{value}</p>
         </div>
       </div>
     </div>
