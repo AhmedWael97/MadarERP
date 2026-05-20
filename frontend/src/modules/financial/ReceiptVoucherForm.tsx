@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   useFrappeCreateDoc,
+  useFrappeGetCall,
   useFrappeGetDoc,
   useFrappeGetDocList,
   useFrappeUpdateDoc,
@@ -107,9 +108,22 @@ function Body({
     posting_date: today,
     payment_type: 'Receive',
     party_type: 'Customer',
-    mode_of_payment: 'نقداً',
+    mode_of_payment: 'Cash',
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // Default company (used to auto-fill the party-side receivable account).
+  const { data: defaults } = useFrappeGetCall<{ message: { default_company?: string } }>(
+    'frappe.client.get_value',
+    { doctype: 'Global Defaults', fieldname: 'default_company' },
+    'gd:default_company',
+  );
+  const defaultCompany = defaults?.message?.default_company;
+  const { data: companyDoc } = useFrappeGetDoc<{
+    name: string;
+    default_receivable_account?: string;
+    default_payable_account?: string;
+  }>('Company', defaultCompany, defaultCompany ? `co:${defaultCompany}` : null);
 
   const { data: existing } = useFrappeGetDoc<PEDoc>(
     'Payment Entry',
@@ -172,6 +186,19 @@ function Body({
   const cashAccounts = (accounts ?? []).filter(
     (a) => a.account_type === 'Cash' || a.account_type === 'Bank',
   );
+
+  // Auto-fill the party-side account (`paid_from` for Receive) from the
+  // company default when the user picks a party type. Doesn't override if the
+  // user has already chosen something. Receive: paid_from = receivable account.
+  useEffect(() => {
+    if (isEdit) return;
+    if (doc.paid_from) return;
+    if (doc.party_type === 'Customer' && companyDoc?.default_receivable_account) {
+      setDoc((d) => ({ ...d, paid_from: companyDoc.default_receivable_account }));
+    } else if (doc.party_type === 'Supplier' && companyDoc?.default_payable_account) {
+      setDoc((d) => ({ ...d, paid_from: companyDoc.default_payable_account }));
+    }
+  }, [doc.party_type, companyDoc, isEdit, doc.paid_from]);
 
   async function save(andSubmit: boolean) {
     const amt = Number(doc.paid_amount ?? 0);
@@ -354,13 +381,14 @@ function Body({
         </div>
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Field label="الخزينة">
+            <Field label="الخزينة / الحساب البنكي (إلى)" required>
               <select
-                value={doc.paid_from ?? ''}
-                onChange={(e) => set('paid_from', e.target.value)}
+                required
+                value={doc.paid_to ?? ''}
+                onChange={(e) => set('paid_to', e.target.value)}
                 className={INPUT}
               >
-                <option value="">— اختر —</option>
+                <option value="">— اختر الخزينة أو الحساب البنكي —</option>
                 {cashAccounts.map((a) => (
                   <option key={a.name} value={a.name}>
                     {a.account_number
@@ -370,24 +398,11 @@ function Body({
                 ))}
               </select>
             </Field>
-            <Field label="الحساب البنكي">
+            <Field label={`حساب ${doc.party_type === 'Supplier' ? 'المورد' : 'العميل'} (من)`} required>
               <select
-                value={doc.bank_account ?? ''}
-                onChange={(e) => set('bank_account', e.target.value)}
-                className={INPUT}
-              >
-                <option value="">— اختر —</option>
-                {(bankAccounts ?? []).map((b) => (
-                  <option key={b.name} value={b.name}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="الحساب (القيد)">
-              <select
-                value={doc.paid_to ?? ''}
-                onChange={(e) => set('paid_to', e.target.value)}
+                required
+                value={doc.paid_from ?? ''}
+                onChange={(e) => set('paid_from', e.target.value)}
                 className={INPUT}
               >
                 <option value="">— اختر الحساب —</option>
@@ -396,6 +411,20 @@ function Body({
                     {a.account_number
                       ? `${a.account_number} - ${a.account_name ?? a.name}`
                       : (a.account_name ?? a.name)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="الحساب البنكي (اختياري)">
+              <select
+                value={doc.bank_account ?? ''}
+                onChange={(e) => set('bank_account', e.target.value)}
+                className={INPUT}
+              >
+                <option value="">— لا يوجد —</option>
+                {(bankAccounts ?? []).map((b) => (
+                  <option key={b.name} value={b.name}>
+                    {b.name}
                   </option>
                 ))}
               </select>

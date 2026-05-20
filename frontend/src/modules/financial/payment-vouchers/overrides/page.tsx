@@ -66,6 +66,8 @@ function Body() {
   const [toDate, setToDate] = useState('');
   const [mop, setMop] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [partyTypeFilter, setPartyTypeFilter] = useState('');
+  const [partyFilter, setPartyFilter] = useState('');
 
   const filters = useMemo(() => {
     const f: Array<[string, string, unknown]> = [['payment_type', '=', 'Pay']];
@@ -73,8 +75,10 @@ function Body() {
     if (toDate) f.push(['posting_date', '<=', toDate]);
     if (mop) f.push(['mode_of_payment', '=', mop]);
     if (statusFilter !== '') f.push(['docstatus', '=', Number(statusFilter)]);
+    if (partyTypeFilter) f.push(['party_type', '=', partyTypeFilter]);
+    if (partyFilter) f.push(['party', '=', partyFilter]);
     return f;
-  }, [fromDate, toDate, mop, statusFilter]);
+  }, [fromDate, toDate, mop, statusFilter, partyTypeFilter, partyFilter]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<PERow>('Payment Entry', {
     fields: ['name', 'posting_date', 'party_type', 'party', 'custom_payee_name', 'paid_amount', 'mode_of_payment', 'docstatus'],
@@ -84,6 +88,26 @@ function Body() {
   });
 
   const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 50 });
+  const { data: suppliers } = useFrappeGetDocList<{ name: string; supplier_name?: string }>(
+    'Supplier',
+    { fields: ['name', 'supplier_name'], limit: 300 },
+    partyTypeFilter === 'Supplier' ? undefined : null,
+  );
+  const { data: customers } = useFrappeGetDocList<{ name: string; customer_name?: string }>(
+    'Customer',
+    { fields: ['name', 'customer_name'], limit: 300 },
+    partyTypeFilter === 'Customer' ? undefined : null,
+  );
+  const { data: employees } = useFrappeGetDocList<{ name: string; employee_name?: string }>(
+    'Employee',
+    { fields: ['name', 'employee_name'], limit: 300 },
+    partyTypeFilter === 'Employee' ? undefined : null,
+  );
+  const partyOpts =
+    partyTypeFilter === 'Supplier' ? (suppliers ?? []).map((s) => ({ v: s.name, l: s.supplier_name ?? s.name }))
+    : partyTypeFilter === 'Customer' ? (customers ?? []).map((c) => ({ v: c.name, l: c.customer_name ?? c.name }))
+    : partyTypeFilter === 'Employee' ? (employees ?? []).map((e) => ({ v: e.name, l: e.employee_name ?? e.name }))
+    : [];
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -114,6 +138,28 @@ function Body() {
             <option value="1">مرحّل</option>
             <option value="2">ملغى</option>
           </select>
+          <select
+            value={partyTypeFilter}
+            onChange={(e) => { setPartyTypeFilter(e.target.value); setPartyFilter(''); }}
+            className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg"
+            title="نوع الجهة"
+          >
+            <option value="">كل الجهات</option>
+            <option value="Supplier">موردين</option>
+            <option value="Customer">عملاء</option>
+            <option value="Employee">موظفين</option>
+          </select>
+          {partyTypeFilter && (
+            <select
+              value={partyFilter}
+              onChange={(e) => setPartyFilter(e.target.value)}
+              className="px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg min-w-[180px]"
+              title="الجهة"
+            >
+              <option value="">— الكل —</option>
+              {partyOpts.map((p) => <option key={p.v} value={p.v}>{p.l}</option>)}
+            </select>
+          )}
         </div>
       </div>
 

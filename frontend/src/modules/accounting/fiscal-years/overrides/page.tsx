@@ -1,5 +1,5 @@
 import FleetEntityList from '@/modules/fleet/FleetEntityList';
-// ERPNext Fiscal Year: year (Data), year_start_date, year_end_date, disabled.
+// ERPNext Fiscal Year: year is also the name, so we drop the duplicate column.
 export default function Page() {
   return (
     <FleetEntityList
@@ -11,10 +11,9 @@ export default function Page() {
         newLabel: 'سنة مالية جديدة',
         searchField: 'year',
         columns: [
-          { fieldname: 'name',            header: 'الكود' },
-          { fieldname: 'year',            header: 'الفترة' },
-          { fieldname: 'year_start_date', header: 'من' },
-          { fieldname: 'year_end_date',   header: 'إلى' },
+          { fieldname: 'year',            header: 'السنة المالية' },
+          { fieldname: 'year_start_date', header: 'تاريخ البداية' },
+          { fieldname: 'year_end_date',   header: 'تاريخ النهاية' },
           { fieldname: 'disabled',        header: 'الحالة', isBadge: true },
         ],
         badgeMap: {

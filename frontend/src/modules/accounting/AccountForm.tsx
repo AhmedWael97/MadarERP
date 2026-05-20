@@ -152,8 +152,15 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
     <form onSubmit={onSubmit}>
       <Card title="بيانات الحساب" subtitle="معلومات الحساب الأساسية">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Field label="كود الحساب" required>
-            <input type="text" required dir="ltr" placeholder="مثال: 1101" value={values.account_number ?? ''} onChange={(e) => set('account_number', e.target.value)} className={INPUT + ' font-mono'} />
+          <Field label="كود الحساب (يُولَّد تلقائياً إذا تُرك فارغاً)">
+            <input
+              type="text"
+              dir="ltr"
+              placeholder="اتركه فارغاً للتوليد التلقائي من كود الأب"
+              value={values.account_number ?? ''}
+              onChange={(e) => set('account_number', e.target.value)}
+              className={INPUT + ' font-mono'}
+            />
           </Field>
           <Field label="الحساب الأب">
             <select value={values.parent_account ?? ''} onChange={(e) => set('parent_account', e.target.value)} className={INPUT}>
