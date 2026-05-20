@@ -1,0 +1,116 @@
+source,target,context
+# Construction Module - Arabic Translations
+# Madaar Construction Project
+"Project Code","كود المشروع",DocType: Madaar Construction Project
+"Project Name (Arabic)","اسم المشروع بالعربي",DocType: Madaar Construction Project
+"Project Name (English)","اسم المشروع بالإنجليزي",DocType: Madaar Construction Project
+"Project Type","نوع المشروع",DocType: Madaar Construction Project
+"Building","مباني",DocType: Madaar Construction Project
+"Roads","طرق",DocType: Madaar Construction Project
+"Infrastructure","بنية تحتية",DocType: Madaar Construction Project
+"Electrical","كهرباء",DocType: Madaar Construction Project
+"Mechanical","ميكانيكا",DocType: Madaar Construction Project
+"Finishing","تشطيبات",DocType: Madaar Construction Project
+"Client / Customer","العميل / المقاول",DocType: Madaar Construction Project
+"Project Manager","مدير المشروع",DocType: Madaar Construction Project
+"Contract Value","قيمة العقد",DocType: Madaar Construction Project
+"Estimated Budget","الميزانية التقديرية",DocType: Madaar Construction Project
+"Retention %","نسبة الاحتجاز %",DocType: Madaar Construction Project
+"Advance Payment","الدفعة المقدمة",DocType: Madaar Construction Project
+"Cost Center","مركز التكلفة",DocType: Madaar Construction Project
+"Planning","تخطيط",DocType: Madaar Construction Project
+"On Hold","متوقف مؤقتاً",DocType: Madaar Construction Project
+"Madaar Construction Project","مشروع إنشاء مدار",
+# Madaar Construction Contract
+"Contract Number","رقم العقد",DocType: Madaar Construction Contract
+"Contract Date","تاريخ العقد",DocType: Madaar Construction Contract
+"Contract Type","نوع العقد",DocType: Madaar Construction Contract
+"Fixed Price","سعر ثابت",DocType: Madaar Construction Contract
+"Unit Rate","سعر الوحدة",DocType: Madaar Construction Contract
+"Cost Plus","التكلفة زائد",DocType: Madaar Construction Contract
+"Design & Build","تصميم وتنفيذ",DocType: Madaar Construction Contract
+"Advance %","نسبة السلفة %",DocType: Madaar Construction Contract
+"Scope of Work","نطاق العمل",DocType: Madaar Construction Contract
+"Terminated","منتهي",DocType: Madaar Construction Contract
+"Madaar Construction Contract","عقد إنشاء مدار",
+# Madaar Construction Equipment
+"Equipment Name (Arabic)","اسم المعدة بالعربي",DocType: Madaar Construction Equipment
+"Equipment Name (English)","اسم المعدة بالإنجليزي",DocType: Madaar Construction Equipment
+"Equipment Code","كود المعدة",DocType: Madaar Construction Equipment
+"Equipment Type","نوع المعدة",DocType: Madaar Construction Equipment
+"Current Project","المشروع الحالي",DocType: Madaar Construction Equipment
+"Operator","المشغّل",DocType: Madaar Construction Equipment
+"Hourly Cost","التكلفة بالساعة",DocType: Madaar Construction Equipment
+"Daily Cost","التكلفة اليومية",DocType: Madaar Construction Equipment
+"Monthly Cost","التكلفة الشهرية",DocType: Madaar Construction Equipment
+"Assigned","مُعيَّن",DocType: Madaar Construction Equipment
+"Retired","مسحوب من الخدمة",DocType: Madaar Construction Equipment
+"Madaar Construction Equipment","معدة إنشاء مدار",
+# Madaar Material Request Construction
+"Request Date","تاريخ الطلب",DocType: Madaar Material Request Construction
+"Required Date","تاريخ الحاجة",DocType: Madaar Material Request Construction
+"Requested By","طلب بواسطة",DocType: Madaar Material Request Construction
+"Approved By","اعتمد بواسطة",DocType: Madaar Material Request Construction
+"Pending Approval","قيد الاعتماد",DocType: Madaar Material Request Construction
+"Partially Received","مستلم جزئياً",DocType: Madaar Material Request Construction
+"Received","مستلم",DocType: Madaar Material Request Construction
+"Madaar Material Request Construction","طلب مواد إنشاء مدار",
+# Madaar Material Request Item
+"Material / Item","المادة / الصنف",DocType: Madaar Material Request Item
+"Estimated Unit Price","سعر الوحدة التقديري",DocType: Madaar Material Request Item
+"Estimated Total","الإجمالي التقديري",DocType: Madaar Material Request Item
+"Madaar Material Request Item","صنف طلب المواد مدار",
+# Madaar Labor Record
+"Worker Name","اسم العامل",DocType: Madaar Labor Record
+"Worker Type","نوع العامل",DocType: Madaar Labor Record
+"Skilled","ماهر",DocType: Madaar Labor Record
+"Unskilled","غير ماهر",DocType: Madaar Labor Record
+"Supervisor","مشرف",DocType: Madaar Labor Record
+"Technician","تقني",DocType: Madaar Labor Record
+"Regular Hours","ساعات عادية",DocType: Madaar Labor Record
+"Hourly Rate","معدل الساعة",DocType: Madaar Labor Record
+"Overtime Hours","ساعات العمل الإضافي",DocType: Madaar Labor Record
+"Overtime Rate","معدل ساعة الإضافي",DocType: Madaar Labor Record
+"Total Cost","إجمالي التكلفة",DocType: Madaar Labor Record
+"Madaar Labor Record","سجل عمالة مدار",
+# Madaar Change Order (Variation)
+"Variation No.","رقم التعديل",DocType: Madaar Change Order
+"Client Approved","موافق من العميل",DocType: Madaar Change Order
+"Revised Completion Date","تاريخ الإنجاز المعدّل",DocType: Madaar Change Order
+"Amount Change","قيمة التعديل",DocType: Madaar Change Order
+"Approved","معتمد",DocType: Madaar Change Order
+"Rejected","مرفوض",DocType: Madaar Change Order
+"Madaar Change Order","أمر تغيير مدار",
+# Madaar Progress Bill
+"Billing No.","رقم فاتورة الدفعة",DocType: Madaar Progress Bill
+"Period Start","بداية الفترة",DocType: Madaar Progress Bill
+"Period End","نهاية الفترة",DocType: Madaar Progress Bill
+"Completion %","نسبة الإنجاز %",DocType: Madaar Progress Bill
+"Gross Amount","المبلغ الإجمالي",DocType: Madaar Progress Bill
+"Retention Amount","مبلغ الاحتجاز",DocType: Madaar Progress Bill
+"Net Amount","صافي المبلغ",DocType: Madaar Progress Bill
+"Sales Invoice","فاتورة المبيعات",DocType: Madaar Progress Bill
+"Madaar Progress Bill","فاتورة دفعة مدار",
+# Madaar BOQ
+"Bill of Quantities","جدول الكميات",
+"Madaar BOQ","جدول كميات مدار",
+"Madaar BOQ Item","بند جدول كميات مدار",
+# Common
+"Project","المشروع",
+"Status","الحالة",
+"Date","التاريخ",
+"Notes","ملاحظات",
+"Description","الوصف",
+"Items","البنود",
+"Unit","الوحدة",
+"Quantity","الكمية",
+"In Progress","جاري التنفيذ",
+"Completed","مكتمل",
+"Cancelled","ملغي",
+"Draft","مسودة",
+"Active","نشط",
+"Available","متاح",
+"Maintenance","صيانة",
+"Project Details","تفاصيل المشروع",
+"Financial","المالية",
+"Madaar Construction","إنشاءات مدار",

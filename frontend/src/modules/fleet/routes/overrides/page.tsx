@@ -10,13 +10,18 @@ export default function Page() {
         newLabel: 'مسار جديد',
         searchField: 'route_name',
         columns: [
-          { fieldname: 'name', header: 'الكود' },
+          { fieldname: 'route_code', header: 'الكود', mono: true },
           { fieldname: 'route_name', header: 'اسم المسار' },
-          { fieldname: 'origin', header: 'البداية' },
-          { fieldname: 'destination', header: 'النهاية' },
+          { fieldname: 'origin', header: 'من' },
+          { fieldname: 'destination', header: 'إلى' },
           { fieldname: 'distance_km', header: 'المسافة (كم)', numeric: true, ltr: true },
-          { fieldname: 'estimated_duration', header: 'المدة المقدرة', ltr: true },
+          { fieldname: 'standard_hours', header: 'الوقت (ساعة)', numeric: true, ltr: true },
+          { fieldname: 'is_active', header: 'الحالة', isBadge: true },
         ],
+        badgeMap: {
+          '1': { label: 'نشط', cls: 'bg-emerald-100 text-emerald-700' },
+          '0': { label: 'متوقف', cls: 'bg-slate-100 text-slate-700' },
+        },
       }}
     />
   );

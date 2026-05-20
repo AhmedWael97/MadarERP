@@ -11,10 +11,17 @@
     "maintenance_type",
     "priority",
     "column_break_1",
+    "reported_by",
     "assigned_technician",
     "status",
     "estimated_cost",
     "actual_cost",
+    "parts_cost",
+    "labor_cost",
+    "odometer_on_maintenance",
+    "vendor",
+    "section_description",
+    "issue",
     "description"
   ],
   "fields": [
@@ -23,7 +30,8 @@
       "fieldtype": "Link",
       "label": "Vehicle",
       "reqd": 1,
-      "options": "Madaar Vehicle"
+      "options": "Madaar Vehicle",
+      "in_list_view": 1
     },
     {
       "fieldname": "request_date",
@@ -35,7 +43,7 @@
       "fieldname": "maintenance_type",
       "fieldtype": "Select",
       "label": "Type",
-      "options": "Routine\nRepair\nInspection\nEmergency",
+      "options": "Routine\nRepair\nInspection\nEmergency\nPM",
       "default": "Routine"
     },
     {
@@ -43,11 +51,17 @@
       "fieldtype": "Select",
       "label": "Priority",
       "options": "Low\nMedium\nHigh\nCritical",
-      "default": "Medium"
+      "default": "Medium",
+      "in_list_view": 1
     },
     {
       "fieldname": "column_break_1",
       "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "reported_by",
+      "fieldtype": "Data",
+      "label": "Reported By"
     },
     {
       "fieldname": "assigned_technician",
@@ -60,7 +74,8 @@
       "fieldtype": "Select",
       "label": "Status",
       "options": "Open\nIn Progress\nCompleted\nCancelled",
-      "default": "Open"
+      "default": "Open",
+      "in_list_view": 1
     },
     {
       "fieldname": "estimated_cost",
@@ -73,15 +88,45 @@
       "label": "Actual Cost"
     },
     {
+      "fieldname": "parts_cost",
+      "fieldtype": "Currency",
+      "label": "Parts Cost"
+    },
+    {
+      "fieldname": "labor_cost",
+      "fieldtype": "Currency",
+      "label": "Labor Cost"
+    },
+    {
+      "fieldname": "odometer_on_maintenance",
+      "fieldtype": "Int",
+      "label": "Odometer at Service (km)"
+    },
+    {
+      "fieldname": "vendor",
+      "fieldtype": "Data",
+      "label": "Workshop / Vendor"
+    },
+    {
+      "fieldname": "section_description",
+      "fieldtype": "Section Break",
+      "label": "Description"
+    },
+    {
+      "fieldname": "issue",
+      "fieldtype": "Text",
+      "label": "Reported Issue"
+    },
+    {
       "fieldname": "description",
       "fieldtype": "Text",
-      "label": "Description"
+      "label": "Work Description"
     }
   ],
   "istable": 0,
   "issingle": 0,
   "links": [],
-  "modified": "2026-05-15 00:00:00",
+  "modified": "2026-05-20 00:00:00",
   "modified_by": "Administrator",
   "module": "Madaar Fleet",
   "name": "Madaar Vehicle Maintenance Request",

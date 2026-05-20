@@ -7,11 +7,15 @@
   "engine": "InnoDB",
   "field_order": [
     "project",
+    "contract",
     "boq",
+    "variation_number",
     "date",
     "column_break_1",
     "amount_change",
     "status",
+    "client_approved",
+    "revised_completion_date",
     "description"
   ],
   "fields": [
@@ -20,13 +24,24 @@
       "fieldtype": "Link",
       "label": "Project",
       "reqd": 1,
-      "options": "Project"
+      "options": "Project",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "contract",
+      "fieldtype": "Data",
+      "label": "Contract Reference"
     },
     {
       "fieldname": "boq",
       "fieldtype": "Link",
       "label": "BOQ",
       "options": "Madaar BOQ"
+    },
+    {
+      "fieldname": "variation_number",
+      "fieldtype": "Data",
+      "label": "Variation No."
     },
     {
       "fieldname": "date",
@@ -41,14 +56,26 @@
     {
       "fieldname": "amount_change",
       "fieldtype": "Currency",
-      "label": "Amount Change"
+      "label": "Amount Change",
+      "in_list_view": 1
     },
     {
       "fieldname": "status",
       "fieldtype": "Select",
       "label": "Status",
       "options": "Pending\nApproved\nRejected",
-      "default": "Pending"
+      "default": "Pending",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "client_approved",
+      "fieldtype": "Check",
+      "label": "Client Approved"
+    },
+    {
+      "fieldname": "revised_completion_date",
+      "fieldtype": "Date",
+      "label": "Revised Completion Date"
     },
     {
       "fieldname": "description",

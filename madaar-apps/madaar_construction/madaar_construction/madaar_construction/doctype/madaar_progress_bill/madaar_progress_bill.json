@@ -7,7 +7,9 @@
   "engine": "InnoDB",
   "field_order": [
     "project",
+    "contract",
     "boq",
+    "billing_number",
     "period_start",
     "period_end",
     "column_break_1",
@@ -25,7 +27,18 @@
       "fieldtype": "Link",
       "label": "Project",
       "reqd": 1,
-      "options": "Project"
+      "options": "Project",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "contract",
+      "fieldtype": "Data",
+      "label": "Contract Reference"
+    },
+    {
+      "fieldname": "billing_number",
+      "fieldtype": "Data",
+      "label": "Billing No."
     },
     {
       "fieldname": "boq",

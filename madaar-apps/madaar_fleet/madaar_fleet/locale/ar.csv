@@ -1,0 +1,149 @@
+source,target,context
+# Fleet Module - Arabic Translations
+# Madaar Vehicle
+"Vehicle Number","رقم المركبة",DocType: Madaar Vehicle
+"Vehicle Code","كود المركبة",DocType: Madaar Vehicle
+"Name (Arabic)","الاسم بالعربي",DocType: Madaar Vehicle
+"Name (English)","الاسم بالإنجليزي",DocType: Madaar Vehicle
+"Plate Number","رقم اللوحة",DocType: Madaar Vehicle
+"Internal Number","الرقم الداخلي",DocType: Madaar Vehicle
+"Ownership Type","نوع الملكية",DocType: Madaar Vehicle
+"Owned","مملوك",DocType: Madaar Vehicle
+"Finance Lease","تأجير تمويلي",DocType: Madaar Vehicle
+"Rented","مؤجر",DocType: Madaar Vehicle
+"Contractor","مقاول",DocType: Madaar Vehicle
+"Brand / Make","الماركة / الصانع",DocType: Madaar Vehicle
+"Chassis Number","رقم الشاسيه",DocType: Madaar Vehicle
+"Engine Number","رقم المحرك",DocType: Madaar Vehicle
+"Seating Capacity","سعة المقاعد",DocType: Madaar Vehicle
+"Load Capacity (ton)","طاقة الحمولة (طن)",DocType: Madaar Vehicle
+"Assigned Driver","السائق المخصص",DocType: Madaar Vehicle
+"Depot / Garage","الموقف / الكراج",DocType: Madaar Vehicle
+"Default Route","المسار الافتراضي",DocType: Madaar Vehicle
+"GPS Number","رقم GPS",DocType: Madaar Vehicle
+"SIM Number","رقم SIM",DocType: Madaar Vehicle
+"Purchase Date","تاريخ الشراء",DocType: Madaar Vehicle
+"Purchase Value","قيمة الشراء",DocType: Madaar Vehicle
+"Insurance Value","قيمة التأمين",DocType: Madaar Vehicle
+"Residual Value","القيمة المتبقية",DocType: Madaar Vehicle
+"In Maintenance","في الصيانة",DocType: Madaar Vehicle
+"Out of Service","خارج الخدمة",DocType: Madaar Vehicle
+"Reserved","محجوز",DocType: Madaar Vehicle
+"Suspended","موقوف",DocType: Madaar Vehicle
+"Madaar Vehicle","مركبة مدار",
+# Madaar Driver Profile
+"Driver Code","كود السائق",DocType: Madaar Driver Profile
+"Driver Name","اسم السائق",DocType: Madaar Driver Profile
+"National ID","رقم الهوية الوطنية",DocType: Madaar Driver Profile
+"Blood Type","فصيلة الدم",DocType: Madaar Driver Profile
+"Mobile","الجوال",DocType: Madaar Driver Profile
+"Emergency Contact Name","اسم جهة اتصال الطوارئ",DocType: Madaar Driver Profile
+"Emergency Contact Phone","هاتف جهة اتصال الطوارئ",DocType: Madaar Driver Profile
+"License Type","نوع الرخصة",DocType: Madaar Driver Profile
+"Hire Date","تاريخ التعيين",DocType: Madaar Driver Profile
+"Employment Type","نوع العقد",DocType: Madaar Driver Profile
+"Full Time","دوام كامل",DocType: Madaar Driver Profile
+"Part Time","دوام جزئي",DocType: Madaar Driver Profile
+"External","خارجي",DocType: Madaar Driver Profile
+"Assigned Vehicle","المركبة المخصصة",DocType: Madaar Driver Profile
+"On Leave","في إجازة",DocType: Madaar Driver Profile
+"Madaar Driver Profile","ملف سائق مدار",
+# Madaar Trip
+"Trip Date","تاريخ الرحلة",DocType: Madaar Trip
+"Trip Type","نوع الرحلة",DocType: Madaar Trip
+"Contract Reference","مرجع العقد",DocType: Madaar Trip
+"Departure Time","وقت المغادرة",DocType: Madaar Trip
+"Arrival Time","وقت الوصول",DocType: Madaar Trip
+"Fuel Issued (L)","الوقود الصادر (لتر)",DocType: Madaar Trip
+"Passengers Count","عدد الركاب",DocType: Madaar Trip
+"Load / Cargo Details","تفاصيل الشحن",DocType: Madaar Trip
+"Estimated Cost","التكلفة التقديرية",DocType: Madaar Trip
+"Revenue Value","قيمة الإيراد",DocType: Madaar Trip
+"Toll Cost","تكلفة العبور",DocType: Madaar Trip
+"Remarks","ملاحظات",DocType: Madaar Trip
+"Planned","مخطط",DocType: Madaar Trip
+"In Progress","جاري التنفيذ",DocType: Madaar Trip
+"Completed","مكتمل",DocType: Madaar Trip
+"Cancelled","ملغي",DocType: Madaar Trip
+"Madaar Trip","رحلة مدار",
+# Madaar Fuel Log
+"Station / Vendor","المحطة / المورد",DocType: Madaar Fuel Log
+"Payment Method","طريقة الدفع",DocType: Madaar Fuel Log
+"Transaction No.","رقم العملية",DocType: Madaar Fuel Log
+"Unit Price / Rate","سعر الوحدة / المعدل",DocType: Madaar Fuel Log
+"Quantity (L / kWh)","الكمية (لتر / كيلوواط)",DocType: Madaar Fuel Log
+"Voucher","قسيمة",DocType: Madaar Fuel Log
+"Account","حساب",DocType: Madaar Fuel Log
+"Madaar Fuel Log","سجل وقود مدار",
+# Madaar Route
+"Route Code","كود المسار",DocType: Madaar Route
+"Is Active","فعّال",DocType: Madaar Route
+"Night Route","مسار ليلي",DocType: Madaar Route
+"Standard Hours","الساعات المعيارية",DocType: Madaar Route
+"Toll Fees","رسوم العبور",DocType: Madaar Route
+"Contracted Price","السعر المتعاقد",DocType: Madaar Route
+"Fuel Standard (L/100km)","معيار الوقود (لتر/100كم)",DocType: Madaar Route
+"Stops / Waypoints","المحطات / نقاط المرور",DocType: Madaar Route
+"Stops","المحطات",DocType: Madaar Route
+"Origin","نقطة الانطلاق",DocType: Madaar Route
+"Destination","الوجهة",DocType: Madaar Route
+"Distance (km)","المسافة (كم)",DocType: Madaar Route
+"Estimated Duration","المدة المتوقعة",DocType: Madaar Route
+"Madaar Route","مسار مدار",
+# Madaar Vehicle Maintenance Request
+"Reported By","أبلغ عنه",DocType: Madaar Vehicle Maintenance Request
+"Workshop / Vendor","الورشة / المورد",DocType: Madaar Vehicle Maintenance Request
+"Parts Cost","تكلفة القطع",DocType: Madaar Vehicle Maintenance Request
+"Labor Cost","تكلفة العمالة",DocType: Madaar Vehicle Maintenance Request
+"Odometer at Service (km)","عداد المسافة عند الصيانة (كم)",DocType: Madaar Vehicle Maintenance Request
+"Reported Issue","المشكلة المبلغ عنها",DocType: Madaar Vehicle Maintenance Request
+"Work Description","وصف العمل",DocType: Madaar Vehicle Maintenance Request
+"Routine","دورية",DocType: Madaar Vehicle Maintenance Request
+"Repair","إصلاح",DocType: Madaar Vehicle Maintenance Request
+"Inspection","فحص",DocType: Madaar Vehicle Maintenance Request
+"Emergency","طارئ",DocType: Madaar Vehicle Maintenance Request
+"Critical","حرج",DocType: Madaar Vehicle Maintenance Request
+"Madaar Vehicle Maintenance Request","طلب صيانة مركبة مدار",
+# Madaar Vehicle Accident
+"Accident Type","نوع الحادثة",DocType: Madaar Vehicle Accident
+"Damage Level","مستوى الضرر",DocType: Madaar Vehicle Accident
+"Actual Cost","التكلفة الفعلية",DocType: Madaar Vehicle Accident
+"Insurance Claimed","تم تقديم مطالبة تأمينية",DocType: Madaar Vehicle Accident
+"Under Review","قيد المراجعة",DocType: Madaar Vehicle Accident
+"Repaired","تم الإصلاح",DocType: Madaar Vehicle Accident
+"Total Loss","خسارة كلية",DocType: Madaar Vehicle Accident
+"Madaar Vehicle Accident","حادثة مركبة مدار",
+# Madaar Vehicle Violation
+"Violation Type","نوع المخالفة",DocType: Madaar Vehicle Violation
+"Authority / Source","الجهة / المصدر",DocType: Madaar Vehicle Violation
+"Fine Amount","مبلغ الغرامة",DocType: Madaar Vehicle Violation
+"Charged To","على حساب",DocType: Madaar Vehicle Violation
+"Is Paid","مسدد",DocType: Madaar Vehicle Violation
+"Unpaid","غير مسدد",DocType: Madaar Vehicle Violation
+"Paid","مسدد",DocType: Madaar Vehicle Violation
+"Contested","مطعون فيه",DocType: Madaar Vehicle Violation
+"Dismissed","ملغي",DocType: Madaar Vehicle Violation
+"Madaar Vehicle Violation","مخالفة مركبة مدار",
+# Common
+"Vehicle","المركبة",
+"Driver","السائق",
+"Route","المسار",
+"Status","الحالة",
+"Date","التاريخ",
+"Notes","ملاحظات",
+"Description","الوصف",
+"Branch","الفرع",
+"Color","اللون",
+"Active","نشط",
+"Inactive","غير نشط",
+"Address","العنوان",
+"Basic Information","المعلومات الأساسية",
+"Contact Information","معلومات التواصل",
+"License Details","تفاصيل الرخصة",
+"Vehicle Assignment","تعيين المركبة",
+"Assignment","التعيين",
+"Financial Details","التفاصيل المالية",
+"Odometer & Distance","العداد والمسافة",
+"Transaction Details","تفاصيل المعاملة",
+"Financial Standards","المعايير المالية",
+"Madaar Fleet","أسطول مدار",

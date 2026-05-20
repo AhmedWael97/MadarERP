@@ -31,6 +31,21 @@ const LMS = lazy(() => import('../pages/LMS'));
 const LMSList = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSList })));
 const LMSForm = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSForm })));
 
+// --- Fleet forms ---
+const VehicleForm = lazy(() => import('../modules/fleet/vehicles/VehicleForm'));
+const DriverForm = lazy(() => import('../modules/fleet/drivers/DriverForm'));
+const RouteForm = lazy(() => import('../modules/fleet/routes/RouteForm'));
+const TripForm = lazy(() => import('../modules/fleet/trips/TripForm'));
+const FuelLogForm = lazy(() => import('../modules/fleet/fuel/FuelLogForm'));
+const MaintenanceForm = lazy(() => import('../modules/fleet/maintenance--requests/MaintenanceForm'));
+const AccidentForm = lazy(() => import('../modules/fleet/accidents/AccidentForm'));
+const ViolationForm = lazy(() => import('../modules/fleet/violations/ViolationForm'));
+
+// --- Construction forms ---
+const ConstructionProjectForm = lazy(() => import('../modules/construction/projects/ConstructionProjectForm'));
+const ConstructionEquipmentForm = lazy(() => import('../modules/construction/equipment/ConstructionEquipmentForm'));
+const ConstructionContractForm = lazy(() => import('../modules/construction/contracts/ConstructionContractForm'));
+
 const Loading = (
   <div className="grid min-h-[40vh] place-items-center text-(--color-muted)">…</div>
 );
@@ -342,6 +357,105 @@ export const router = createBrowserRouter([
             <EmployeeCustody />
           </Suspense>
         ),
+      },
+      // --- Fleet: Vehicles CRUD ---
+      {
+        path: 'fleet/vehicles/create',
+        element: (<Suspense fallback={Loading}><VehicleForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/vehicles/:id/edit',
+        element: (<Suspense fallback={Loading}><VehicleForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Drivers CRUD ---
+      {
+        path: 'fleet/drivers/create',
+        element: (<Suspense fallback={Loading}><DriverForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/drivers/:id/edit',
+        element: (<Suspense fallback={Loading}><DriverForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Routes CRUD ---
+      {
+        path: 'fleet/routes/create',
+        element: (<Suspense fallback={Loading}><RouteForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/routes/:id/edit',
+        element: (<Suspense fallback={Loading}><RouteForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Trips CRUD ---
+      {
+        path: 'fleet/trips/create',
+        element: (<Suspense fallback={Loading}><TripForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/trips/:id/edit',
+        element: (<Suspense fallback={Loading}><TripForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Fuel Logs CRUD ---
+      {
+        path: 'fleet/fuel/create',
+        element: (<Suspense fallback={Loading}><FuelLogForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/fuel/:id/edit',
+        element: (<Suspense fallback={Loading}><FuelLogForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Maintenance Requests CRUD ---
+      {
+        path: 'fleet/maintenance/requests/create',
+        element: (<Suspense fallback={Loading}><MaintenanceForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/maintenance/requests/:id/edit',
+        element: (<Suspense fallback={Loading}><MaintenanceForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Accidents CRUD ---
+      {
+        path: 'fleet/accidents/create',
+        element: (<Suspense fallback={Loading}><AccidentForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/accidents/:id/edit',
+        element: (<Suspense fallback={Loading}><AccidentForm mode="edit" /></Suspense>),
+      },
+      // --- Fleet: Violations CRUD ---
+      {
+        path: 'fleet/violations/create',
+        element: (<Suspense fallback={Loading}><ViolationForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'fleet/violations/:id/edit',
+        element: (<Suspense fallback={Loading}><ViolationForm mode="edit" /></Suspense>),
+      },
+      // --- Construction: Projects CRUD ---
+      {
+        path: 'construction/projects/create',
+        element: (<Suspense fallback={Loading}><ConstructionProjectForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'construction/projects/:id/edit',
+        element: (<Suspense fallback={Loading}><ConstructionProjectForm mode="edit" /></Suspense>),
+      },
+      // --- Construction: Equipment CRUD ---
+      {
+        path: 'construction/equipment/create',
+        element: (<Suspense fallback={Loading}><ConstructionEquipmentForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'construction/equipment/:id/edit',
+        element: (<Suspense fallback={Loading}><ConstructionEquipmentForm mode="edit" /></Suspense>),
+      },
+      // --- Construction: Contracts CRUD ---
+      {
+        path: 'construction/contracts/create',
+        element: (<Suspense fallback={Loading}><ConstructionContractForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'construction/contracts/:id/edit',
+        element: (<Suspense fallback={Loading}><ConstructionContractForm mode="edit" /></Suspense>),
       },
       // --- Events (Culture Wheel) — hand-written, not auto-generated from a scan ---
       {

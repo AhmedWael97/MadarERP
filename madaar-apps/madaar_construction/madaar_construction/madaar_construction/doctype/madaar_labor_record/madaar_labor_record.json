@@ -9,9 +9,13 @@
     "project",
     "date",
     "employee",
+    "worker_name",
+    "worker_type",
     "column_break_1",
     "hours_worked",
     "hourly_rate",
+    "overtime_hours",
+    "overtime_rate",
     "total_cost",
     "task_description"
   ],
@@ -21,13 +25,15 @@
       "fieldtype": "Link",
       "label": "Project",
       "reqd": 1,
-      "options": "Project"
+      "options": "Project",
+      "in_list_view": 1
     },
     {
       "fieldname": "date",
       "fieldtype": "Date",
       "label": "Date",
-      "reqd": 1
+      "reqd": 1,
+      "in_list_view": 1
     },
     {
       "fieldname": "employee",
@@ -36,13 +42,24 @@
       "options": "Employee"
     },
     {
+      "fieldname": "worker_name",
+      "fieldtype": "Data",
+      "label": "Worker Name"
+    },
+    {
+      "fieldname": "worker_type",
+      "fieldtype": "Select",
+      "label": "Worker Type",
+      "options": "\nSkilled\nUnskilled\nSupervisor\nTechnician"
+    },
+    {
       "fieldname": "column_break_1",
       "fieldtype": "Column Break"
     },
     {
       "fieldname": "hours_worked",
       "fieldtype": "Float",
-      "label": "Hours"
+      "label": "Regular Hours"
     },
     {
       "fieldname": "hourly_rate",
@@ -50,10 +67,23 @@
       "label": "Hourly Rate"
     },
     {
+      "fieldname": "overtime_hours",
+      "fieldtype": "Float",
+      "label": "Overtime Hours",
+      "default": "0"
+    },
+    {
+      "fieldname": "overtime_rate",
+      "fieldtype": "Currency",
+      "label": "Overtime Rate",
+      "default": "0"
+    },
+    {
       "fieldname": "total_cost",
       "fieldtype": "Currency",
       "label": "Total Cost",
-      "read_only": 1
+      "read_only": 1,
+      "in_list_view": 1
     },
     {
       "fieldname": "task_description",

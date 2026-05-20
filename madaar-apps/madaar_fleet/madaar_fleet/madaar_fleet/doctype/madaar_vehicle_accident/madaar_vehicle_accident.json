@@ -9,12 +9,16 @@
     "vehicle",
     "driver",
     "accident_datetime",
+    "accident_type",
     "location",
     "column_break_1",
     "severity",
     "estimated_repair_cost",
+    "actual_cost",
     "insurance_claim_number",
+    "insurance_claim",
     "status",
+    "section_description",
     "description"
   ],
   "fields": [
@@ -23,7 +27,8 @@
       "fieldtype": "Link",
       "label": "Vehicle",
       "reqd": 1,
-      "options": "Madaar Vehicle"
+      "options": "Madaar Vehicle",
+      "in_list_view": 1
     },
     {
       "fieldname": "driver",
@@ -34,8 +39,13 @@
     {
       "fieldname": "accident_datetime",
       "fieldtype": "Datetime",
-      "label": "Date / Time",
+      "label": "Accident Date/Time",
       "reqd": 1
+    },
+    {
+      "fieldname": "accident_type",
+      "fieldtype": "Data",
+      "label": "Accident Type"
     },
     {
       "fieldname": "location",
@@ -49,26 +59,43 @@
     {
       "fieldname": "severity",
       "fieldtype": "Select",
-      "label": "Severity",
-      "options": "Minor\nModerate\nMajor\nTotal Loss",
-      "default": "Minor"
+      "label": "Damage Level",
+      "options": "Minor\nModerate\nSevere\nTotal Loss",
+      "default": "Minor",
+      "in_list_view": 1
     },
     {
       "fieldname": "estimated_repair_cost",
       "fieldtype": "Currency",
-      "label": "Est. Repair Cost"
+      "label": "Estimated Cost"
+    },
+    {
+      "fieldname": "actual_cost",
+      "fieldtype": "Currency",
+      "label": "Actual Cost"
     },
     {
       "fieldname": "insurance_claim_number",
       "fieldtype": "Data",
-      "label": "Insurance Claim #"
+      "label": "Insurance Claim No."
+    },
+    {
+      "fieldname": "insurance_claim",
+      "fieldtype": "Check",
+      "label": "Insurance Claimed"
     },
     {
       "fieldname": "status",
       "fieldtype": "Select",
       "label": "Status",
       "options": "Reported\nUnder Review\nRepaired\nClosed",
-      "default": "Reported"
+      "default": "Reported",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_description",
+      "fieldtype": "Section Break",
+      "label": "Description"
     },
     {
       "fieldname": "description",
@@ -79,7 +106,7 @@
   "istable": 0,
   "issingle": 0,
   "links": [],
-  "modified": "2026-05-15 00:00:00",
+  "modified": "2026-05-20 00:00:00",
   "modified_by": "Administrator",
   "module": "Madaar Fleet",
   "name": "Madaar Vehicle Accident",

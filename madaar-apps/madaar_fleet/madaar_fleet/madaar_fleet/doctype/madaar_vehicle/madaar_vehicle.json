@@ -1,41 +1,112 @@
 {
   "actions": [],
-  "allow_rename": 0,
+  "allow_rename": 1,
   "autoname": "field:vehicle_number",
   "creation": "2026-05-15 00:00:00",
   "doctype": "DocType",
   "engine": "InnoDB",
   "field_order": [
+    "section_basic",
     "vehicle_number",
+    "vehicle_code",
+    "name_ar",
+    "name_en",
     "license_plate",
+    "internal_number",
+    "status",
+    "ownership_type",
+    "column_break_1",
     "make",
     "model",
     "year",
+    "color",
     "vin",
-    "column_break_1",
+    "chassis_number",
+    "engine_number",
     "fuel_type",
+    "seating_capacity",
+    "load_capacity",
     "current_odometer",
-    "status",
-    "driver"
+    "section_assignment",
+    "driver",
+    "branch",
+    "depot_id",
+    "default_route",
+    "gps_number",
+    "sim_number",
+    "section_financial",
+    "purchase_date",
+    "purchase_value",
+    "insurance_value",
+    "residual_value",
+    "column_break_2",
+    "section_notes",
+    "notes"
   ],
   "fields": [
+    {
+      "fieldname": "section_basic",
+      "fieldtype": "Section Break",
+      "label": "Basic Information"
+    },
     {
       "fieldname": "vehicle_number",
       "fieldtype": "Data",
       "label": "Vehicle Number",
       "reqd": 1,
-      "unique": 1
+      "unique": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "vehicle_code",
+      "fieldtype": "Data",
+      "label": "Vehicle Code"
+    },
+    {
+      "fieldname": "name_ar",
+      "fieldtype": "Data",
+      "label": "Name (Arabic)"
+    },
+    {
+      "fieldname": "name_en",
+      "fieldtype": "Data",
+      "label": "Name (English)"
     },
     {
       "fieldname": "license_plate",
       "fieldtype": "Data",
-      "label": "License Plate",
-      "reqd": 1
+      "label": "Plate Number",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "internal_number",
+      "fieldtype": "Data",
+      "label": "Internal Number"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Active\nIn Maintenance\nOut of Service\nReserved\nSold\nSuspended",
+      "default": "Active",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "ownership_type",
+      "fieldtype": "Select",
+      "label": "Ownership Type",
+      "options": "Owned\nFinance Lease\nRented\nContractor",
+      "default": "Owned"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
     },
     {
       "fieldname": "make",
       "fieldtype": "Data",
-      "label": "Make"
+      "label": "Brand / Make"
     },
     {
       "fieldname": "model",
@@ -48,19 +119,41 @@
       "label": "Year"
     },
     {
-      "fieldname": "vin",
+      "fieldname": "color",
       "fieldtype": "Data",
-      "label": "VIN"
+      "label": "Color"
     },
     {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
+      "fieldname": "vin",
+      "fieldtype": "Data",
+      "label": "VIN",
+      "hidden": 1
+    },
+    {
+      "fieldname": "chassis_number",
+      "fieldtype": "Data",
+      "label": "Chassis Number"
+    },
+    {
+      "fieldname": "engine_number",
+      "fieldtype": "Data",
+      "label": "Engine Number"
     },
     {
       "fieldname": "fuel_type",
       "fieldtype": "Select",
       "label": "Fuel Type",
-      "options": "Petrol\nDiesel\nElectric\nHybrid\nLPG"
+      "options": "Petrol\nDiesel\nElectric\nHybrid\nLPG\nCNG"
+    },
+    {
+      "fieldname": "seating_capacity",
+      "fieldtype": "Int",
+      "label": "Seating Capacity"
+    },
+    {
+      "fieldname": "load_capacity",
+      "fieldtype": "Float",
+      "label": "Load Capacity (ton)"
     },
     {
       "fieldname": "current_odometer",
@@ -68,23 +161,86 @@
       "label": "Current Odometer (km)"
     },
     {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Active\nIn Service\nOut of Service\nSold",
-      "default": "Active"
+      "fieldname": "section_assignment",
+      "fieldtype": "Section Break",
+      "label": "Assignment"
     },
     {
       "fieldname": "driver",
       "fieldtype": "Link",
-      "label": "Default Driver",
+      "label": "Assigned Driver",
       "options": "Madaar Driver Profile"
+    },
+    {
+      "fieldname": "branch",
+      "fieldtype": "Data",
+      "label": "Branch"
+    },
+    {
+      "fieldname": "depot_id",
+      "fieldtype": "Data",
+      "label": "Depot / Garage"
+    },
+    {
+      "fieldname": "default_route",
+      "fieldtype": "Link",
+      "label": "Default Route",
+      "options": "Madaar Route"
+    },
+    {
+      "fieldname": "gps_number",
+      "fieldtype": "Data",
+      "label": "GPS Number"
+    },
+    {
+      "fieldname": "sim_number",
+      "fieldtype": "Data",
+      "label": "SIM Number"
+    },
+    {
+      "fieldname": "section_financial",
+      "fieldtype": "Section Break",
+      "label": "Financial Details"
+    },
+    {
+      "fieldname": "purchase_date",
+      "fieldtype": "Date",
+      "label": "Purchase Date"
+    },
+    {
+      "fieldname": "purchase_value",
+      "fieldtype": "Currency",
+      "label": "Purchase Value"
+    },
+    {
+      "fieldname": "insurance_value",
+      "fieldtype": "Currency",
+      "label": "Insurance Value"
+    },
+    {
+      "fieldname": "residual_value",
+      "fieldtype": "Currency",
+      "label": "Residual Value"
+    },
+    {
+      "fieldname": "column_break_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "section_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Text",
+      "label": "Notes"
     }
   ],
   "istable": 0,
   "issingle": 0,
   "links": [],
-  "modified": "2026-05-15 00:00:00",
+  "modified": "2026-05-20 00:00:00",
   "modified_by": "Administrator",
   "module": "Madaar Fleet",
   "name": "Madaar Vehicle",

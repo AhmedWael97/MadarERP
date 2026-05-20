@@ -1,0 +1,123 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "field:equipment_code",
+  "creation": "2026-05-20 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "name_ar",
+    "name_en",
+    "equipment_code",
+    "equipment_type",
+    "status",
+    "column_break_1",
+    "project",
+    "assigned_operator",
+    "hourly_cost",
+    "daily_cost",
+    "monthly_cost",
+    "section_notes",
+    "notes"
+  ],
+  "fields": [
+    {
+      "fieldname": "name_ar",
+      "fieldtype": "Data",
+      "label": "Equipment Name (Arabic)",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "name_en",
+      "fieldtype": "Data",
+      "label": "Equipment Name (English)"
+    },
+    {
+      "fieldname": "equipment_code",
+      "fieldtype": "Data",
+      "label": "Equipment Code",
+      "unique": 1
+    },
+    {
+      "fieldname": "equipment_type",
+      "fieldtype": "Data",
+      "label": "Equipment Type"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Available\nAssigned\nMaintenance\nRetired",
+      "default": "Available",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Current Project",
+      "options": "Madaar Construction Project"
+    },
+    {
+      "fieldname": "assigned_operator",
+      "fieldtype": "Link",
+      "label": "Operator",
+      "options": "Employee"
+    },
+    {
+      "fieldname": "hourly_cost",
+      "fieldtype": "Currency",
+      "label": "Hourly Cost"
+    },
+    {
+      "fieldname": "daily_cost",
+      "fieldtype": "Currency",
+      "label": "Daily Cost"
+    },
+    {
+      "fieldname": "monthly_cost",
+      "fieldtype": "Currency",
+      "label": "Monthly Cost"
+    },
+    {
+      "fieldname": "section_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Text",
+      "label": "Notes"
+    }
+  ],
+  "istable": 0,
+  "issingle": 0,
+  "links": [],
+  "modified": "2026-05-20 00:00:00",
+  "modified_by": "Administrator",
+  "module": "Madaar Construction",
+  "name": "Madaar Construction Equipment",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "name_ar",
+  "track_changes": 1
+}
