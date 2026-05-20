@@ -206,23 +206,23 @@ const SECTIONS: Section[] = [
         ],
       },
       {
-        to: '/assets',
+        to: '/fixed-assets/dashboard',
         labelAr: 'الأصول الثابتة',
         icon: Building2,
         accent: 'amber',
         groups: [
           {
             leaves: [
-              { to: '/assets',             labelAr: 'لوحة المعلومات' },
-              { to: '/assets/list',        labelAr: 'الأصول' },
-              { to: '/assets/categories',  labelAr: 'التصنيفات' },
+              { to: '/fixed-assets/dashboard',  labelAr: 'لوحة المعلومات' },
+              { to: '/fixed-assets/assets',     labelAr: 'الأصول' },
+              { to: '/fixed-assets/categories', labelAr: 'التصنيفات' },
             ],
           },
           {
             headerAr: '📊 التقارير',
             leaves: [
-              { to: '/assets/reports/register',     labelAr: 'سجل الأصول الثابتة' },
-              { to: '/assets/reports/depreciation', labelAr: 'جدول الإهلاك' },
+              { to: '/fixed-assets/reports/register',     labelAr: 'سجل الأصول الثابتة' },
+              { to: '/fixed-assets/reports/depreciation', labelAr: 'جدول الإهلاك' },
             ],
           },
         ],
