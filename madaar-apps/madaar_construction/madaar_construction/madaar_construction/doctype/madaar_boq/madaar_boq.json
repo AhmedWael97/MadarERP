@@ -1,93 +1,93 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "BOQ-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "project",
-    "date",
-    "status",
-    "column_break_1",
-    "total_amount",
-    "currency",
-    "section_items",
-    "items"
-  ],
-  "fields": [
-    {
-      "fieldname": "project",
-      "fieldtype": "Link",
-      "label": "Project",
-      "reqd": 1,
-      "options": "Project"
-    },
-    {
-      "fieldname": "date",
-      "fieldtype": "Date",
-      "label": "Date",
-      "reqd": 1
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Draft\nApproved\nLocked",
-      "default": "Draft"
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "total_amount",
-      "fieldtype": "Currency",
-      "label": "Total Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "currency",
-      "fieldtype": "Link",
-      "label": "Currency",
-      "options": "Currency",
-      "default": "EGP"
-    },
-    {
-      "fieldname": "section_items",
-      "fieldtype": "Section Break",
-      "label": "BOQ Items"
-    },
-    {
-      "fieldname": "items",
-      "fieldtype": "Table",
-      "label": "Items",
-      "options": "Madaar BOQ Item"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-15 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Construction",
-  "name": "Madaar BOQ",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "BOQ-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "date",
+  "status",
+  "column_break_1",
+  "total_amount",
+  "currency",
+  "section_items",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "reqd": 1,
+   "options": "Project"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Datetime",
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nApproved\nLocked",
+   "default": "Draft"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "default": "EGP"
+  },
+  {
+   "fieldname": "section_items",
+   "fieldtype": "Section Break",
+   "label": "BOQ Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Madaar BOQ Item"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-15 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Construction",
+ "name": "Madaar BOQ",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

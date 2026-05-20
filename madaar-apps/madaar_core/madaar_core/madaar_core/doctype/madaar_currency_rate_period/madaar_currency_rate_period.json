@@ -5,18 +5,79 @@
  "creation": "2026-05-21 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": ["pair_section", "from_currency", "to_currency", "column_break_1", "rate", "period_section", "effective_from", "column_break_2", "effective_to", "notes"],
+ "field_order": [
+  "pair_section",
+  "from_currency",
+  "to_currency",
+  "column_break_1",
+  "rate",
+  "period_section",
+  "effective_from",
+  "column_break_2",
+  "effective_to",
+  "notes"
+ ],
  "fields": [
-  {"fieldname": "pair_section", "fieldtype": "Section Break", "label": "Currency Pair"},
-  {"fieldname": "from_currency", "fieldtype": "Link", "label": "From Currency", "options": "Currency", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "to_currency", "fieldtype": "Link", "label": "To Currency", "options": "Currency", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
-  {"fieldname": "rate", "fieldtype": "Float", "label": "Rate", "reqd": 1, "in_list_view": 1, "precision": "6"},
-  {"fieldname": "period_section", "fieldtype": "Section Break", "label": "Effective Period"},
-  {"fieldname": "effective_from", "fieldtype": "Date", "label": "Effective From", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "column_break_2", "fieldtype": "Column Break"},
-  {"fieldname": "effective_to", "fieldtype": "Date", "label": "Effective To (blank = open-ended)", "in_list_view": 1},
-  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+  {
+   "fieldname": "pair_section",
+   "fieldtype": "Section Break",
+   "label": "Currency Pair"
+  },
+  {
+   "fieldname": "from_currency",
+   "fieldtype": "Link",
+   "label": "From Currency",
+   "options": "Currency",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "to_currency",
+   "fieldtype": "Link",
+   "label": "To Currency",
+   "options": "Currency",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Float",
+   "label": "Rate",
+   "reqd": 1,
+   "in_list_view": 1,
+   "precision": "6"
+  },
+  {
+   "fieldname": "period_section",
+   "fieldtype": "Section Break",
+   "label": "Effective Period"
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Datetime",
+   "label": "Effective From",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "effective_to",
+   "fieldtype": "Datetime",
+   "label": "Effective To (blank = open-ended)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
  ],
  "links": [],
  "modified": "2026-05-21 00:00:00",
@@ -25,7 +86,18 @@
  "name": "Madaar Currency Rate Period",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "effective_from",
  "sort_order": "DESC",

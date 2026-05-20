@@ -1,170 +1,170 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "EVC-.YYYY.-.#####",
-  "creation": "2026-05-16 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "event_request",
-    "contract_type",
-    "workflow_state",
-    "column_break_1",
-    "party_name",
-    "signed_date",
-    "section_terms",
-    "event_start",
-    "event_end",
-    "rehearsals_required",
-    "column_break_terms",
-    "ticket_price",
-    "team_size",
-    "terms",
-    "section_gates",
-    "hr_availability_confirmed",
-    "hr_confirmed_on",
-    "column_break_gates",
-    "legal_reviewed",
-    "legal_reviewed_on"
-  ],
-  "fields": [
-    {
-      "fieldname": "event_request",
-      "fieldtype": "Link",
-      "label": "Event Request",
-      "reqd": 1,
-      "options": "Madaar Event Request",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "contract_type",
-      "fieldtype": "Select",
-      "label": "Contract Type",
-      "reqd": 1,
-      "options": "General\nEvent-Specific",
-      "default": "Event-Specific",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "workflow_state",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Draft\nHR Pending\nLegal Review\nAwaiting Signature\nSigned\nCancelled",
-      "default": "Draft",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "party_name",
-      "fieldtype": "Data",
-      "label": "Counterparty (Artist / Group)"
-    },
-    {
-      "fieldname": "signed_date",
-      "fieldtype": "Date",
-      "label": "Signed Date"
-    },
-    {
-      "fieldname": "section_terms",
-      "fieldtype": "Section Break",
-      "label": "Terms"
-    },
-    {
-      "fieldname": "event_start",
-      "fieldtype": "Datetime",
-      "label": "Event Start"
-    },
-    {
-      "fieldname": "event_end",
-      "fieldtype": "Datetime",
-      "label": "Event End"
-    },
-    {
-      "fieldname": "rehearsals_required",
-      "fieldtype": "Check",
-      "label": "Rehearsals Required",
-      "default": 0
-    },
-    {
-      "fieldname": "column_break_terms",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "ticket_price",
-      "fieldtype": "Currency",
-      "label": "Ticket Price"
-    },
-    {
-      "fieldname": "team_size",
-      "fieldtype": "Int",
-      "label": "Team Size"
-    },
-    {
-      "fieldname": "terms",
-      "fieldtype": "Text Editor",
-      "label": "Rules & Regulations / Specific Terms"
-    },
-    {
-      "fieldname": "section_gates",
-      "fieldtype": "Section Break",
-      "label": "Signing Gates"
-    },
-    {
-      "fieldname": "hr_availability_confirmed",
-      "fieldtype": "Check",
-      "label": "HR Availability Confirmed",
-      "default": 0
-    },
-    {
-      "fieldname": "hr_confirmed_on",
-      "fieldtype": "Datetime",
-      "label": "HR Confirmed On",
-      "read_only": 1
-    },
-    {
-      "fieldname": "column_break_gates",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "legal_reviewed",
-      "fieldtype": "Check",
-      "label": "Legal Reviewed",
-      "default": 0
-    },
-    {
-      "fieldname": "legal_reviewed_on",
-      "fieldtype": "Datetime",
-      "label": "Legal Reviewed On",
-      "read_only": 1
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-16 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Events",
-  "name": "Madaar Event Contract",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "event_request",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "EVC-.YYYY.-.#####",
+ "creation": "2026-05-16 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event_request",
+  "contract_type",
+  "workflow_state",
+  "column_break_1",
+  "party_name",
+  "signed_date",
+  "section_terms",
+  "event_start",
+  "event_end",
+  "rehearsals_required",
+  "column_break_terms",
+  "ticket_price",
+  "team_size",
+  "terms",
+  "section_gates",
+  "hr_availability_confirmed",
+  "hr_confirmed_on",
+  "column_break_gates",
+  "legal_reviewed",
+  "legal_reviewed_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "event_request",
+   "fieldtype": "Link",
+   "label": "Event Request",
+   "reqd": 1,
+   "options": "Madaar Event Request",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contract_type",
+   "fieldtype": "Select",
+   "label": "Contract Type",
+   "reqd": 1,
+   "options": "General\nEvent-Specific",
+   "default": "Event-Specific",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "workflow_state",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nHR Pending\nLegal Review\nAwaiting Signature\nSigned\nCancelled",
+   "default": "Draft",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Data",
+   "label": "Counterparty (Artist / Group)"
+  },
+  {
+   "fieldname": "signed_date",
+   "fieldtype": "Datetime",
+   "label": "Signed Date"
+  },
+  {
+   "fieldname": "section_terms",
+   "fieldtype": "Section Break",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "event_start",
+   "fieldtype": "Datetime",
+   "label": "Event Start"
+  },
+  {
+   "fieldname": "event_end",
+   "fieldtype": "Datetime",
+   "label": "Event End"
+  },
+  {
+   "fieldname": "rehearsals_required",
+   "fieldtype": "Check",
+   "label": "Rehearsals Required",
+   "default": 0
+  },
+  {
+   "fieldname": "column_break_terms",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ticket_price",
+   "fieldtype": "Currency",
+   "label": "Ticket Price"
+  },
+  {
+   "fieldname": "team_size",
+   "fieldtype": "Int",
+   "label": "Team Size"
+  },
+  {
+   "fieldname": "terms",
+   "fieldtype": "Text Editor",
+   "label": "Rules & Regulations / Specific Terms"
+  },
+  {
+   "fieldname": "section_gates",
+   "fieldtype": "Section Break",
+   "label": "Signing Gates"
+  },
+  {
+   "fieldname": "hr_availability_confirmed",
+   "fieldtype": "Check",
+   "label": "HR Availability Confirmed",
+   "default": 0
+  },
+  {
+   "fieldname": "hr_confirmed_on",
+   "fieldtype": "Datetime",
+   "label": "HR Confirmed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gates",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "legal_reviewed",
+   "fieldtype": "Check",
+   "label": "Legal Reviewed",
+   "default": 0
+  },
+  {
+   "fieldname": "legal_reviewed_on",
+   "fieldtype": "Datetime",
+   "label": "Legal Reviewed On",
+   "read_only": 1
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-16 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Events",
+ "name": "Madaar Event Contract",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "event_request",
+ "track_changes": 1
 }

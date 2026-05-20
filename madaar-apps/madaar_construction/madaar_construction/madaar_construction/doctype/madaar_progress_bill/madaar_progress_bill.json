@@ -1,134 +1,134 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "PROG-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "project",
-    "contract",
-    "boq",
-    "billing_number",
-    "period_start",
-    "period_end",
-    "column_break_1",
-    "completion_pct",
-    "gross_amount",
-    "retention_pct",
-    "retention_amount",
-    "net_amount",
-    "status",
-    "linked_sales_invoice"
-  ],
-  "fields": [
-    {
-      "fieldname": "project",
-      "fieldtype": "Link",
-      "label": "Project",
-      "reqd": 1,
-      "options": "Project",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "contract",
-      "fieldtype": "Data",
-      "label": "Contract Reference"
-    },
-    {
-      "fieldname": "billing_number",
-      "fieldtype": "Data",
-      "label": "Billing No."
-    },
-    {
-      "fieldname": "boq",
-      "fieldtype": "Link",
-      "label": "BOQ",
-      "reqd": 1,
-      "options": "Madaar BOQ"
-    },
-    {
-      "fieldname": "period_start",
-      "fieldtype": "Date",
-      "label": "Period Start",
-      "reqd": 1
-    },
-    {
-      "fieldname": "period_end",
-      "fieldtype": "Date",
-      "label": "Period End",
-      "reqd": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "completion_pct",
-      "fieldtype": "Percent",
-      "label": "Completion %"
-    },
-    {
-      "fieldname": "gross_amount",
-      "fieldtype": "Currency",
-      "label": "Gross Amount"
-    },
-    {
-      "fieldname": "retention_pct",
-      "fieldtype": "Percent",
-      "label": "Retention %",
-      "default": 10
-    },
-    {
-      "fieldname": "retention_amount",
-      "fieldtype": "Currency",
-      "label": "Retention Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "net_amount",
-      "fieldtype": "Currency",
-      "label": "Net Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Draft\nSubmitted\nApproved\nPaid",
-      "default": "Draft"
-    },
-    {
-      "fieldname": "linked_sales_invoice",
-      "fieldtype": "Link",
-      "label": "Sales Invoice",
-      "options": "Sales Invoice",
-      "read_only": 1
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-15 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Construction",
-  "name": "Madaar Progress Bill",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "PROG-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "contract",
+  "boq",
+  "billing_number",
+  "period_start",
+  "period_end",
+  "column_break_1",
+  "completion_pct",
+  "gross_amount",
+  "retention_pct",
+  "retention_amount",
+  "net_amount",
+  "status",
+  "linked_sales_invoice"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "reqd": 1,
+   "options": "Project",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Data",
+   "label": "Contract Reference"
+  },
+  {
+   "fieldname": "billing_number",
+   "fieldtype": "Data",
+   "label": "Billing No."
+  },
+  {
+   "fieldname": "boq",
+   "fieldtype": "Link",
+   "label": "BOQ",
+   "reqd": 1,
+   "options": "Madaar BOQ"
+  },
+  {
+   "fieldname": "period_start",
+   "fieldtype": "Datetime",
+   "label": "Period Start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "period_end",
+   "fieldtype": "Datetime",
+   "label": "Period End",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "completion_pct",
+   "fieldtype": "Percent",
+   "label": "Completion %"
+  },
+  {
+   "fieldname": "gross_amount",
+   "fieldtype": "Currency",
+   "label": "Gross Amount"
+  },
+  {
+   "fieldname": "retention_pct",
+   "fieldtype": "Percent",
+   "label": "Retention %",
+   "default": 10
+  },
+  {
+   "fieldname": "retention_amount",
+   "fieldtype": "Currency",
+   "label": "Retention Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "net_amount",
+   "fieldtype": "Currency",
+   "label": "Net Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSubmitted\nApproved\nPaid",
+   "default": "Draft"
+  },
+  {
+   "fieldname": "linked_sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-15 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Construction",
+ "name": "Madaar Progress Bill",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

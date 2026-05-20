@@ -5,22 +5,104 @@
  "creation": "2026-05-17 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": ["identity_section", "student_id", "full_name", "email", "column_break_1", "phone", "joined_on", "status", "details_section", "national_id", "birth_date", "column_break_2", "gender", "notes"],
+ "field_order": [
+  "identity_section",
+  "student_id",
+  "full_name",
+  "email",
+  "column_break_1",
+  "phone",
+  "joined_on",
+  "status",
+  "details_section",
+  "national_id",
+  "birth_date",
+  "column_break_2",
+  "gender",
+  "notes"
+ ],
  "fields": [
-  {"fieldname": "identity_section", "fieldtype": "Section Break", "label": "Identity"},
-  {"fieldname": "student_id", "fieldtype": "Data", "label": "Student ID", "reqd": 1, "unique": 1, "in_list_view": 1},
-  {"fieldname": "full_name", "fieldtype": "Data", "label": "Full Name", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "email", "fieldtype": "Data", "label": "Email", "options": "Email", "in_list_view": 1},
-  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
-  {"fieldname": "phone", "fieldtype": "Data", "label": "Phone", "options": "Phone"},
-  {"fieldname": "joined_on", "fieldtype": "Date", "label": "Joined On", "in_list_view": 1},
-  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Active\nGraduated\nDropped\nSuspended", "default": "Active", "in_list_view": 1},
-  {"fieldname": "details_section", "fieldtype": "Section Break", "label": "Details"},
-  {"fieldname": "national_id", "fieldtype": "Data", "label": "National ID"},
-  {"fieldname": "birth_date", "fieldtype": "Date", "label": "Date of Birth"},
-  {"fieldname": "column_break_2", "fieldtype": "Column Break"},
-  {"fieldname": "gender", "fieldtype": "Select", "label": "Gender", "options": "\nMale\nFemale"},
-  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+  {
+   "fieldname": "identity_section",
+   "fieldtype": "Section Break",
+   "label": "Identity"
+  },
+  {
+   "fieldname": "student_id",
+   "fieldtype": "Data",
+   "label": "Student ID",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "joined_on",
+   "fieldtype": "Datetime",
+   "label": "Joined On",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nGraduated\nDropped\nSuspended",
+   "default": "Active",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "national_id",
+   "fieldtype": "Data",
+   "label": "National ID"
+  },
+  {
+   "fieldname": "birth_date",
+   "fieldtype": "Datetime",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "\nMale\nFemale"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
  ],
  "links": [],
  "modified": "2026-05-17 00:00:00",
@@ -29,7 +111,18 @@
  "name": "Madaar LMS Student",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",

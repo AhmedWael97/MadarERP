@@ -5,14 +5,56 @@
  "creation": "2026-05-17 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": ["student", "schedule", "batch", "class_date", "status", "notes"],
+ "field_order": [
+  "student",
+  "schedule",
+  "batch",
+  "class_date",
+  "status",
+  "notes"
+ ],
  "fields": [
-  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Madaar LMS Student", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "schedule", "fieldtype": "Link", "label": "Schedule", "options": "Madaar LMS Schedule"},
-  {"fieldname": "batch", "fieldtype": "Link", "label": "Batch", "options": "Madaar LMS Batch", "in_list_view": 1},
-  {"fieldname": "class_date", "fieldtype": "Date", "label": "Class Date", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Present\nAbsent\nLate\nExcused", "default": "Present", "in_list_view": 1},
-  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Madaar LMS Student",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "schedule",
+   "fieldtype": "Link",
+   "label": "Schedule",
+   "options": "Madaar LMS Schedule"
+  },
+  {
+   "fieldname": "batch",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Madaar LMS Batch",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "class_date",
+   "fieldtype": "Datetime",
+   "label": "Class Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Present\nAbsent\nLate\nExcused",
+   "default": "Present",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
  ],
  "links": [],
  "modified": "2026-05-17 00:00:00",
@@ -21,7 +63,18 @@
  "name": "Madaar LMS Attendance",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",

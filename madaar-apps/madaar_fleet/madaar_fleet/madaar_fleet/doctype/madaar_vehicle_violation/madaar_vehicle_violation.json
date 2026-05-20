@@ -1,121 +1,121 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "VIO-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "vehicle",
-    "driver",
-    "date",
-    "violation_type",
-    "authority",
-    "location",
-    "column_break_1",
-    "fine_amount",
-    "charged_to",
-    "is_paid",
-    "status",
-    "notes"
-  ],
-  "fields": [
-    {
-      "fieldname": "vehicle",
-      "fieldtype": "Link",
-      "label": "Vehicle",
-      "reqd": 1,
-      "options": "Madaar Vehicle",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "driver",
-      "fieldtype": "Link",
-      "label": "Driver",
-      "options": "Madaar Driver Profile"
-    },
-    {
-      "fieldname": "date",
-      "fieldtype": "Date",
-      "label": "Date",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "violation_type",
-      "fieldtype": "Data",
-      "label": "Violation Type",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "authority",
-      "fieldtype": "Data",
-      "label": "Authority / Source"
-    },
-    {
-      "fieldname": "location",
-      "fieldtype": "Data",
-      "label": "Location"
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "fine_amount",
-      "fieldtype": "Currency",
-      "label": "Fine Amount",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "charged_to",
-      "fieldtype": "Select",
-      "label": "Charged To",
-      "options": "Company\nDriver",
-      "default": "Company"
-    },
-    {
-      "fieldname": "is_paid",
-      "fieldtype": "Check",
-      "label": "Is Paid"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Unpaid\nPaid\nContested\nDismissed",
-      "default": "Unpaid",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "notes",
-      "fieldtype": "Small Text",
-      "label": "Notes"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Vehicle Violation",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "VIO-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vehicle",
+  "driver",
+  "date",
+  "violation_type",
+  "authority",
+  "location",
+  "column_break_1",
+  "fine_amount",
+  "charged_to",
+  "is_paid",
+  "status",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "label": "Vehicle",
+   "reqd": 1,
+   "options": "Madaar Vehicle",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "label": "Driver",
+   "options": "Madaar Driver Profile"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Datetime",
+   "label": "Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "violation_type",
+   "fieldtype": "Data",
+   "label": "Violation Type",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "authority",
+   "fieldtype": "Data",
+   "label": "Authority / Source"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fine_amount",
+   "fieldtype": "Currency",
+   "label": "Fine Amount",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "charged_to",
+   "fieldtype": "Select",
+   "label": "Charged To",
+   "options": "Company\nDriver",
+   "default": "Company"
+  },
+  {
+   "fieldname": "is_paid",
+   "fieldtype": "Check",
+   "label": "Is Paid"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Unpaid\nPaid\nContested\nDismissed",
+   "default": "Unpaid",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Fleet",
+ "name": "Madaar Vehicle Violation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

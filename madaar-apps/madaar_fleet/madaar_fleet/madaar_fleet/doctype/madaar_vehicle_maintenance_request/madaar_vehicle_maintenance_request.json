@@ -1,151 +1,151 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "MAINT-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "vehicle",
-    "request_date",
-    "maintenance_type",
-    "priority",
-    "column_break_1",
-    "reported_by",
-    "assigned_technician",
-    "status",
-    "estimated_cost",
-    "actual_cost",
-    "parts_cost",
-    "labor_cost",
-    "odometer_on_maintenance",
-    "vendor",
-    "section_description",
-    "issue",
-    "description"
-  ],
-  "fields": [
-    {
-      "fieldname": "vehicle",
-      "fieldtype": "Link",
-      "label": "Vehicle",
-      "reqd": 1,
-      "options": "Madaar Vehicle",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "request_date",
-      "fieldtype": "Date",
-      "label": "Request Date",
-      "reqd": 1
-    },
-    {
-      "fieldname": "maintenance_type",
-      "fieldtype": "Select",
-      "label": "Type",
-      "options": "Routine\nRepair\nInspection\nEmergency\nPM",
-      "default": "Routine"
-    },
-    {
-      "fieldname": "priority",
-      "fieldtype": "Select",
-      "label": "Priority",
-      "options": "Low\nMedium\nHigh\nCritical",
-      "default": "Medium",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "reported_by",
-      "fieldtype": "Data",
-      "label": "Reported By"
-    },
-    {
-      "fieldname": "assigned_technician",
-      "fieldtype": "Link",
-      "label": "Technician",
-      "options": "Employee"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Open\nIn Progress\nCompleted\nCancelled",
-      "default": "Open",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "estimated_cost",
-      "fieldtype": "Currency",
-      "label": "Estimated Cost"
-    },
-    {
-      "fieldname": "actual_cost",
-      "fieldtype": "Currency",
-      "label": "Actual Cost"
-    },
-    {
-      "fieldname": "parts_cost",
-      "fieldtype": "Currency",
-      "label": "Parts Cost"
-    },
-    {
-      "fieldname": "labor_cost",
-      "fieldtype": "Currency",
-      "label": "Labor Cost"
-    },
-    {
-      "fieldname": "odometer_on_maintenance",
-      "fieldtype": "Int",
-      "label": "Odometer at Service (km)"
-    },
-    {
-      "fieldname": "vendor",
-      "fieldtype": "Data",
-      "label": "Workshop / Vendor"
-    },
-    {
-      "fieldname": "section_description",
-      "fieldtype": "Section Break",
-      "label": "Description"
-    },
-    {
-      "fieldname": "issue",
-      "fieldtype": "Text",
-      "label": "Reported Issue"
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Text",
-      "label": "Work Description"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Vehicle Maintenance Request",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "MAINT-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vehicle",
+  "request_date",
+  "maintenance_type",
+  "priority",
+  "column_break_1",
+  "reported_by",
+  "assigned_technician",
+  "status",
+  "estimated_cost",
+  "actual_cost",
+  "parts_cost",
+  "labor_cost",
+  "odometer_on_maintenance",
+  "vendor",
+  "section_description",
+  "issue",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "label": "Vehicle",
+   "reqd": 1,
+   "options": "Madaar Vehicle",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "request_date",
+   "fieldtype": "Datetime",
+   "label": "Request Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "maintenance_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Routine\nRepair\nInspection\nEmergency\nPM",
+   "default": "Routine"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "Low\nMedium\nHigh\nCritical",
+   "default": "Medium",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reported_by",
+   "fieldtype": "Data",
+   "label": "Reported By"
+  },
+  {
+   "fieldname": "assigned_technician",
+   "fieldtype": "Link",
+   "label": "Technician",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nIn Progress\nCompleted\nCancelled",
+   "default": "Open",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "estimated_cost",
+   "fieldtype": "Currency",
+   "label": "Estimated Cost"
+  },
+  {
+   "fieldname": "actual_cost",
+   "fieldtype": "Currency",
+   "label": "Actual Cost"
+  },
+  {
+   "fieldname": "parts_cost",
+   "fieldtype": "Currency",
+   "label": "Parts Cost"
+  },
+  {
+   "fieldname": "labor_cost",
+   "fieldtype": "Currency",
+   "label": "Labor Cost"
+  },
+  {
+   "fieldname": "odometer_on_maintenance",
+   "fieldtype": "Int",
+   "label": "Odometer at Service (km)"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Data",
+   "label": "Workshop / Vendor"
+  },
+  {
+   "fieldname": "section_description",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "issue",
+   "fieldtype": "Text",
+   "label": "Reported Issue"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Work Description"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Fleet",
+ "name": "Madaar Vehicle Maintenance Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

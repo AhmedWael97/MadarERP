@@ -1,106 +1,106 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "MAT-REQ-.YYYY.-.####",
-  "creation": "2026-05-20 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "project",
-    "date",
-    "required_date",
-    "status",
-    "column_break_1",
-    "requested_by",
-    "approved_by",
-    "notes",
-    "section_items",
-    "items"
-  ],
-  "fields": [
-    {
-      "fieldname": "project",
-      "fieldtype": "Link",
-      "label": "Project",
-      "reqd": 1,
-      "options": "Madaar Construction Project",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "date",
-      "fieldtype": "Date",
-      "label": "Request Date",
-      "reqd": 1
-    },
-    {
-      "fieldname": "required_date",
-      "fieldtype": "Date",
-      "label": "Required Date"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Draft\nPending Approval\nApproved\nPartially Received\nReceived\nCancelled",
-      "default": "Draft",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "requested_by",
-      "fieldtype": "Link",
-      "label": "Requested By",
-      "options": "User"
-    },
-    {
-      "fieldname": "approved_by",
-      "fieldtype": "Link",
-      "label": "Approved By",
-      "options": "User"
-    },
-    {
-      "fieldname": "notes",
-      "fieldtype": "Small Text",
-      "label": "Notes"
-    },
-    {
-      "fieldname": "section_items",
-      "fieldtype": "Section Break",
-      "label": "Items"
-    },
-    {
-      "fieldname": "items",
-      "fieldtype": "Table",
-      "label": "Items",
-      "options": "Madaar Material Request Item"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Construction",
-  "name": "Madaar Material Request Construction",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "MAT-REQ-.YYYY.-.####",
+ "creation": "2026-05-20 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "date",
+  "required_date",
+  "status",
+  "column_break_1",
+  "requested_by",
+  "approved_by",
+  "notes",
+  "section_items",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "reqd": 1,
+   "options": "Madaar Construction Project",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Datetime",
+   "label": "Request Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "required_date",
+   "fieldtype": "Datetime",
+   "label": "Required Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nPartially Received\nReceived\nCancelled",
+   "default": "Draft",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "label": "Requested By",
+   "options": "User"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "section_items",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Madaar Material Request Item"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Construction",
+ "name": "Madaar Material Request Construction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

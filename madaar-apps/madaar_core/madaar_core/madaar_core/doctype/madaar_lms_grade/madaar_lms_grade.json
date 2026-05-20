@@ -5,17 +5,77 @@
  "creation": "2026-05-17 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
- "field_order": ["student", "course", "assessment_type", "marks", "max_marks", "grade_letter", "graded_on", "graded_by", "notes"],
+ "field_order": [
+  "student",
+  "course",
+  "assessment_type",
+  "marks",
+  "max_marks",
+  "grade_letter",
+  "graded_on",
+  "graded_by",
+  "notes"
+ ],
  "fields": [
-  {"fieldname": "student", "fieldtype": "Link", "label": "Student", "options": "Madaar LMS Student", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "course", "fieldtype": "Link", "label": "Course", "options": "Madaar LMS Course", "reqd": 1, "in_list_view": 1},
-  {"fieldname": "assessment_type", "fieldtype": "Select", "label": "Assessment Type", "options": "Quiz\nAssignment\nMidterm\nFinal\nProject", "default": "Quiz", "in_list_view": 1},
-  {"fieldname": "marks", "fieldtype": "Float", "label": "Marks", "in_list_view": 1},
-  {"fieldname": "max_marks", "fieldtype": "Float", "label": "Max Marks", "default": "100"},
-  {"fieldname": "grade_letter", "fieldtype": "Select", "label": "Grade", "options": "\nA+\nA\nB+\nB\nC+\nC\nD\nF", "in_list_view": 1},
-  {"fieldname": "graded_on", "fieldtype": "Date", "label": "Graded On"},
-  {"fieldname": "graded_by", "fieldtype": "Link", "label": "Graded By", "options": "Madaar LMS Instructor"},
-  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "Student",
+   "options": "Madaar LMS Student",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "Course",
+   "options": "Madaar LMS Course",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "assessment_type",
+   "fieldtype": "Select",
+   "label": "Assessment Type",
+   "options": "Quiz\nAssignment\nMidterm\nFinal\nProject",
+   "default": "Quiz",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "marks",
+   "fieldtype": "Float",
+   "label": "Marks",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "max_marks",
+   "fieldtype": "Float",
+   "label": "Max Marks",
+   "default": "100"
+  },
+  {
+   "fieldname": "grade_letter",
+   "fieldtype": "Select",
+   "label": "Grade",
+   "options": "\nA+\nA\nB+\nB\nC+\nC\nD\nF",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "graded_on",
+   "fieldtype": "Datetime",
+   "label": "Graded On"
+  },
+  {
+   "fieldname": "graded_by",
+   "fieldtype": "Link",
+   "label": "Graded By",
+   "options": "Madaar LMS Instructor"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
  ],
  "links": [],
  "modified": "2026-05-17 00:00:00",
@@ -24,7 +84,18 @@
  "name": "Madaar LMS Grade",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",

@@ -1,235 +1,158 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "field:route_name",  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "route_name",
-    "route_code",
-    "name_ar",
-    "name_en",
-    "is_active",
-    "is_night_route",
-    "column_break_1",
-    "origin",
-    "destination",
-    "distance_km",
-    "estimated_duration",
-    "standard_hours",
-    "section_financial",
-    "toll_fees",
-    "contracted_price",
-    "fuel_standard",
-    "section_stops",
-    "waypoints",
-    "stops_text"
-  ],
-  "fields": [
-    {
-      "fieldname": "route_name",
-      "fieldtype": "Data",
-      "label": "Route Name",
-      "reqd": 1,
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "route_code",
-      "fieldtype": "Data",
-      "label": "Route Code"
-    },
-    {
-      "fieldname": "name_ar",
-      "fieldtype": "Data",
-      "label": "Name (Arabic)"
-    },
-    {
-      "fieldname": "name_en",
-      "fieldtype": "Data",
-      "label": "Name (English)"
-    },
-    {
-      "fieldname": "is_active",
-      "fieldtype": "Check",
-      "label": "Is Active",
-      "default": "1"
-    },
-    {
-      "fieldname": "is_night_route",
-      "fieldtype": "Check",
-      "label": "Night Route"
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "origin",
-      "fieldtype": "Data",
-      "label": "Origin",
-      "reqd": 1
-    },
-    {
-      "fieldname": "destination",
-      "fieldtype": "Data",
-      "label": "Destination",
-      "reqd": 1
-    },
-    {
-      "fieldname": "distance_km",
-      "fieldtype": "Float",
-      "label": "Distance (km)"
-    },
-    {
-      "fieldname": "estimated_duration",
-      "fieldtype": "Data",
-      "label": "Estimated Duration"
-    },
-    {
-      "fieldname": "standard_hours",
-      "fieldtype": "Float",
-      "label": "Standard Hours"
-    },
-    {
-      "fieldname": "section_financial",
-      "fieldtype": "Section Break",
-      "label": "Financial Standards"
-    },
-    {
-      "fieldname": "toll_fees",
-      "fieldtype": "Currency",
-      "label": "Toll Fees"
-    },
-    {
-      "fieldname": "contracted_price",
-      "fieldtype": "Currency",
-      "label": "Contracted Price"
-    },
-    {
-      "fieldname": "fuel_standard",
-      "fieldtype": "Float",
-      "label": "Fuel Standard (L/100km)"
-    },
-    {
-      "fieldname": "section_stops",
-      "fieldtype": "Section Break",
-      "label": "Stops / Waypoints"
-    },
-    {
-      "fieldname": "waypoints",
-      "fieldtype": "Text",
-      "label": "Waypoints (old)",
-      "hidden": 1
-    },
-    {
-      "fieldname": "stops_text",
-      "fieldtype": "Text",
-      "label": "Stops"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Route",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "route_name",
-  "track_changes": 1
-}  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "route_name",
-    "origin",
-    "destination",
-    "column_break_1",
-    "distance_km",
-    "estimated_duration",
-    "waypoints"
-  ],
-  "fields": [
-    {
-      "fieldname": "route_name",
-      "fieldtype": "Data",
-      "label": "Route Name",
-      "reqd": 1,
-      "unique": 1
-    },
-    {
-      "fieldname": "origin",
-      "fieldtype": "Data",
-      "label": "Origin",
-      "reqd": 1
-    },
-    {
-      "fieldname": "destination",
-      "fieldtype": "Data",
-      "label": "Destination",
-      "reqd": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "distance_km",
-      "fieldtype": "Float",
-      "label": "Distance (km)"
-    },
-    {
-      "fieldname": "estimated_duration",
-      "fieldtype": "Int",
-      "label": "Est. Duration (minutes)"
-    },
-    {
-      "fieldname": "waypoints",
-      "fieldtype": "Text",
-      "label": "Waypoints"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-15 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Route",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "route_name",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:route_name",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "route_name",
+  "route_code",
+  "name_ar",
+  "name_en",
+  "is_active",
+  "is_night_route",
+  "column_break_1",
+  "origin",
+  "destination",
+  "distance_km",
+  "estimated_duration",
+  "standard_hours",
+  "section_financial",
+  "toll_fees",
+  "contracted_price",
+  "fuel_standard",
+  "section_stops",
+  "waypoints",
+  "stops_text"
+ ],
+ "fields": [
+  {
+   "fieldname": "route_name",
+   "fieldtype": "Data",
+   "label": "Route Name",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "route_code",
+   "fieldtype": "Data",
+   "label": "Route Code"
+  },
+  {
+   "fieldname": "name_ar",
+   "fieldtype": "Data",
+   "label": "Name (Arabic)"
+  },
+  {
+   "fieldname": "name_en",
+   "fieldtype": "Data",
+   "label": "Name (English)"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "default": "1"
+  },
+  {
+   "fieldname": "is_night_route",
+   "fieldtype": "Check",
+   "label": "Night Route"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "origin",
+   "fieldtype": "Data",
+   "label": "Origin",
+   "reqd": 1
+  },
+  {
+   "fieldname": "destination",
+   "fieldtype": "Data",
+   "label": "Destination",
+   "reqd": 1
+  },
+  {
+   "fieldname": "distance_km",
+   "fieldtype": "Float",
+   "label": "Distance (km)"
+  },
+  {
+   "fieldname": "estimated_duration",
+   "fieldtype": "Data",
+   "label": "Estimated Duration"
+  },
+  {
+   "fieldname": "standard_hours",
+   "fieldtype": "Float",
+   "label": "Standard Hours"
+  },
+  {
+   "fieldname": "section_financial",
+   "fieldtype": "Section Break",
+   "label": "Financial Standards"
+  },
+  {
+   "fieldname": "toll_fees",
+   "fieldtype": "Currency",
+   "label": "Toll Fees"
+  },
+  {
+   "fieldname": "contracted_price",
+   "fieldtype": "Currency",
+   "label": "Contracted Price"
+  },
+  {
+   "fieldname": "fuel_standard",
+   "fieldtype": "Float",
+   "label": "Fuel Standard (L/100km)"
+  },
+  {
+   "fieldname": "section_stops",
+   "fieldtype": "Section Break",
+   "label": "Stops / Waypoints"
+  },
+  {
+   "fieldname": "waypoints",
+   "fieldtype": "Text",
+   "label": "Waypoints (old)",
+   "hidden": 1
+  },
+  {
+   "fieldname": "stops_text",
+   "fieldtype": "Text",
+   "label": "Stops"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Fleet",
+ "name": "Madaar Route",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "route_name",
+ "track_changes": 1
 }

@@ -1,175 +1,175 @@
 {
-  "actions": [],
-  "allow_rename": 1,
-  "autoname": "field:project_code",
-  "creation": "2026-05-20 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "section_basic",
-    "project_code",
-    "name_ar",
-    "name_en",
-    "project_type",
-    "status",
-    "column_break_1",
-    "customer",
-    "location",
-    "start_date",
-    "end_date",
-    "manager",
-    "section_financial",
-    "contract_value",
-    "estimated_budget",
-    "column_break_2",
-    "retention_percentage",
-    "advance_payment",
-    "cost_center",
-    "section_notes",
-    "notes"
-  ],
-  "fields": [
-    {
-      "fieldname": "section_basic",
-      "fieldtype": "Section Break",
-      "label": "Project Details"
-    },
-    {
-      "fieldname": "project_code",
-      "fieldtype": "Data",
-      "label": "Project Code",
-      "reqd": 1,
-      "unique": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "name_ar",
-      "fieldtype": "Data",
-      "label": "Project Name (Arabic)",
-      "reqd": 1
-    },
-    {
-      "fieldname": "name_en",
-      "fieldtype": "Data",
-      "label": "Project Name (English)"
-    },
-    {
-      "fieldname": "project_type",
-      "fieldtype": "Select",
-      "label": "Project Type",
-      "options": "Building\nRoads\nInfrastructure\nElectrical\nMechanical\nFinishing\nOther"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Planning\nIn Progress\nCompleted\nOn Hold\nCancelled",
-      "default": "Planning",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "customer",
-      "fieldtype": "Link",
-      "label": "Client / Customer",
-      "options": "Customer",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "location",
-      "fieldtype": "Data",
-      "label": "Location"
-    },
-    {
-      "fieldname": "start_date",
-      "fieldtype": "Date",
-      "label": "Start Date"
-    },
-    {
-      "fieldname": "end_date",
-      "fieldtype": "Date",
-      "label": "End Date"
-    },
-    {
-      "fieldname": "manager",
-      "fieldtype": "Link",
-      "label": "Project Manager",
-      "options": "User"
-    },
-    {
-      "fieldname": "section_financial",
-      "fieldtype": "Section Break",
-      "label": "Financial"
-    },
-    {
-      "fieldname": "contract_value",
-      "fieldtype": "Currency",
-      "label": "Contract Value"
-    },
-    {
-      "fieldname": "estimated_budget",
-      "fieldtype": "Currency",
-      "label": "Estimated Budget"
-    },
-    {
-      "fieldname": "column_break_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "retention_percentage",
-      "fieldtype": "Percent",
-      "label": "Retention %",
-      "default": "10"
-    },
-    {
-      "fieldname": "advance_payment",
-      "fieldtype": "Currency",
-      "label": "Advance Payment"
-    },
-    {
-      "fieldname": "cost_center",
-      "fieldtype": "Link",
-      "label": "Cost Center",
-      "options": "Cost Center"
-    },
-    {
-      "fieldname": "section_notes",
-      "fieldtype": "Section Break",
-      "label": "Notes"
-    },
-    {
-      "fieldname": "notes",
-      "fieldtype": "Text",
-      "label": "Notes"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Construction",
-  "name": "Madaar Construction Project",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "name_ar",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:project_code",
+ "creation": "2026-05-20 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_basic",
+  "project_code",
+  "name_ar",
+  "name_en",
+  "project_type",
+  "status",
+  "column_break_1",
+  "customer",
+  "location",
+  "start_date",
+  "end_date",
+  "manager",
+  "section_financial",
+  "contract_value",
+  "estimated_budget",
+  "column_break_2",
+  "retention_percentage",
+  "advance_payment",
+  "cost_center",
+  "section_notes",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_basic",
+   "fieldtype": "Section Break",
+   "label": "Project Details"
+  },
+  {
+   "fieldname": "project_code",
+   "fieldtype": "Data",
+   "label": "Project Code",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "name_ar",
+   "fieldtype": "Data",
+   "label": "Project Name (Arabic)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "name_en",
+   "fieldtype": "Data",
+   "label": "Project Name (English)"
+  },
+  {
+   "fieldname": "project_type",
+   "fieldtype": "Select",
+   "label": "Project Type",
+   "options": "Building\nRoads\nInfrastructure\nElectrical\nMechanical\nFinishing\nOther"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Planning\nIn Progress\nCompleted\nOn Hold\nCancelled",
+   "default": "Planning",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Client / Customer",
+   "options": "Customer",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "manager",
+   "fieldtype": "Link",
+   "label": "Project Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "section_financial",
+   "fieldtype": "Section Break",
+   "label": "Financial"
+  },
+  {
+   "fieldname": "contract_value",
+   "fieldtype": "Currency",
+   "label": "Contract Value"
+  },
+  {
+   "fieldname": "estimated_budget",
+   "fieldtype": "Currency",
+   "label": "Estimated Budget"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "retention_percentage",
+   "fieldtype": "Percent",
+   "label": "Retention %",
+   "default": "10"
+  },
+  {
+   "fieldname": "advance_payment",
+   "fieldtype": "Currency",
+   "label": "Advance Payment"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Construction",
+ "name": "Madaar Construction Project",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "name_ar",
+ "track_changes": 1
 }

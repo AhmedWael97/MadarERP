@@ -1,79 +1,79 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "COD-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "shipment",
-    "settlement_date",
-    "amount_collected",
-    "column_break_1",
-    "payment_method",
-    "status"
-  ],
-  "fields": [
-    {
-      "fieldname": "shipment",
-      "fieldtype": "Link",
-      "label": "Shipment",
-      "reqd": 1,
-      "options": "Shipment"
-    },
-    {
-      "fieldname": "settlement_date",
-      "fieldtype": "Date",
-      "label": "Settlement Date",
-      "reqd": 1
-    },
-    {
-      "fieldname": "amount_collected",
-      "fieldtype": "Currency",
-      "label": "Amount Collected",
-      "reqd": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "payment_method",
-      "fieldtype": "Select",
-      "label": "Payment Method",
-      "options": "Cash\nCard\nBank Transfer\nWallet"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Pending\nReceived\nReconciled",
-      "default": "Pending"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-15 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Logistics",
-  "name": "Madaar COD Settlement",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "COD-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "shipment",
+  "settlement_date",
+  "amount_collected",
+  "column_break_1",
+  "payment_method",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "shipment",
+   "fieldtype": "Link",
+   "label": "Shipment",
+   "reqd": 1,
+   "options": "Shipment"
+  },
+  {
+   "fieldname": "settlement_date",
+   "fieldtype": "Datetime",
+   "label": "Settlement Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount_collected",
+   "fieldtype": "Currency",
+   "label": "Amount Collected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_method",
+   "fieldtype": "Select",
+   "label": "Payment Method",
+   "options": "Cash\nCard\nBank Transfer\nWallet"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nReceived\nReconciled",
+   "default": "Pending"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-15 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Logistics",
+ "name": "Madaar COD Settlement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
 }

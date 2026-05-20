@@ -1,347 +1,223 @@
 {
-  "actions": [],
-  "allow_rename": 0,
-  "autoname": "TRP-.YYYY.-.####",
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "trip_number",
-    "trip_date",
-    "vehicle",
-    "driver",
-    "route",
-    "trip_type",
-    "column_break_1",
-    "status",
-    "customer",
-    "contract",
-    "start_date",
-    "end_date",
-    "start_time",
-    "end_time",
-    "section_odo",
-    "start_odometer",
-    "end_odometer",
-    "column_break_2",
-    "distance_km",
-    "fuel_issued",
-    "passengers_count",
-    "section_financial",
-    "cost_estimate",
-    "revenue_value",
-    "toll_cost",
-    "section_details",
-    "load_details",
-    "purpose",
-    "remarks"
-  ],
-  "fields": [
-    {
-      "fieldname": "trip_number",
-      "fieldtype": "Data",
-      "label": "Trip Number",
-      "read_only": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "trip_date",
-      "fieldtype": "Date",
-      "label": "Trip Date",
-      "reqd": 1
-    },
-    {
-      "fieldname": "vehicle",
-      "fieldtype": "Link",
-      "label": "Vehicle",
-      "reqd": 1,
-      "options": "Madaar Vehicle",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "driver",
-      "fieldtype": "Link",
-      "label": "Driver",
-      "options": "Madaar Driver Profile",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "route",
-      "fieldtype": "Link",
-      "label": "Route",
-      "options": "Madaar Route"
-    },
-    {
-      "fieldname": "trip_type",
-      "fieldtype": "Data",
-      "label": "Trip Type"
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Planned\nIn Progress\nCompleted\nCancelled",
-      "default": "Planned",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "customer",
-      "fieldtype": "Link",
-      "label": "Customer",
-      "options": "Customer"
-    },
-    {
-      "fieldname": "contract",
-      "fieldtype": "Data",
-      "label": "Contract Reference"
-    },
-    {
-      "fieldname": "start_date",
-      "fieldtype": "Datetime",
-      "label": "Start Date/Time"
-    },
-    {
-      "fieldname": "end_date",
-      "fieldtype": "Datetime",
-      "label": "End Date/Time"
-    },
-    {
-      "fieldname": "start_time",
-      "fieldtype": "Time",
-      "label": "Departure Time"
-    },
-    {
-      "fieldname": "end_time",
-      "fieldtype": "Time",
-      "label": "Arrival Time"
-    },
-    {
-      "fieldname": "section_odo",
-      "fieldtype": "Section Break",
-      "label": "Odometer & Distance"
-    },
-    {
-      "fieldname": "start_odometer",
-      "fieldtype": "Int",
-      "label": "Start Odometer (km)"
-    },
-    {
-      "fieldname": "end_odometer",
-      "fieldtype": "Int",
-      "label": "End Odometer (km)"
-    },
-    {
-      "fieldname": "column_break_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "distance_km",
-      "fieldtype": "Float",
-      "label": "Distance (km)"
-    },
-    {
-      "fieldname": "fuel_issued",
-      "fieldtype": "Float",
-      "label": "Fuel Issued (L)"
-    },
-    {
-      "fieldname": "passengers_count",
-      "fieldtype": "Int",
-      "label": "Passengers Count"
-    },
-    {
-      "fieldname": "section_financial",
-      "fieldtype": "Section Break",
-      "label": "Financial"
-    },
-    {
-      "fieldname": "cost_estimate",
-      "fieldtype": "Currency",
-      "label": "Estimated Cost"
-    },
-    {
-      "fieldname": "revenue_value",
-      "fieldtype": "Currency",
-      "label": "Revenue Value"
-    },
-    {
-      "fieldname": "toll_cost",
-      "fieldtype": "Currency",
-      "label": "Toll Cost"
-    },
-    {
-      "fieldname": "section_details",
-      "fieldtype": "Section Break",
-      "label": "Details"
-    },
-    {
-      "fieldname": "load_details",
-      "fieldtype": "Small Text",
-      "label": "Load / Cargo Details"
-    },
-    {
-      "fieldname": "purpose",
-      "fieldtype": "Small Text",
-      "label": "Purpose"
-    },
-    {
-      "fieldname": "remarks",
-      "fieldtype": "Small Text",
-      "label": "Remarks"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-20 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Trip",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "trip_number",
-  "track_changes": 1
-}
-  "creation": "2026-05-15 00:00:00",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "trip_number",
-    "vehicle",
-    "driver",
-    "route",
-    "column_break_1",
-    "start_date",
-    "end_date",
-    "status",
-    "section_odo",
-    "start_odometer",
-    "end_odometer",
-    "column_break_2",
-    "distance_km",
-    "purpose"
-  ],
-  "fields": [
-    {
-      "fieldname": "trip_number",
-      "fieldtype": "Data",
-      "label": "Trip Number",
-      "read_only": 1
-    },
-    {
-      "fieldname": "vehicle",
-      "fieldtype": "Link",
-      "label": "Vehicle",
-      "reqd": 1,
-      "options": "Madaar Vehicle"
-    },
-    {
-      "fieldname": "driver",
-      "fieldtype": "Link",
-      "label": "Driver",
-      "options": "Madaar Driver Profile"
-    },
-    {
-      "fieldname": "route",
-      "fieldtype": "Link",
-      "label": "Route",
-      "options": "Madaar Route"
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "start_date",
-      "fieldtype": "Datetime",
-      "label": "Start",
-      "reqd": 1
-    },
-    {
-      "fieldname": "end_date",
-      "fieldtype": "Datetime",
-      "label": "End"
-    },
-    {
-      "fieldname": "status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Planned\nIn Progress\nCompleted\nCancelled",
-      "default": "Planned"
-    },
-    {
-      "fieldname": "section_odo",
-      "fieldtype": "Section Break",
-      "label": "Odometer"
-    },
-    {
-      "fieldname": "start_odometer",
-      "fieldtype": "Int",
-      "label": "Start Odometer (km)"
-    },
-    {
-      "fieldname": "end_odometer",
-      "fieldtype": "Int",
-      "label": "End Odometer (km)"
-    },
-    {
-      "fieldname": "column_break_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "distance_km",
-      "fieldtype": "Float",
-      "label": "Distance (km)"
-    },
-    {
-      "fieldname": "purpose",
-      "fieldtype": "Small Text",
-      "label": "Purpose"
-    }
-  ],
-  "istable": 0,
-  "issingle": 0,
-  "links": [],
-  "modified": "2026-05-15 00:00:00",
-  "modified_by": "Administrator",
-  "module": "Madaar Fleet",
-  "name": "Madaar Trip",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "System Manager",
-      "share": 1,
-      "write": 1
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "title_field": "trip_number",
-  "track_changes": 1
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "TRP-.YYYY.-.####",
+ "creation": "2026-05-15 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "trip_number",
+  "trip_date",
+  "vehicle",
+  "driver",
+  "route",
+  "trip_type",
+  "column_break_1",
+  "status",
+  "customer",
+  "contract",
+  "start_date",
+  "end_date",
+  "start_time",
+  "end_time",
+  "section_odo",
+  "start_odometer",
+  "end_odometer",
+  "column_break_2",
+  "distance_km",
+  "fuel_issued",
+  "passengers_count",
+  "section_financial",
+  "cost_estimate",
+  "revenue_value",
+  "toll_cost",
+  "section_details",
+  "load_details",
+  "purpose",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "trip_number",
+   "fieldtype": "Data",
+   "label": "Trip Number",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "trip_date",
+   "fieldtype": "Datetime",
+   "label": "Trip Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "label": "Vehicle",
+   "reqd": 1,
+   "options": "Madaar Vehicle",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "label": "Driver",
+   "options": "Madaar Driver Profile",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Link",
+   "label": "Route",
+   "options": "Madaar Route"
+  },
+  {
+   "fieldname": "trip_type",
+   "fieldtype": "Data",
+   "label": "Trip Type"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Planned\nIn Progress\nCompleted\nCancelled",
+   "default": "Planned",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Data",
+   "label": "Contract Reference"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "label": "Start Date/Time"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date/Time"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Departure Time"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "Arrival Time"
+  },
+  {
+   "fieldname": "section_odo",
+   "fieldtype": "Section Break",
+   "label": "Odometer & Distance"
+  },
+  {
+   "fieldname": "start_odometer",
+   "fieldtype": "Int",
+   "label": "Start Odometer (km)"
+  },
+  {
+   "fieldname": "end_odometer",
+   "fieldtype": "Int",
+   "label": "End Odometer (km)"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "distance_km",
+   "fieldtype": "Float",
+   "label": "Distance (km)"
+  },
+  {
+   "fieldname": "fuel_issued",
+   "fieldtype": "Float",
+   "label": "Fuel Issued (L)"
+  },
+  {
+   "fieldname": "passengers_count",
+   "fieldtype": "Int",
+   "label": "Passengers Count"
+  },
+  {
+   "fieldname": "section_financial",
+   "fieldtype": "Section Break",
+   "label": "Financial"
+  },
+  {
+   "fieldname": "cost_estimate",
+   "fieldtype": "Currency",
+   "label": "Estimated Cost"
+  },
+  {
+   "fieldname": "revenue_value",
+   "fieldtype": "Currency",
+   "label": "Revenue Value"
+  },
+  {
+   "fieldname": "toll_cost",
+   "fieldtype": "Currency",
+   "label": "Toll Cost"
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "load_details",
+   "fieldtype": "Small Text",
+   "label": "Load / Cargo Details"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Small Text",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 0,
+ "issingle": 0,
+ "links": [],
+ "modified": "2026-05-20 00:00:00",
+ "modified_by": "Administrator",
+ "module": "Madaar Fleet",
+ "name": "Madaar Trip",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "trip_number",
+ "track_changes": 1
 }

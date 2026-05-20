@@ -16,15 +16,59 @@
   "estimated_repair_cost"
  ],
  "fields": [
-  {"fieldname": "asset", "fieldtype": "Link", "in_list_view": 1, "label": "Asset", "options": "Asset", "reqd": 1},
-  {"fieldname": "accident_date", "fieldtype": "Date", "in_list_view": 1, "label": "Accident Date", "reqd": 1},
-  {"fieldname": "severity", "fieldtype": "Select", "in_list_view": 1, "label": "Severity", "options": "Minor\nMajor\nTotal Loss", "default": "Minor"},
-  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
-  {"fieldname": "reported_by", "fieldtype": "Link", "label": "Reported By", "options": "User"},
-  {"fieldname": "location", "fieldtype": "Data", "label": "Location"},
-  {"fieldname": "details_section", "fieldtype": "Section Break", "label": "Details"},
-  {"fieldname": "description", "fieldtype": "Long Text", "label": "Description"},
-  {"fieldname": "estimated_repair_cost", "fieldtype": "Currency", "label": "Estimated Repair Cost"}
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "options": "Asset",
+   "reqd": 1
+  },
+  {
+   "fieldname": "accident_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Accident Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "severity",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Severity",
+   "options": "Minor\nMajor\nTotal Loss",
+   "default": "Minor"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reported_by",
+   "fieldtype": "Link",
+   "label": "Reported By",
+   "options": "User"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Long Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "estimated_repair_cost",
+   "fieldtype": "Currency",
+   "label": "Estimated Repair Cost"
+  }
  ],
  "links": [],
  "modified": "2026-05-14 00:00:00",
@@ -33,7 +77,18 @@
  "name": "Asset Accident Log",
  "owner": "Administrator",
  "permissions": [
-  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1}
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
  ],
  "sort_field": "accident_date",
  "sort_order": "DESC",
