@@ -26,6 +26,14 @@ doc_events = {
     "Quotation": {
         "before_save": "madaar_core.pricing.apply_group_pricing",
     },
+    # Auto-number tree DocTypes from the parent's code when the user leaves
+    # the code field blank. See madaar_core/auto_code.py.
+    "Account": {
+        "before_insert": "madaar_core.auto_code.autoset_account_number",
+    },
+    "Cost Center": {
+        "before_insert": "madaar_core.auto_code.autoset_cost_center_number",
+    },
 }
 
 # Scheduled job that resets monthly feature counters at the period boundary.
