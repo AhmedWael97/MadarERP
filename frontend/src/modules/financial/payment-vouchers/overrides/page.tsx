@@ -275,9 +275,19 @@ function Body() {
                   <td colSpan={7} className="px-5 py-12 text-center">
                     <p className="text-slate-400 mb-3">لا توجد سندات مطابقة</p>
                     {error && (
-                      <p className="text-xs text-red-500 mb-3 font-mono" dir="ltr">
-                        {(error as any)?.message ?? String(error)}
-                      </p>
+                      <pre className="text-xs text-red-500 mb-3 font-mono whitespace-pre-wrap text-start max-w-2xl mx-auto bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20 rounded-lg p-3" dir="ltr">
+                        {(() => {
+                          const e: any = error;
+                          const lines = [
+                            `HTTP: ${e?.httpStatus ?? '?'} ${e?.httpStatusText ?? ''}`,
+                            `Exception: ${e?.exception ?? e?.exc_type ?? '(none)'}`,
+                            `Message: ${e?.message ?? String(error)}`,
+                          ];
+                          if (e?._server_messages) lines.push(`Server: ${e._server_messages}`);
+                          if (e?.exc) lines.push(`Trace: ${String(e.exc).slice(0, 600)}`);
+                          return lines.join('\n');
+                        })()}
+                      </pre>
                     )}
                     <button onClick={() => refresh()} className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-600 hover:text-rose-700">
                       <RefreshCcw size={14} /> إعادة المحاولة
