@@ -311,6 +311,14 @@ export const router = createBrowserRouter([
           return { Component: mod.default };
         },
       },
+      // --- Treasury: Currencies CRUD (Frappe Currency doctype) ---
+      {
+        path: 'treasury/currencies',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/currencies/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Sales: detail pages for invoice/order/quotation/return ---
       {
         path: 'sales/invoices/:id',

@@ -42,13 +42,44 @@ export default function JournalEntryListPage() {
   );
 }
 
+// User-requested 8 source filters. Each maps to a Frappe filter — usually a
+// child-table filter on `Journal Entry Account.reference_type` since that's
+// where ERPNext records the document that triggered the JE. Returns get a
+// separate `is_return` filter on the reference doctype where applicable.
+type SourceKey = '' | 'sales' | 'purchase' | 'sales-return' | 'purchase-return' | 'receipt' | 'payment' | 'credit-note' | 'debit-note';
+const SOURCE_LABEL: Record<SourceKey, string> = {
+  '':                'كل المصادر',
+  'sales':           'مبيعات',
+  'purchase':        'مشتريات',
+  'sales-return':    'مرتجع مبيعات',
+  'purchase-return': 'مرتجع مشتريات',
+  'receipt':         'سند قبض',
+  'payment':         'سند صرف',
+  'credit-note':     'إشعار دائن',
+  'debit-note':      'إشعار مدين',
+};
+const SOURCE_FILTER: Record<Exclude<SourceKey, ''>, Array<any>> = {
+  // Filters on child table Journal Entry Account.reference_type.
+  // Sales / Purchase returns: ERPNext flags returns on Sales Invoice itself
+  // (is_return=1). We approximate by also matching credit/debit notes which
+  // are the typical return-side voucher_type values on the JE itself.
+  'sales':           [['Journal Entry Account', 'reference_type', '=', 'Sales Invoice']],
+  'purchase':        [['Journal Entry Account', 'reference_type', '=', 'Purchase Invoice']],
+  'sales-return':    [['voucher_type', '=', 'Credit Note']],
+  'purchase-return': [['voucher_type', '=', 'Debit Note']],
+  'receipt':         [['Journal Entry Account', 'reference_type', '=', 'Payment Entry'], ['voucher_type', 'in', ['Bank Entry', 'Cash Entry']]],
+  'payment':         [['Journal Entry Account', 'reference_type', '=', 'Payment Entry'], ['voucher_type', 'in', ['Bank Entry', 'Cash Entry']]],
+  'credit-note':     [['voucher_type', '=', 'Credit Note']],
+  'debit-note':      [['voucher_type', '=', 'Debit Note']],
+};
+
 function Body() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'' | 'draft' | 'posted' | 'cancelled'>('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [voucherType, setVoucherType] = useState('');
+  const [source, setSource] = useState<SourceKey>('');
 
   const { data: total } = useFrappeGetDocCount('Journal Entry');
   const { data: draft } = useFrappeGetDocCount('Journal Entry', [['docstatus', '=', 0]]);
@@ -56,16 +87,18 @@ function Body() {
   const { data: cancelled } = useFrappeGetDocCount('Journal Entry', [['docstatus', '=', 2]]);
 
   const filters = useMemo(() => {
-    const f: Array<[string, any, unknown]> = [];
+    const f: Array<any> = [];
     if (search.trim()) f.push(['user_remark', 'like', `%${search.trim()}%`]);
     if (status === 'draft') f.push(['docstatus', '=', 0]);
     if (status === 'posted') f.push(['docstatus', '=', 1]);
     if (status === 'cancelled') f.push(['docstatus', '=', 2]);
     if (fromDate) f.push(['posting_date', '>=', fromDate]);
     if (toDate) f.push(['posting_date', '<=', toDate]);
-    if (voucherType) f.push(['voucher_type', '=', voucherType]);
+    if (source && source in SOURCE_FILTER) {
+      for (const sf of SOURCE_FILTER[source as Exclude<SourceKey, ''>]) f.push(sf);
+    }
     return f as any;
-  }, [search, status, fromDate, toDate, voucherType]);
+  }, [search, status, fromDate, toDate, source]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<JERow>('Journal Entry', {
     fields: ['name', 'posting_date', 'user_remark', 'total_debit', 'total_credit', 'docstatus', 'voucher_type'],
@@ -111,14 +144,10 @@ function Body() {
           </select>
           <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-36 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm" placeholder="من تاريخ" />
           <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-36 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm" placeholder="إلى تاريخ" />
-          <select value={voucherType} onChange={(e) => setVoucherType(e.target.value)} className="px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm">
-            <option value="">كل الأنواع</option>
-            <option value="Journal Entry">قيد يدوي</option>
-            <option value="Sales Invoice">مبيعات</option>
-            <option value="Purchase Invoice">مشتريات</option>
-            <option value="Payment Entry">سند دفع / قبض</option>
-            <option value="Credit Note">إشعار دائن</option>
-            <option value="Debit Note">إشعار مدين</option>
+          <select value={source} onChange={(e) => setSource(e.target.value as SourceKey)} className="px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm" title="المصدر">
+            {(Object.keys(SOURCE_LABEL) as SourceKey[]).map((k) => (
+              <option key={k} value={k}>{SOURCE_LABEL[k]}</option>
+            ))}
           </select>
         </div>
       </div>

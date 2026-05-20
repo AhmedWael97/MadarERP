@@ -121,6 +121,7 @@ const SECTIONS: Section[] = [
               { to: '/treasury/treasuries',        labelAr: 'الخزائن' },
               { to: '/treasury/bank-institutions', labelAr: 'البنوك' },
               { to: '/treasury/banks',             labelAr: 'الحسابات البنكية' },
+              { to: '/treasury/currencies',        labelAr: 'العملات' },
             ],
           },
           {
