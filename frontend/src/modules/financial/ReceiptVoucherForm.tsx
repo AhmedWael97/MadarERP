@@ -14,7 +14,7 @@ import {
 import { toast } from 'sonner';
 import { ArrowRight, Home } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
-import { RequirePerm } from '@/lib/auth/RequireAuth';
+import { RequirePerm } from '@/lib/auth/RequirePerm';
 
 // ─── Field types ──────────────────────────────────────────────────────────────
 interface PEDoc {
@@ -174,13 +174,17 @@ function Body({
   );
 
   async function save(andSubmit: boolean) {
+    const amt = Number(doc.paid_amount ?? 0);
     const payload: Record<string, unknown> = {
       payment_type: 'Receive',
       posting_date: doc.posting_date,
-      party_type: doc.party_type,
+      party_type: doc.party_type || undefined,
       party: doc.party || undefined,
       custom_payee_name: doc.custom_payee_name || undefined,
-      paid_amount: Number(doc.paid_amount ?? 0),
+      paid_amount: amt,
+      received_amount: amt,
+      source_exchange_rate: 1,
+      target_exchange_rate: 1,
       mode_of_payment: doc.mode_of_payment,
       paid_from: doc.paid_from || undefined,
       bank_account: doc.bank_account || undefined,
@@ -280,13 +284,13 @@ function Body({
                 <option value="">إيراد آخر</option>
               </select>
             </Field>
-            <Field label="العميل">
+            <Field label={doc.party_type === 'Supplier' ? 'المورد' : doc.party_type === 'Employee' ? 'الموظف' : 'العميل'}>
               <select
                 value={doc.party ?? ''}
                 onChange={(e) => set('party', e.target.value)}
                 className={INPUT}
               >
-                <option value="">— اختر العميل —</option>
+                <option value="">— اختر —</option>
                 {partyOptions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}

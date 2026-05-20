@@ -91,6 +91,32 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   });
   const { data: currencies } = useFrappeGetDocList<{ name: string }>('Currency', { fields: ['name'], limit: 100 });
 
+  const { data: siblings } = useFrappeGetDocList<{ account_number?: string }>('Account', {
+    fields: ['account_number'],
+    filters: values.parent_account
+      ? [['parent_account', '=', values.parent_account]]
+      : [['parent_account', '=', '']],
+    limit: 200,
+    enabled: !isEdit,
+  } as any);
+
+  // Auto-suggest account_number when parent changes (create mode only)
+  useEffect(() => {
+    if (isEdit) return;
+    if (!values.parent_account) return;
+    const parent = (parents ?? []).find((p) => p.name === values.parent_account);
+    const parentCode = parent?.account_number ?? '';
+    if (!parentCode) return;
+    const nums = (siblings ?? [])
+      .map((s) => s.account_number ?? '')
+      .filter((c) => c.startsWith(parentCode) && c !== parentCode)
+      .map((c) => parseInt(c.slice(parentCode.length), 10))
+      .filter((n) => !isNaN(n));
+    const nextSuffix = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    const suggested = parentCode + String(nextSuffix).padStart(2, '0');
+    setValues((v) => ({ ...v, account_number: suggested }));
+  }, [values.parent_account, siblings, parents, isEdit]);
+
   function set<K extends keyof AccountDoc>(key: K, val: AccountDoc[K]) {
     setValues((p) => ({ ...p, [key]: val }));
   }

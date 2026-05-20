@@ -48,6 +48,7 @@ function Body() {
   const [status, setStatus] = useState<'' | 'draft' | 'posted' | 'cancelled'>('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [voucherType, setVoucherType] = useState('');
 
   const { data: total } = useFrappeGetDocCount('Journal Entry');
   const { data: draft } = useFrappeGetDocCount('Journal Entry', [['docstatus', '=', 0]]);
@@ -62,8 +63,9 @@ function Body() {
     if (status === 'cancelled') f.push(['docstatus', '=', 2]);
     if (fromDate) f.push(['posting_date', '>=', fromDate]);
     if (toDate) f.push(['posting_date', '<=', toDate]);
+    if (voucherType) f.push(['voucher_type', '=', voucherType]);
     return f as any;
-  }, [search, status, fromDate, toDate]);
+  }, [search, status, fromDate, toDate, voucherType]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<JERow>('Journal Entry', {
     fields: ['name', 'posting_date', 'user_remark', 'total_debit', 'total_credit', 'docstatus', 'voucher_type'],
@@ -109,6 +111,15 @@ function Body() {
           </select>
           <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-36 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm" placeholder="من تاريخ" />
           <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-36 px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm" placeholder="إلى تاريخ" />
+          <select value={voucherType} onChange={(e) => setVoucherType(e.target.value)} className="px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm">
+            <option value="">كل الأنواع</option>
+            <option value="Journal Entry">قيد يدوي</option>
+            <option value="Sales Invoice">مبيعات</option>
+            <option value="Purchase Invoice">مشتريات</option>
+            <option value="Payment Entry">سند دفع / قبض</option>
+            <option value="Credit Note">إشعار دائن</option>
+            <option value="Debit Note">إشعار مدين</option>
+          </select>
         </div>
       </div>
 

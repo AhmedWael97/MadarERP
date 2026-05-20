@@ -11,7 +11,7 @@
  *   description  → madaar_description      (Custom Field)
  *   is_active    → disabled (inverse)
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFrappeCreateDoc, useFrappeGetDoc, useFrappeGetDocList, useFrappeUpdateDoc } from 'frappe-react-sdk';
 import { toast } from 'sonner';
@@ -63,11 +63,38 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
   const saving = creating || updating;
 
-  const { data: parents } = useFrappeGetDocList<{ name: string; cost_center_name?: string }>('Cost Center', {
-    fields: ['name', 'cost_center_name'],
+  const { data: parents } = useFrappeGetDocList<{ name: string; cost_center_name?: string; madaar_cost_center_code?: string }>('Cost Center', {
+    fields: ['name', 'cost_center_name', 'madaar_cost_center_code'],
     filters: [['is_group', '=', 1]],
     limit: 200,
   });
+
+  const { data: siblings } = useFrappeGetDocList<{ madaar_cost_center_code?: string }>('Cost Center', {
+    fields: ['madaar_cost_center_code'],
+    filters: values.parent_cost_center
+      ? [['parent_cost_center', '=', values.parent_cost_center]]
+      : [['parent_cost_center', '=', '']],
+    limit: 200,
+  } as any);
+
+  // Auto-suggest code when parent changes (create mode only)
+  const suggestedCode = useMemo(() => {
+    if (isEdit) return null;
+    const parent = (parents ?? []).find((p) => p.name === values.parent_cost_center);
+    const parentCode = parent?.madaar_cost_center_code ?? '';
+    if (!parentCode) return null;
+    const nums = (siblings ?? [])
+      .map((s) => s.madaar_cost_center_code ?? '')
+      .filter((c) => c.startsWith(parentCode) && c !== parentCode)
+      .map((c) => parseInt(c.slice(parentCode.length), 10))
+      .filter((n) => !isNaN(n));
+    const nextSuffix = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    return parentCode + String(nextSuffix).padStart(2, '0');
+  }, [isEdit, values.parent_cost_center, siblings, parents]);
+
+  useEffect(() => {
+    if (suggestedCode !== null) set('madaar_cost_center_code', suggestedCode);
+  }, [suggestedCode]);
 
   function set<K extends keyof CostCenterDoc>(key: K, val: CostCenterDoc[K]) {
     setValues((p) => ({ ...p, [key]: val }));
