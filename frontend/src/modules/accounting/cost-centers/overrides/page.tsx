@@ -1,22 +1,22 @@
-import FleetEntityList from '@/modules/fleet/FleetEntityList';
-// ERPNext Cost Center: cost_center_name, cost_center_number, parent_cost_center,
-// company, is_group, disabled. The reference Blade view shows this as a flat
-// list with نوع (group/leaf) + المستوى (parent) — render the same here.
+import TreeOrTableList from '@/components/erp/TreeOrTableList';
+// ERPNext Cost Center: hierarchy via parent_cost_center. Defaults to the tree
+// view (matches the reference Blade view) with a Table toggle for searching.
 export default function Page() {
   return (
-    <FleetEntityList
+    <TreeOrTableList
       cfg={{
         doctype: 'Cost Center',
         title: 'مراكز التكلفة',
         subtitle: 'هيكل تجميع المصروفات والإيرادات حسب القسم أو المشروع',
         basePath: '/accounting/cost-centers',
         newLabel: 'مركز تكلفة جديد',
+        parentField: 'parent_cost_center',
         searchField: 'cost_center_name',
+        defaultView: 'tree',
         columns: [
-          { fieldname: 'cost_center_number', header: 'الكود' },
           { fieldname: 'cost_center_name',   header: 'الاسم' },
+          { fieldname: 'cost_center_number', header: 'الكود' },
           { fieldname: 'is_group',           header: 'النوع', isBadge: true },
-          { fieldname: 'parent_cost_center', header: 'المستوى الأعلى' },
           { fieldname: 'company',            header: 'الشركة' },
           { fieldname: 'disabled',           header: 'الحالة', isBadge: true },
         ],

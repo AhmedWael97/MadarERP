@@ -1,24 +1,25 @@
-import FleetEntityList from '@/modules/fleet/FleetEntityList';
+import TreeOrTableList from '@/components/erp/TreeOrTableList';
 // ERPNext Account: account_name, account_number, account_type, root_type,
-// is_group, balance_must_be, parent_account, company, disabled.
-// Rendering as a flat searchable list — easier to scan than the tree view,
-// and avoids the auto-generated TreeView placeholder that was erroring out.
+// is_group, parent_account, company, disabled. The hierarchy is by
+// parent_account → child accounts. Defaults to the tree view (matches the
+// reference Blade view) with a toggle to a flat searchable table.
 export default function Page() {
   return (
-    <FleetEntityList
+    <TreeOrTableList
       cfg={{
         doctype: 'Account',
         title: 'دليل الحسابات',
         subtitle: 'شجرة حسابات النظام — الأصول والخصوم والإيرادات والمصروفات',
         basePath: '/accounting/chart-of-accounts',
         newLabel: 'حساب جديد',
+        parentField: 'parent_account',
         searchField: 'account_name',
+        defaultView: 'tree',
         columns: [
-          { fieldname: 'account_number', header: 'الكود' },
           { fieldname: 'account_name',   header: 'اسم الحساب' },
+          { fieldname: 'account_number', header: 'الكود' },
           { fieldname: 'account_type',   header: 'النوع' },
           { fieldname: 'root_type',      header: 'الطبيعة', isBadge: true },
-          { fieldname: 'parent_account', header: 'الحساب الأب' },
           { fieldname: 'is_group',       header: 'مجموعة', isBadge: true },
           { fieldname: 'disabled',       header: 'الحالة', isBadge: true },
         ],
