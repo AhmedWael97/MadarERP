@@ -1,17 +1,4 @@
-// AUTO-GENERATED — do not edit. Create src/modules/<module>/<slug>/overrides/page.tsx to override.
-import { PageShell } from '@/components/erp/PageShell';
-import { ModuleHubCards } from '@/components/erp/ModuleHub';
-import { RequirePerm } from '@/lib/auth/RequirePerm';
-import { useTranslation } from 'react-i18next';
-import meta from './meta';
-
-export default function Page() {
-  const { t } = useTranslation();
-  
-  
-  return (
-    <PageShell title={t(meta.titleKey, { defaultValue: "Dashboard" })} >
-      <ModuleHubCards module={meta.module} currentPath={meta.routePath} />
-    </PageShell>
-  );
-}
+// OVERRIDDEN by src/modules/core/dashboard/overrides/page.tsx.
+// The generator (scripts/generate-pages.mjs) detected that file and emitted
+// this thin re-export instead of the default scaffold.
+export { default } from '@/modules/core/dashboard/overrides/page';
