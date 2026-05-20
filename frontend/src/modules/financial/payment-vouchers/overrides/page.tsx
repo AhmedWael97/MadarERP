@@ -78,6 +78,9 @@ function Body() {
     return f;
   }, [fromDate, toDate, mop, statusFilter, partyTypeFilter, partyFilter]);
 
+  // Explicit swrKey makes the cache scope crystal clear (and prevents any
+  // collision with /financial/receipt-vouchers which also queries Payment Entry).
+  const swrKey = `pe:pay:${JSON.stringify(filters)}`;
   const { data: rows, isLoading, mutate: refresh } = useFrappeGetDocList<PERow>(
     'Payment Entry',
     {
@@ -86,8 +89,7 @@ function Body() {
       limit: 200,
       orderBy: { field: 'posting_date', order: 'desc' },
     },
-    undefined,
-    { revalidateOnMount: true, revalidateOnFocus: true, revalidateIfStale: true } as any,
+    swrKey,
   );
 
   const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 50 });

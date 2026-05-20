@@ -172,12 +172,11 @@ function Body({
   const { mutate: mutateCache } = useSWRConfig();
   const saving = creating || updating || submitting;
 
-  // After save/submit the user navigates back to the list. SWR caches the list
-  // under keys derived from the doctype + args, so invalidating every key that
-  // mentions 'Payment Entry' forces the list page to refetch on mount.
+  // Invalidate the Pay / Receive list caches (the lists key on 'pe:pay:*'
+  // and 'pe:receive:*' — see receipt-vouchers/payment-vouchers overrides).
   function invalidateListCaches() {
     mutateCache(
-      (key: unknown) => typeof key === 'string' && key.includes('Payment Entry'),
+      (key: unknown) => typeof key === 'string' && (key.startsWith('pe:pay') || key.startsWith('pe:receive')),
       undefined,
       { revalidate: true },
     );

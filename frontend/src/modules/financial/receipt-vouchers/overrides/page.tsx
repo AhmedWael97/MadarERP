@@ -80,8 +80,9 @@ function Body() {
     return f;
   }, [fromDate, toDate, mop, statusFilter, partyTypeFilter, partyFilter]);
 
-  // revalidateOnMount + revalidateOnFocus = the new row from a sister page or
-  // desk shows up the instant the user returns to this tab.
+  // Explicit swrKey keeps this list's cache distinct from the sister
+  // payment-vouchers page (both query Payment Entry).
+  const swrKey = `pe:receive:${JSON.stringify(filters)}`;
   const { data: rows, isLoading, mutate: refresh } = useFrappeGetDocList<PERow>(
     'Payment Entry',
     {
@@ -90,8 +91,7 @@ function Body() {
       limit: 200,
       orderBy: { field: 'posting_date', order: 'desc' },
     },
-    undefined,
-    { revalidateOnMount: true, revalidateOnFocus: true, revalidateIfStale: true } as any,
+    swrKey,
   );
 
   const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 50 });
