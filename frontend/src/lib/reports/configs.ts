@@ -556,6 +556,145 @@ export const REPORT_CONFIGS: Record<string, ReportConfig> = {
     ],
   },
 
+  '/financial/reports/bank-statement': {
+    doctype: 'GL Entry',
+    fields: ['posting_date', 'account', 'voucher_type', 'voucher_no', 'against', 'debit', 'credit', 'party'],
+    baseFilters: [['is_cancelled', '=', 0]],
+    // Pick the bank/cash account from a dropdown; until one is chosen the
+    // table is empty (the GL Entry doctype is huge — never query unfiltered).
+    filters: [
+      { fieldname: 'account', label: 'الحساب البنكي', type: 'link', options: 'Account' },
+      { fieldname: 'posting_date', label: 'الفترة', type: 'daterange' },
+    ],
+    orderBy: { field: 'posting_date', order: 'asc' },
+    limit: 2000,
+    columns: [
+      { id: 'posting_date', header: 'التاريخ', fieldtype: 'Date' },
+      { id: 'voucher_type', header: 'النوع' },
+      { id: 'voucher_no', header: 'المرجع' },
+      { id: 'against', header: 'مقابل' },
+      { id: 'party', header: 'الطرف' },
+      { id: 'debit', header: 'إيداع', fieldtype: 'Currency', isMeasure: true },
+      { id: 'credit', header: 'سحب', fieldtype: 'Currency', isMeasure: true },
+    ],
+    kpis: [
+      { label: 'إجمالي الإيداع', compute: (r) => r.reduce((s, x) => s + (Number(x.debit) || 0), 0), format: currency, variant: 'emerald' },
+      { label: 'إجمالي السحب', compute: (r) => r.reduce((s, x) => s + (Number(x.credit) || 0), 0), format: currency, variant: 'rose' },
+      {
+        label: 'الرصيد',
+        compute: (r) => r.reduce((s, x) => s + (Number(x.debit) || 0) - (Number(x.credit) || 0), 0),
+        format: currency,
+        variant: 'violet',
+      },
+      { label: 'عدد الحركات', compute: (r) => r.length, variant: 'teal' },
+    ],
+    chart: {
+      title: 'الرصيد التراكمي',
+      build: (rows) => {
+        const sorted = [...rows].sort((a, b) =>
+          String(a.posting_date ?? '').localeCompare(String(b.posting_date ?? '')),
+        );
+        if (sorted.length === 0) return null;
+        let running = 0;
+        const points = sorted.map((r) => {
+          running += (Number(r.debit) || 0) - (Number(r.credit) || 0);
+          return [String(r.posting_date ?? '').slice(0, 10), running] as [string, number];
+        });
+        return {
+          tooltip: { trigger: 'axis' },
+          grid: { left: 60, right: 20, bottom: 40, top: 20 },
+          xAxis: { type: 'category', data: points.map((p) => p[0]) },
+          yAxis: { type: 'value' },
+          series: [
+            {
+              type: 'line',
+              smooth: true,
+              areaStyle: {},
+              data: points.map((p) => p[1]),
+              itemStyle: { color: '#3b82f6' },
+            },
+          ],
+        };
+      },
+    },
+  },
+
+  '/financial/reports/cash-flow': {
+    doctype: 'Payment Entry',
+    fields: ['name', 'posting_date', 'payment_type', 'party_type', 'party', 'paid_amount', 'mode_of_payment'],
+    baseFilters: [['docstatus', '=', 1]],
+    filters: [
+      { fieldname: 'posting_date', label: 'الفترة', type: 'daterange' },
+      { fieldname: 'payment_type', label: 'النوع', type: 'select', options: ['Receive', 'Pay', 'Internal Transfer'] },
+      { fieldname: 'mode_of_payment', label: 'طريقة الدفع', type: 'link', options: 'Mode of Payment' },
+    ],
+    orderBy: { field: 'posting_date', order: 'desc' },
+    columns: [
+      { id: 'posting_date', header: 'التاريخ', fieldtype: 'Date' },
+      { id: 'name', header: 'رقم السند' },
+      { id: 'payment_type', header: 'النوع' },
+      { id: 'party', header: 'الطرف' },
+      { id: 'mode_of_payment', header: 'طريقة الدفع' },
+      { id: 'paid_amount', header: 'المبلغ', fieldtype: 'Currency', isMeasure: true },
+    ],
+    kpis: [
+      {
+        label: 'التدفقات الداخلة',
+        compute: (r) =>
+          r.filter((x) => x.payment_type === 'Receive').reduce((s, x) => s + (Number(x.paid_amount) || 0), 0),
+        format: currency,
+        variant: 'emerald',
+      },
+      {
+        label: 'التدفقات الخارجة',
+        compute: (r) =>
+          r.filter((x) => x.payment_type === 'Pay').reduce((s, x) => s + (Number(x.paid_amount) || 0), 0),
+        format: currency,
+        variant: 'rose',
+      },
+      {
+        label: 'الصافي',
+        compute: (r) =>
+          r.reduce(
+            (s, x) =>
+              s + (x.payment_type === 'Receive' ? Number(x.paid_amount) || 0 : -(Number(x.paid_amount) || 0)),
+            0,
+          ),
+        format: currency,
+        variant: 'violet',
+      },
+      { label: 'عدد الحركات', compute: (r) => r.length, variant: 'teal' },
+    ],
+    chart: {
+      title: 'التدفق النقدي الشهري',
+      build: (rows) => {
+        const byMonth = new Map<string, { in: number; out: number }>();
+        for (const r of rows) {
+          const k = String(r.posting_date ?? '').slice(0, 7);
+          if (!k) continue;
+          const slot = byMonth.get(k) ?? { in: 0, out: 0 };
+          const amt = Number(r.paid_amount) || 0;
+          if (r.payment_type === 'Receive') slot.in += amt;
+          else if (r.payment_type === 'Pay') slot.out += amt;
+          byMonth.set(k, slot);
+        }
+        const months = [...byMonth.keys()].sort();
+        if (months.length === 0) return null;
+        return {
+          tooltip: { trigger: 'axis' },
+          legend: { data: ['داخل', 'خارج'] },
+          grid: { left: 60, right: 20, bottom: 40, top: 30 },
+          xAxis: { type: 'category', data: months },
+          yAxis: { type: 'value' },
+          series: [
+            { name: 'داخل', type: 'bar', data: months.map((m) => byMonth.get(m)!.in), itemStyle: { color: '#10b981' } },
+            { name: 'خارج', type: 'bar', data: months.map((m) => byMonth.get(m)!.out), itemStyle: { color: '#f43f5e' } },
+          ],
+        };
+      },
+    },
+  },
+
   '/financial/reports/vouchers': {
     doctype: 'Payment Entry',
     fields: ['name', 'posting_date', 'payment_type', 'party_name', 'mode_of_payment', 'paid_amount', 'docstatus'],
