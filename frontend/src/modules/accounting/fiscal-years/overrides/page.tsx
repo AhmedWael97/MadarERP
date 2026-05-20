@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFrappeGetDocList } from 'frappe-react-sdk';
-import { Calendar, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Calendar, CalendarDays, Pencil, Plus } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -148,6 +148,13 @@ function Body() {
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-1">
+                        <Link
+                          to={`/accounting/fiscal-years/${encodeURIComponent(r.name)}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition"
+                          title="إدارة الفترات"
+                        >
+                          <CalendarDays size={12} /> الفترات
+                        </Link>
                         <button onClick={() => navigate(`/accounting/fiscal-years/${encodeURIComponent(r.name)}/edit`)} className="p-1.5 rounded-lg text-slate-400 hover:text-[color:var(--color-brand-600)] hover:bg-[color:var(--color-brand-50,#ecfdf5)] transition" aria-label="edit"><Pencil size={16} /></button>
                       </div>
                     </td>

@@ -311,6 +311,14 @@ export const router = createBrowserRouter([
           return { Component: mod.default };
         },
       },
+      // --- Accounting: Fiscal Year detail (periods, close/open) ---
+      {
+        path: 'accounting/fiscal-years/:id',
+        lazy: async () => {
+          const mod = await import('../modules/accounting/FiscalYearDetail');
+          return { Component: mod.default };
+        },
+      },
       // --- Treasury: Currencies CRUD (Frappe Currency doctype) ---
       {
         path: 'treasury/currencies',
