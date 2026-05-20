@@ -172,11 +172,12 @@ function Body({
   const { mutate: mutateCache } = useSWRConfig();
   const saving = creating || updating || submitting;
 
-  // Invalidate the Pay / Receive list caches (the lists key on 'pe:pay:*'
-  // and 'pe:receive:*' — see receipt-vouchers/payment-vouchers overrides).
+  // The list pages use the SDK's default SWR key (a string built from the
+  // resource URL + query params), so any cached `/api/resource/Payment Entry`
+  // entry needs to be revalidated after a save.
   function invalidateListCaches() {
     mutateCache(
-      (key: unknown) => typeof key === 'string' && (key.startsWith('pe:pay') || key.startsWith('pe:receive')),
+      (key: unknown) => typeof key === 'string' && key.includes('/api/resource/Payment Entry'),
       undefined,
       { revalidate: true },
     );

@@ -78,10 +78,10 @@ function Body() {
     return f;
   }, [fromDate, toDate, mop, statusFilter, partyTypeFilter, partyFilter]);
 
-  // Explicit swrKey makes the cache scope crystal clear (and prevents any
-  // collision with /financial/receipt-vouchers which also queries Payment Entry).
-  const swrKey = `pe:pay:${JSON.stringify(filters)}`;
-  const { data: rows, isLoading, mutate: refresh } = useFrappeGetDocList<PERow>(
+  // No third arg — fall back to the SDK's default URL-based SWR key. That key
+  // already includes the `filters` (so payment_type=Pay vs Receive cannot
+  // collide with the receipt-vouchers page).
+  const { data: rows, isLoading, error, mutate: refresh } = useFrappeGetDocList<PERow>(
     'Payment Entry',
     {
       fields: ['name', 'posting_date', 'party_type', 'party', 'custom_payee_name', 'paid_amount', 'mode_of_payment', 'docstatus'],
@@ -89,7 +89,6 @@ function Body() {
       limit: 200,
       orderBy: { field: 'posting_date', order: 'desc' },
     },
-    swrKey,
   );
 
   const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 50 });
@@ -275,6 +274,11 @@ function Body() {
                 <tr>
                   <td colSpan={7} className="px-5 py-12 text-center">
                     <p className="text-slate-400 mb-3">لا توجد سندات مطابقة</p>
+                    {error && (
+                      <p className="text-xs text-red-500 mb-3 font-mono" dir="ltr">
+                        {(error as any)?.message ?? String(error)}
+                      </p>
+                    )}
                     <button onClick={() => refresh()} className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-600 hover:text-rose-700">
                       <RefreshCcw size={14} /> إعادة المحاولة
                     </button>
