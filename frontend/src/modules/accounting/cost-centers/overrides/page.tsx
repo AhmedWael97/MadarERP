@@ -13,6 +13,7 @@ export default function Page() {
         parentField: 'parent_cost_center',
         searchField: 'cost_center_name',
         defaultView: 'tree',
+        labelFields: { fields: ['cost_center_number', 'cost_center_name'], separator: ' — ' },
         columns: [
           { fieldname: 'cost_center_name',   header: 'الاسم' },
           { fieldname: 'cost_center_number', header: 'الكود' },

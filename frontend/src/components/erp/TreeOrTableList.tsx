@@ -36,6 +36,13 @@ export interface TreeOrTableCfg {
     isBadge?: boolean;
   }>;
   badgeMap?: Record<string, { label: string; cls: string }>;
+  /**
+   * When provided, the tree view's first cell renders these fields joined by
+   * `separator` (default " — ") instead of just column[0].fieldname. Useful for
+   * showing `{code} — {name}` inline on the hierarchy node.
+   * Empty / null field values are filtered out before joining.
+   */
+  labelFields?: { fields: string[]; separator?: string };
 }
 
 interface TreeRow extends Record<string, unknown> {
@@ -84,6 +91,9 @@ function Body({ cfg }: { cfg: TreeOrTableCfg }) {
     const set = new Set<string>(['name', cfg.parentField]);
     if (cfg.columns.find((c) => c.fieldname === 'is_group') === undefined) set.add('is_group');
     for (const c of cfg.columns) set.add(c.fieldname);
+    if (cfg.labelFields) {
+      for (const f of cfg.labelFields.fields) set.add(f);
+    }
     return Array.from(set);
   }, [cfg]);
 
@@ -252,6 +262,33 @@ function Body({ cfg }: { cfg: TreeOrTableCfg }) {
 
                       // First column carries the indent + chevron in tree mode.
                       if (idx === 0 && view === 'tree') {
+                        let treeLabel: React.ReactNode = cell;
+                        if (cfg.labelFields) {
+                          const sep = cfg.labelFields.separator ?? ' — ';
+                          const parts = cfg.labelFields.fields
+                            .map((f) => r[f])
+                            .filter((v) => v !== null && v !== undefined && v !== '');
+                          if (parts.length > 0) {
+                            treeLabel = (
+                              <span className="flex items-baseline gap-1">
+                                {parts.map((part, pi) => (
+                                  <span key={pi}>
+                                    {pi === 0 ? (
+                                      <span className="font-mono text-xs text-[color:var(--color-brand-600)] font-bold">
+                                        {String(part)}
+                                      </span>
+                                    ) : (
+                                      <span className="font-semibold">{String(part)}</span>
+                                    )}
+                                    {pi < parts.length - 1 && (
+                                      <span className="text-slate-400 mx-0.5">{sep}</span>
+                                    )}
+                                  </span>
+                                ))}
+                              </span>
+                            );
+                          }
+                        }
                         return (
                           <td key={c.fieldname} className="px-5 py-3">
                             <div className="flex items-center gap-1.5" style={{ paddingInlineStart: `${depth * 18}px` }}>
@@ -262,7 +299,7 @@ function Body({ cfg }: { cfg: TreeOrTableCfg }) {
                               ) : (
                                 <span className="inline-block w-[18px]" />
                               )}
-                              <span className={c.fieldname === 'name' ? 'font-mono font-semibold text-[color:var(--color-brand-600)]' : 'font-semibold'}>{cell}</span>
+                              <span className={c.fieldname === 'name' ? 'font-mono font-semibold text-[color:var(--color-brand-600)]' : 'font-semibold'}>{treeLabel}</span>
                             </div>
                           </td>
                         );

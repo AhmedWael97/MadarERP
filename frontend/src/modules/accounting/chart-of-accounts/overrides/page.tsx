@@ -15,6 +15,7 @@ export default function Page() {
         parentField: 'parent_account',
         searchField: 'account_name',
         defaultView: 'tree',
+        labelFields: { fields: ['account_number', 'account_name'], separator: ' — ' },
         columns: [
           { fieldname: 'account_name',   header: 'اسم الحساب' },
           { fieldname: 'account_number', header: 'الكود' },
