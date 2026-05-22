@@ -70,11 +70,12 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   // Parents: only group CCs are eligible. Leave the dropdown's empty option in
   // place so the user can create a root-level CC by NOT picking a parent.
-  const { data: parents } = useFrappeGetDocList<{ name: string; cost_center_name?: string; cost_center_number?: string }>('Cost Center', {
-    fields: ['name', 'cost_center_name', 'cost_center_number'],
+  const { data: parents } = useFrappeGetDocList<{ name: string; cost_center_name?: string; cost_center_number?: string; company?: string }>('Cost Center', {
+    fields: ['name', 'cost_center_name', 'cost_center_number', 'company'],
     filters: [['is_group', '=', 1]],
     limit: 200,
   });
+  const { data: companies } = useFrappeGetDocList<{ name: string }>('Company', { fields: ['name'], limit: 50 });
 
   // Siblings — needed to auto-suggest the next code when parent changes.
   const { data: siblings } = useFrappeGetDocList<{ cost_center_number?: string }>('Cost Center', {
@@ -106,10 +107,10 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   function set<K extends keyof CostCenterDoc>(key: K, val: CostCenterDoc[K]) {
     setValues((p) => {
-      // Clear the suggested code whenever the user changes the parent so the
-      // auto-suggest effect re-runs with the new parent's siblings.
+      // Clear the suggested code and auto-fill company whenever the user changes the parent.
       if (key === 'parent_cost_center' && !isEdit) {
-        return { ...p, [key]: val, cost_center_number: '' };
+        const parent = (parents ?? []).find((pr) => pr.name === val);
+        return { ...p, [key]: val, cost_center_number: '', company: parent?.company ?? p.company };
       }
       return { ...p, [key]: val };
     });
@@ -158,6 +159,12 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
                   {p.cost_center_number ? `${p.cost_center_number} — ${p.cost_center_name ?? p.name}` : (p.cost_center_name ?? p.name)}
                 </option>
               ))}
+            </select>
+          </Field>
+          <Field label="الشركة" required>
+            <select required value={values.company ?? ''} onChange={(e) => set('company', e.target.value)} className={INPUT}>
+              <option value="">اختر الشركة</option>
+              {(companies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
             </select>
           </Field>
           <Field label="الاسم بالعربية" required>

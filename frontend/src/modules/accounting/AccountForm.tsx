@@ -42,6 +42,7 @@ interface AccountDoc {
   account_name?: string;
   account_number?: string;
   parent_account?: string;
+  company?: string;
   root_type?: RootType;
   account_currency?: string;
   is_group?: 0 | 1;
@@ -83,13 +84,14 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
   const saving = creating || updating;
 
-  const { data: parents } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string }>('Account', {
-    fields: ['name', 'account_name', 'account_number'],
+  const { data: parents } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string; company?: string }>('Account', {
+    fields: ['name', 'account_name', 'account_number', 'company'],
     filters: [['is_group', '=', 1]],
     limit: 500,
     orderBy: { field: 'account_number', order: 'asc' },
   });
   const { data: currencies } = useFrappeGetDocList<{ name: string }>('Currency', { fields: ['name'], limit: 100 });
+  const { data: companies } = useFrappeGetDocList<{ name: string }>('Company', { fields: ['name'], limit: 50 });
 
   const { data: siblings } = useFrappeGetDocList<{ account_number?: string }>('Account', {
     fields: ['account_number'],
@@ -105,6 +107,10 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
     if (isEdit) return;
     if (!values.parent_account) return;
     const parent = (parents ?? []).find((p) => p.name === values.parent_account);
+    // Auto-fill company from parent
+    if (parent?.company) {
+      setValues((v) => ({ ...v, company: parent.company }));
+    }
     const parentCode = parent?.account_number ?? '';
     if (!parentCode) return;
     const nums = (siblings ?? [])
@@ -168,6 +174,12 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
             <select value={values.parent_account ?? ''} onChange={(e) => set('parent_account', e.target.value)} className={INPUT}>
               <option value="">— حساب رئيسي (بدون أب) —</option>
               {parentOptions.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+            </select>
+          </Field>
+          <Field label="الشركة" required>
+            <select required value={values.company ?? ''} onChange={(e) => set('company', e.target.value)} className={INPUT}>
+              <option value="">اختر الشركة</option>
+              {(companies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
             </select>
           </Field>
           <Field label="الاسم بالعربية" required>
