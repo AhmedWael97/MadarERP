@@ -37,8 +37,8 @@ export default function SuperAdminSubscriptions() {
   const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
 
-  const { data: resp } = useFrappeGetCall<{ message: SubscriptionRow[] }>('madaar_core.api.list_tenant_subscriptions');
-  const all: SubscriptionRow[] = resp?.message ?? [];
+  const { data: resp } = useFrappeGetCall<{ message: { rows: SubscriptionRow[]; total: number } }>('madaar_core.api.list_tenant_subscriptions');
+  const all: SubscriptionRow[] = resp?.message?.rows ?? [];
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');

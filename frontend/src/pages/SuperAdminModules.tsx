@@ -38,8 +38,8 @@ export default function SuperAdminModules() {
   const isAr = i18n.language === 'ar';
 
   // Fetch all companies to compute per-module usage counts
-  const { data: tenantsResp } = useFrappeGetCall<{ message: TenantRow[] }>('madaar_core.api.list_tenant_subscriptions');
-  const tenants: TenantRow[] = tenantsResp?.message ?? [];
+  const { data: tenantsResp } = useFrappeGetCall<{ message: { rows: TenantRow[]; total: number } }>('madaar_core.api.list_tenant_subscriptions');
+  const tenants: TenantRow[] = tenantsResp?.message?.rows ?? [];
 
   // Count how many companies have each module enabled
   function usageCount(moduleKey: string): number {
