@@ -236,6 +236,30 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      // --- Accounting: Cost Centers tree (override uses TreeOrTableList with explicit fields) ---
+      {
+        path: 'accounting/cost-centers',
+        lazy: async () => {
+          const mod = await import('../modules/accounting/cost-centers/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      // --- Accounting: Chart of Accounts tree (override uses TreeOrTableList with explicit fields) ---
+      {
+        path: 'accounting/chart-of-accounts',
+        lazy: async () => {
+          const mod = await import('../modules/accounting/chart-of-accounts/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      // --- Accounting: Fiscal Years list (override has rich Arabic UI with period formatter) ---
+      {
+        path: 'accounting/fiscal-years',
+        lazy: async () => {
+          const mod = await import('../modules/accounting/fiscal-years/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Treasury: Bank institutions (separate from Bank Account) ---
       {
         path: 'treasury/bank-institutions',
