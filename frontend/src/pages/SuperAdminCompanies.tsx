@@ -7,6 +7,35 @@ import { PageShell } from '../components/erp/PageShell';
 import { FormCard } from '../components/erp/FormCard';
 import { FormField, FIELD_INPUT_CLASS, FormSubmit, FormCancel, FormInfoBanner, FormBackButton } from '../components/erp/FormField';
 
+const CURRENCIES = [
+  { code: 'EGP', nameAr: 'جنيه مصري' },
+  { code: 'SAR', nameAr: 'ريال سعودي' },
+  { code: 'AED', nameAr: 'درهم إماراتي' },
+  { code: 'KWD', nameAr: 'دينار كويتي' },
+  { code: 'BHD', nameAr: 'دينار بحريني' },
+  { code: 'OMR', nameAr: 'ريال عماني' },
+  { code: 'QAR', nameAr: 'ريال قطري' },
+  { code: 'JOD', nameAr: 'دينار أردني' },
+  { code: 'MAD', nameAr: 'درهم مغربي' },
+  { code: 'USD', nameAr: 'دولار أمريكي' },
+  { code: 'EUR', nameAr: 'يورو' },
+  { code: 'GBP', nameAr: 'جنيه إسترليني' },
+  { code: 'TRY', nameAr: 'ليرة تركية' },
+];
+
+const COUNTRIES = [
+  'Egypt', 'Saudi Arabia', 'United Arab Emirates', 'Kuwait', 'Qatar',
+  'Bahrain', 'Oman', 'Jordan', 'Lebanon', 'Morocco', 'Algeria',
+  'Tunisia', 'Libya', 'Sudan', 'Iraq', 'Yemen', 'Palestine',
+  'United States', 'United Kingdom', 'Germany', 'France', 'Turkey',
+];
+
+const COA_TEMPLATES = [
+  { value: '',                            labelAr: '— افتراضي حسب الدولة —' },
+  { value: 'Standard',                    labelAr: 'Standard' },
+  { value: 'Standard with IFRS Accounts', labelAr: 'Standard with IFRS Accounts' },
+];
+
 const ALL_MODULES: Array<{ key: string; nameAr: string; isCore: boolean }> = [
   { key: 'accounting',    nameAr: 'الحسابات',             isCore: true  },
   { key: 'sales',         nameAr: 'المبيعات',             isCore: true  },
@@ -185,6 +214,12 @@ export function SuperAdminCompanyForm() {
     monthly_amount:           existing?.monthly_amount           ?? 0,
     currency:                 existing?.currency                 ?? 'EGP',
     notes:                    existing?.notes                    ?? '',
+    abbr:              existing?.abbr              ?? '',
+    default_currency:  existing?.default_currency  ?? 'EGP',
+    country:           existing?.country           ?? 'Egypt',
+    chart_of_accounts: existing?.chart_of_accounts ?? '',
+    fy_start_date:     existing?.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
+    fy_end_date:       existing?.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
     admin_name_ar: '',
     admin_email: '',
     admin_password: '',
@@ -218,6 +253,12 @@ export function SuperAdminCompanyForm() {
         monthly_amount:           existing.monthly_amount           ?? 0,
         currency:                 existing.currency                 ?? 'EGP',
         notes:                    existing.notes                    ?? '',
+        abbr:              existing.abbr              ?? '',
+        default_currency:  existing.default_currency  ?? 'EGP',
+        country:           existing.country           ?? 'Egypt',
+        chart_of_accounts: existing.chart_of_accounts ?? '',
+        fy_start_date:     existing.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
+        fy_end_date:       existing.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
         admin_name_ar: '',
         admin_email: '',
         admin_password: '',
@@ -275,7 +316,21 @@ export function SuperAdminCompanyForm() {
               <input value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} required className={FIELD_INPUT_CLASS} />
             </FormField>
             <FormField label={isAr ? 'الكود (Company ID)' : 'Company ID'} required hint={isAr ? 'يستخدم كمعرف فريد للشركة' : 'Unique identifier — used in URLs'}>
-              <input value={form.tenant_company} onChange={(e) => setForm({ ...form, tenant_company: e.target.value })} required disabled={isEdit} className={FIELD_INPUT_CLASS} />
+              <input
+                value={form.tenant_company}
+                onChange={(e) => {
+                  const tc = e.target.value;
+                  setForm((prev) => ({
+                    ...prev,
+                    tenant_company: tc,
+                    // auto-fill abbr from first 4 alphanumeric chars while abbr is still empty
+                    ...(prev.abbr === '' ? { abbr: tc.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() } : {}),
+                  }));
+                }}
+                required
+                disabled={isEdit}
+                className={FIELD_INPUT_CLASS}
+              />
             </FormField>
             <FormField label={isAr ? 'الإيميل' : 'Email'}>
               <input type="email" value={form.owner_email} onChange={(e) => setForm({ ...form, owner_email: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
@@ -299,6 +354,55 @@ export function SuperAdminCompanyForm() {
             </FormField>
             <FormField label={isAr ? 'الحد الأقصى للمستخدمين' : 'Max users'}>
               <input type="number" min={1} max={9999} value={form.max_users || ''} onChange={(e) => setForm({ ...form, max_users: parseInt(e.target.value) || 5 })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+          </div>
+        </FormCard>
+
+        {/* ── ERPNext Company Setup ─────────────────────────────────────── */}
+        <FormCard color="teal" title={isAr ? 'إعداد الشركة في النظام' : 'ERPNext company setup'} icon={<Globe size={20} />}>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            {isAr
+              ? 'هذه المعلومات تُستخدم لإنشاء الشركة في ERPNext وتحديد دليل الحسابات والسنة المالية تلقائياً. اختصار الشركة يُضاف لنهاية كل اسم حساب.'
+              : 'Used to create the ERPNext Company record, auto-generate the chart of accounts, and configure the fiscal year. The abbreviation is appended to every account name.'}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField label={isAr ? 'اختصار الشركة (Abbr)' : 'Company abbreviation'} required hint={isAr ? 'مثال: MDD — يُلحق بكل أسماء الحسابات تلقائياً' : 'e.g. MDD — auto-appended to all account names'}>
+              <input
+                value={form.abbr}
+                onChange={(e) => setForm({ ...form, abbr: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) })}
+                required
+                maxLength={5}
+                placeholder="ABC"
+                dir="ltr"
+                className={FIELD_INPUT_CLASS}
+              />
+            </FormField>
+            <FormField label={isAr ? 'العملة الافتراضية' : 'Default currency'} required>
+              <select value={form.default_currency} onChange={(e) => setForm({ ...form, default_currency: e.target.value })} required className={FIELD_INPUT_CLASS} dir="ltr">
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.code} — {c.nameAr}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'الدولة' : 'Country'} required>
+              <select value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} required className={FIELD_INPUT_CLASS}>
+                {COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'قالب دليل الحسابات' : 'Chart of accounts template'} hint={isAr ? 'اتركه فارغاً لاستخدام القالب الافتراضي للدولة' : 'Leave blank to use the country default'}>            
+              <select value={form.chart_of_accounts} onChange={(e) => setForm({ ...form, chart_of_accounts: e.target.value })} className={FIELD_INPUT_CLASS} dir="ltr">
+                {COA_TEMPLATES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.labelAr}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'بداية السنة المالية' : 'Fiscal year start'} required>
+              <input type="date" value={form.fy_start_date} onChange={(e) => setForm({ ...form, fy_start_date: e.target.value })} required className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'نهاية السنة المالية' : 'Fiscal year end'} required>
+              <input type="date" value={form.fy_end_date} onChange={(e) => setForm({ ...form, fy_end_date: e.target.value })} required className={FIELD_INPUT_CLASS} />
             </FormField>
           </div>
         </FormCard>
