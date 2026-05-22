@@ -220,9 +220,15 @@ export function SuperAdminCompanyForm() {
     chart_of_accounts: existing?.chart_of_accounts ?? '',
     fy_start_date:     existing?.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
     fy_end_date:       existing?.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
+    name_en:       existing?.name_en       ?? '',
+    city:          existing?.city          ?? '',
+    tax_number:    existing?.tax_number    ?? '',
     admin_name_ar: '',
+    admin_name_en: '',
     admin_email: '',
+    admin_phone: '',
     admin_password: '',
+    admin_password_confirmation: '',
   });
 
   // Parse modules from JSON string field on the doctype
@@ -259,9 +265,15 @@ export function SuperAdminCompanyForm() {
         chart_of_accounts: existing.chart_of_accounts ?? '',
         fy_start_date:     existing.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
         fy_end_date:       existing.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
+        name_en:       existing.name_en       ?? '',
+        city:          existing.city          ?? '',
+        tax_number:    existing.tax_number    ?? '',
         admin_name_ar: '',
+        admin_name_en: '',
         admin_email: '',
+        admin_phone: '',
         admin_password: '',
+        admin_password_confirmation: '',
       });
       try {
         const raw = existing.enabled_modules;
@@ -288,8 +300,11 @@ export function SuperAdminCompanyForm() {
         enabled_modules: JSON.stringify(enabledModules),
       };
       delete payload.admin_name_ar;
+      delete payload.admin_name_en;
       delete payload.admin_email;
+      delete payload.admin_phone;
       delete payload.admin_password;
+      delete payload.admin_password_confirmation;
       if (isEdit) {
         await updateDoc('Madaar Tenant Subscription', name!, payload);
       } else {
@@ -315,6 +330,9 @@ export function SuperAdminCompanyForm() {
             <FormField label={isAr ? 'الاسم بالعربية' : 'Name (Arabic)'} required>
               <input value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} required className={FIELD_INPUT_CLASS} />
             </FormField>
+            <FormField label={isAr ? 'الاسم بالإنجليزية' : 'Name (English)'}>
+              <input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} dir="ltr" placeholder="Company Name" className={FIELD_INPUT_CLASS} />
+            </FormField>
             <FormField label={isAr ? 'الكود (Company ID)' : 'Company ID'} required hint={isAr ? 'يستخدم كمعرف فريد للشركة' : 'Unique identifier — used in URLs'}>
               <input
                 value={form.tenant_company}
@@ -337,6 +355,12 @@ export function SuperAdminCompanyForm() {
             </FormField>
             <FormField label={isAr ? 'الهاتف' : 'Phone'}>
               <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'المدينة' : 'City'}>
+              <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'الرقم الضريبي' : 'Tax number'} hint={isAr ? 'رقم التسجيل الضريبي (VAT/Tax ID)' : 'VAT / Tax registration number'}>
+              <input value={form.tax_number} onChange={(e) => setForm({ ...form, tax_number: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
             </FormField>
             <FormField label={isAr ? 'النطاق الفرعي (Subdomain)' : 'Subdomain'} hint={isAr ? 'مثال: company-name — سيظهر كـ company-name.madaar.app' : 'e.g. company-name → company-name.madaar.app'}>
               <div className="flex items-center gap-0">
@@ -456,11 +480,20 @@ export function SuperAdminCompanyForm() {
               <FormField label={isAr ? 'اسم المدير بالعربية' : 'Admin name (Arabic)'} required>
                 <input value={form.admin_name_ar} onChange={(e) => setForm({ ...form, admin_name_ar: e.target.value })} required placeholder={isAr ? 'مثال: أحمد محمد' : 'e.g. Ahmed Mohamed'} className={FIELD_INPUT_CLASS} />
               </FormField>
+              <FormField label={isAr ? 'اسم المدير بالإنجليزية' : 'Admin name (English)'}>
+                <input value={form.admin_name_en} onChange={(e) => setForm({ ...form, admin_name_en: e.target.value })} dir="ltr" placeholder="Ahmed Mohamed" className={FIELD_INPUT_CLASS} />
+              </FormField>
               <FormField label={isAr ? 'إيميل المدير (لتسجيل الدخول)' : 'Admin email (for sign-in)'} required>
                 <input type="email" value={form.admin_email} onChange={(e) => setForm({ ...form, admin_email: e.target.value })} required dir="ltr" placeholder="admin@company.com" className={FIELD_INPUT_CLASS} />
               </FormField>
+              <FormField label={isAr ? 'هاتف المدير' : 'Admin phone'}>
+                <input type="tel" value={form.admin_phone} onChange={(e) => setForm({ ...form, admin_phone: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+              </FormField>
               <FormField label={isAr ? 'كلمة المرور' : 'Password'} required hint={isAr ? '8 أحرف على الأقل' : 'At least 8 characters'}>
                 <input type="password" minLength={8} value={form.admin_password} onChange={(e) => setForm({ ...form, admin_password: e.target.value })} required className={FIELD_INPUT_CLASS} />
+              </FormField>
+              <FormField label={isAr ? 'تأكيد كلمة المرور' : 'Confirm password'} required>
+                <input type="password" minLength={8} value={form.admin_password_confirmation} onChange={(e) => setForm({ ...form, admin_password_confirmation: e.target.value })} required className={FIELD_INPUT_CLASS} />
               </FormField>
             </div>
           </FormCard>
