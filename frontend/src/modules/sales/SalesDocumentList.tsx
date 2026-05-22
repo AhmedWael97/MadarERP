@@ -43,7 +43,7 @@ interface VariantConfig {
 }
 
 const VARIANTS: Record<string, VariantConfig> = {
-  invoices:   { doctype: 'Sales Invoice', title: 'فواتير المبيعات',     subtitle: 'إدارة فواتير البيع والتحصيل',         basePath: '/sales/invoices',   newLabel: 'فاتورة جديدة', customerField: 'customer',   excludeFilter: ['is_return', '=', 1], dateField: 'posting_date',    totalField: 'grand_total' },
+  invoices:   { doctype: 'Sales Invoice', title: 'فواتير المبيعات',     subtitle: 'إدارة فواتير البيع والتحصيل',         basePath: '/sales/invoices',   newLabel: 'فاتورة جديدة', customerField: 'customer',   excludeFilter: ['is_return', '!=', 1], dateField: 'posting_date',    totalField: 'grand_total' },
   orders:     { doctype: 'Sales Order',   title: 'أوامر البيع',          subtitle: 'إدارة أوامر البيع المعتمدة',           basePath: '/sales/orders',     newLabel: 'أمر جديد',     customerField: 'customer',                                       dateField: 'transaction_date', totalField: 'grand_total' },
   quotations: { doctype: 'Quotation',     title: 'عروض الأسعار',          subtitle: 'إدارة عروض الأسعار وتحويلها لأوامر',   basePath: '/sales/quotations', newLabel: 'عرض جديد',     customerField: 'party_name',                                     dateField: 'transaction_date', totalField: 'grand_total' },
   returns:    { doctype: 'Sales Invoice', title: 'مرتجعات المبيعات',     subtitle: 'إدارة مرتجعات المبيعات والإشعارات الدائنة', basePath: '/sales/returns',    newLabel: 'مرتجع جديد',   customerField: 'customer',   extraFilter: ['is_return', '=', 1],   dateField: 'posting_date',    totalField: 'grand_total' },

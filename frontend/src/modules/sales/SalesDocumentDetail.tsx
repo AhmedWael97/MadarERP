@@ -1,7 +1,8 @@
 /** SalesDocumentDetail — shared show page for invoice/order/quotation/return. */
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useFrappeGetDoc } from 'frappe-react-sdk';
-import { ArrowRight, Pencil, Printer } from 'lucide-react';
+import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk';
+import { toast } from 'sonner';
+import { ArrowRight, CheckCircle, Pencil, Printer } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -54,7 +55,8 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
   const cfg = VARIANTS[variant];
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data: doc, isLoading } = useFrappeGetDoc<SalesDoc>(cfg.doctype, id);
+  const { data: doc, isLoading, mutate: refreshDoc } = useFrappeGetDoc<SalesDoc>(cfg.doctype, id);
+  const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
 
   if (isLoading || !doc) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
@@ -62,6 +64,16 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
 
   const date = doc.posting_date ?? doc.transaction_date ?? '—';
   const customer = doc.customer ?? doc.party_name ?? '—';
+
+  async function handleSubmit() {
+    try {
+      await submitCall({ doc: { ...doc, doctype: cfg.doctype } });
+      toast.success('تم الترحيل بنجاح');
+      void refreshDoc();
+    } catch (e: any) {
+      toast.error(e?.message ?? 'تعذر الترحيل');
+    }
+  }
 
   return (
     <RequirePerm doctype={cfg.doctype} action="read">
@@ -71,9 +83,19 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
         actions={
           <>
             {doc.docstatus === 0 && (
-              <Link to={`${cfg.listPath}/${encodeURIComponent(doc.name)}/edit`} className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm font-semibold rounded-xl transition-all">
-                <Pencil size={16} /> تعديل
-              </Link>
+              <>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={handleSubmit}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+                >
+                  <CheckCircle size={16} /> {submitting ? 'جاري الترحيل...' : 'ترحيل'}
+                </button>
+                <Link to={`${cfg.listPath}/${encodeURIComponent(doc.name)}/edit`} className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm font-semibold rounded-xl transition-all">
+                  <Pencil size={16} /> تعديل
+                </Link>
+              </>
             )}
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 text-sm font-semibold rounded-xl">
               <Printer size={16} /> طباعة

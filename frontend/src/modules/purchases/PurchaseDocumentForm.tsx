@@ -14,6 +14,7 @@ import {
   useFrappeCreateDoc,
   useFrappeGetDoc,
   useFrappeGetDocList,
+  useFrappePostCall,
   useFrappeUpdateDoc,
 } from 'frappe-react-sdk';
 import { toast } from 'sonner';
@@ -95,7 +96,8 @@ function Body({ cfg, variant, mode, name, onDone }: { cfg: VariantConfig; varian
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
-  const saving = creating || updating;
+  const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
+  const saving = creating || updating || submitting;
 
   async function onSubmit(values: Record<string, unknown>) {
     const cleaned: Record<string, unknown> = {};
@@ -109,8 +111,11 @@ function Body({ cfg, variant, mode, name, onDone }: { cfg: VariantConfig; varian
         await updateDoc(cfg.doctype, name, cleaned);
         toast.success('تحديث');
       } else {
-        await createDoc(cfg.doctype, cleaned);
-        toast.success('تم الحفظ');
+        const created = await createDoc(cfg.doctype, cleaned) as Record<string, unknown>;
+        if (created?.name) {
+          await submitCall({ doc: { ...created, doctype: cfg.doctype } });
+        }
+        toast.success('تم الحفظ والترحيل');
       }
       onDone();
     } catch (e: any) {
