@@ -19,13 +19,14 @@ const NAV_LINKS: Array<{
   label: { ar: string; en: string };
   icon: React.ElementType;
 }> = [
-  { to: '/super-admin',            end: true,  icon: LayoutDashboard, label: { ar: 'لوحة التحكم',     en: 'Dashboard'  } },
-  { to: '/super-admin/companies',  end: false, icon: Building2,       label: { ar: 'الشركات',         en: 'Companies'  } },
-  { to: '/super-admin/plans',      end: false, icon: Package,         label: { ar: 'الباقات',         en: 'Plans'      } },
-  { to: '/super-admin/modules',    end: false, icon: Package,         label: { ar: 'الموديولات',      en: 'Modules'    } },
-  { to: '/super-admin/users',      end: false, icon: Users,           label: { ar: 'المستخدمين',      en: 'Users'      } },
-  { to: '/super-admin/settings',   end: false, icon: Settings,        label: { ar: 'إعدادات النظام',  en: 'Settings'   } },
-  { to: '/super-admin/letterheads',end: false, icon: FileText,        label: { ar: 'عقود الترخيص',   en: 'Contracts'  } },
+  { to: '/super-admin',                end: true,  icon: LayoutDashboard, label: { ar: 'لوحة التحكم',     en: 'Dashboard'       } },
+  { to: '/super-admin/companies',      end: false, icon: Building2,       label: { ar: 'الشركات',         en: 'Companies'       } },
+  { to: '/super-admin/subscriptions',  end: false, icon: Package,         label: { ar: 'الاشتراكات',      en: 'Subscriptions'   } },
+  { to: '/super-admin/plans',          end: false, icon: Package,         label: { ar: 'الباقات',         en: 'Plans'           } },
+  { to: '/super-admin/modules',        end: false, icon: Package,         label: { ar: 'الموديولات',      en: 'Modules'         } },
+  { to: '/super-admin/users',          end: false, icon: Users,           label: { ar: 'المستخدمين',      en: 'Users'           } },
+  { to: '/super-admin/settings',       end: false, icon: Settings,        label: { ar: 'إعدادات النظام',  en: 'Settings'        } },
+  { to: '/super-admin/letterheads',    end: false, icon: FileText,        label: { ar: 'عقود الترخيص',   en: 'Contracts'       } },
 ];
 
 /**

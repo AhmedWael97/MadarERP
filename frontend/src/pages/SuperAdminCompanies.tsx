@@ -1,11 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useFrappeGetCall, useFrappeGetDoc, useFrappeCreateDoc, useFrappeUpdateDoc } from 'frappe-react-sdk';
-import { Plus, Search, Building2, DollarSign, User as UserIcon, Save } from 'lucide-react';
+import { Plus, Search, Building2, DollarSign, User as UserIcon, Save, Globe, Package, Settings } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 import { FormCard } from '../components/erp/FormCard';
 import { FormField, FIELD_INPUT_CLASS, FormSubmit, FormCancel, FormInfoBanner, FormBackButton } from '../components/erp/FormField';
+
+const ALL_MODULES: Array<{ key: string; nameAr: string; isCore: boolean }> = [
+  { key: 'accounting',    nameAr: 'الحسابات',             isCore: true  },
+  { key: 'sales',         nameAr: 'المبيعات',             isCore: true  },
+  { key: 'purchases',     nameAr: 'المشتريات',            isCore: true  },
+  { key: 'inventory',     nameAr: 'المخزون',              isCore: true  },
+  { key: 'treasury',      nameAr: 'الخزينة',              isCore: true  },
+  { key: 'crm',           nameAr: 'إدارة العملاء',        isCore: false },
+  { key: 'hr',            nameAr: 'الموارد البشرية',      isCore: false },
+  { key: 'construction',  nameAr: 'المقاولات',            isCore: false },
+  { key: 'fleet',         nameAr: 'الأسطول',              isCore: false },
+  { key: 'logistics',     nameAr: 'الخدمات اللوجستية',   isCore: false },
+  { key: 'ecommerce',     nameAr: 'المتجر الإلكتروني',   isCore: false },
+  { key: 'restaurant',    nameAr: 'إدارة المطاعم',        isCore: false },
+  { key: 'workshop',      nameAr: 'مراكز الصيانة',        isCore: false },
+  { key: 'manufacturing', nameAr: 'التصنيع',              isCore: false },
+  { key: 'tax',           nameAr: 'الضرائب',              isCore: false },
+  { key: 'support',       nameAr: 'الدعم الفني',          isCore: false },
+  { key: 'assets',        nameAr: 'الأصول الثابتة',       isCore: false },
+  { key: 'events',        nameAr: 'الفعاليات',            isCore: false },
+  { key: 'lms',           nameAr: 'منصة التعليم',         isCore: false },
+];
 
 interface TenantRow {
   name: string;
@@ -114,7 +136,10 @@ export default function SuperAdminCompanies() {
                       {isAr ? pill.ar : pill.en}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-end">
+                  <td className="px-5 py-3 text-end flex items-center justify-end gap-3">
+                    <Link to={`/super-admin/companies/${encodeURIComponent(r.name)}`} className="text-xs text-slate-500 font-bold hover:underline">
+                      {isAr ? 'عرض' : 'View'}
+                    </Link>
                     <Link to={`/super-admin/companies/${encodeURIComponent(r.name)}/edit`} className="text-xs text-[color:var(--color-brand-600)] font-bold hover:underline">
                       {isAr ? 'تعديل' : 'Edit'}
                     </Link>
@@ -151,6 +176,8 @@ export function SuperAdminCompanyForm() {
     name_ar:                  existing?.name_ar                  ?? '',
     owner_email:              existing?.owner_email              ?? '',
     phone:                    existing?.phone                    ?? '',
+    subdomain:                existing?.subdomain                ?? '',
+    max_users:                existing?.max_users                ?? 5,
     subscription_plan:        existing?.subscription_plan        ?? '',
     subscription_status:      existing?.subscription_status      ?? 'trial',
     subscription_start_date:  existing?.subscription_start_date  ?? new Date().toISOString().slice(0, 10),
@@ -162,13 +189,63 @@ export function SuperAdminCompanyForm() {
     admin_email: '',
     admin_password: '',
   });
+
+  // Parse modules from JSON string field on the doctype
+  const [enabledModules, setEnabledModules] = useState<string[]>(() => {
+    try {
+      const raw = existing?.enabled_modules;
+      if (!raw) return ALL_MODULES.filter((m) => m.isCore).map((m) => m.key);
+      return JSON.parse(raw);
+    } catch {
+      return ALL_MODULES.filter((m) => m.isCore).map((m) => m.key);
+    }
+  });
+
+  // Re-init when existing loads (async)
+  useEffect(() => {
+    if (existing) {
+      setForm({
+        tenant_company:           existing.tenant_company           ?? '',
+        name_ar:                  existing.name_ar                  ?? '',
+        owner_email:              existing.owner_email              ?? '',
+        phone:                    existing.phone                    ?? '',
+        subdomain:                existing.subdomain                ?? '',
+        max_users:                existing.max_users                ?? 5,
+        subscription_plan:        existing.subscription_plan        ?? '',
+        subscription_status:      existing.subscription_status      ?? 'trial',
+        subscription_start_date:  existing.subscription_start_date  ?? new Date().toISOString().slice(0, 10),
+        subscription_end_date:    existing.subscription_end_date    ?? '',
+        monthly_amount:           existing.monthly_amount           ?? 0,
+        currency:                 existing.currency                 ?? 'EGP',
+        notes:                    existing.notes                    ?? '',
+        admin_name_ar: '',
+        admin_email: '',
+        admin_password: '',
+      });
+      try {
+        const raw = existing.enabled_modules;
+        if (raw) setEnabledModules(JSON.parse(raw));
+      } catch { /* keep default */ }
+    }
+  }, [existing]);
+
+  function toggleModule(key: string, isCore: boolean) {
+    if (isCore) return; // core modules cannot be disabled
+    setEnabledModules((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  }
+
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      const payload: any = { ...form };
+      const payload: any = {
+        ...form,
+        enabled_modules: JSON.stringify(enabledModules),
+      };
       delete payload.admin_name_ar;
       delete payload.admin_email;
       delete payload.admin_password;
@@ -205,6 +282,23 @@ export function SuperAdminCompanyForm() {
             </FormField>
             <FormField label={isAr ? 'الهاتف' : 'Phone'}>
               <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'النطاق الفرعي (Subdomain)' : 'Subdomain'} hint={isAr ? 'مثال: company-name — سيظهر كـ company-name.madaar.app' : 'e.g. company-name → company-name.madaar.app'}>
+              <div className="flex items-center gap-0">
+                <input
+                  value={form.subdomain}
+                  onChange={(e) => setForm({ ...form, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                  dir="ltr"
+                  placeholder="company-name"
+                  className={`${FIELD_INPUT_CLASS} rounded-e-none border-e-0`}
+                />
+                <span className="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-e-xl text-slate-500 whitespace-nowrap">
+                  .madaar.app
+                </span>
+              </div>
+            </FormField>
+            <FormField label={isAr ? 'الحد الأقصى للمستخدمين' : 'Max users'}>
+              <input type="number" min={1} max={9999} value={form.max_users || ''} onChange={(e) => setForm({ ...form, max_users: parseInt(e.target.value) || 5 })} className={FIELD_INPUT_CLASS} />
             </FormField>
           </div>
         </FormCard>
@@ -267,6 +361,41 @@ export function SuperAdminCompanyForm() {
             </div>
           </FormCard>
         )}
+
+        {/* ── Modules ─────────────────────────────────────────────────────── */}
+        <FormCard color="violet" title={isAr ? 'الموديولات المفعّلة' : 'Enabled modules'} icon={<Package size={20} />}>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            {isAr ? 'اختر الموديولات التي ستكون متاحة لهذه الشركة. الموديولات الأساسية مفعّلة دائماً.' : 'Select modules available for this company. Core modules are always enabled.'}
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            {ALL_MODULES.map((mod) => {
+              const checked = enabledModules.includes(mod.key);
+              return (
+                <label
+                  key={mod.key}
+                  className={[
+                    'flex items-center gap-2 p-2.5 rounded-xl border text-sm cursor-pointer select-none transition-colors',
+                    mod.isCore
+                      ? 'border-violet-200 bg-violet-50 dark:bg-violet-900/20 dark:border-violet-700 opacity-80 cursor-not-allowed'
+                      : checked
+                        ? 'border-violet-400 bg-violet-50 dark:bg-violet-900/30 dark:border-violet-500 font-semibold'
+                        : 'border-slate-200 dark:border-slate-700 hover:border-violet-300',
+                  ].join(' ')}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={mod.isCore}
+                    onChange={() => toggleModule(mod.key, mod.isCore)}
+                    className="accent-violet-600"
+                  />
+                  <span>{mod.nameAr}</span>
+                  {mod.isCore && <span className="ms-auto text-[9px] bg-violet-200 dark:bg-violet-700 text-violet-700 dark:text-violet-200 rounded-md px-1">أساسي</span>}
+                </label>
+              );
+            })}
+          </div>
+        </FormCard>
 
         {/* ── Notes ─────────────────────────────────────────────────────── */}
         <FormCard color="amber" title={isAr ? 'ملاحظات داخلية' : 'Internal notes'} icon={<Save size={20} />}>

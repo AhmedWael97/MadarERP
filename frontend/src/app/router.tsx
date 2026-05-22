@@ -24,6 +24,11 @@ const SuperAdmin = lazy(() => import('../pages/SuperAdmin'));
 const SuperAdminList = lazy(() => import('../pages/SuperAdmin').then((m) => ({ default: m.SuperAdminList })));
 const SuperAdminCompanies = lazy(() => import('../pages/SuperAdminCompanies'));
 const SuperAdminCompanyForm = lazy(() => import('../pages/SuperAdminCompanies').then((m) => ({ default: m.SuperAdminCompanyForm })));
+const SuperAdminCompanyDetail = lazy(() => import('../pages/SuperAdminCompanyDetail'));
+const SuperAdminModules = lazy(() => import('../pages/SuperAdminModules'));
+const SuperAdminSubscriptions = lazy(() => import('../pages/SuperAdminSubscriptions'));
+const SuperAdminUsers = lazy(() => import('../pages/SuperAdminUsers'));
+const SuperAdminSettings = lazy(() => import('../pages/SuperAdminSettings'));
 const SuperAdminPlans = lazy(() => import('../pages/SuperAdminPlans'));
 const SuperAdminPlanForm = lazy(() => import('../pages/SuperAdminPlans').then((m) => ({ default: m.SuperAdminPlanForm })));
 const EmployeeCustody = lazy(() => import('../pages/EmployeeCustody'));
@@ -574,6 +579,10 @@ export const router = createBrowserRouter([
         element: (<Suspense fallback={Loading}><SuperAdminCompanyForm /></Suspense>),
       },
       {
+        path: 'companies/:name',
+        element: (<Suspense fallback={Loading}><SuperAdminCompanyDetail /></Suspense>),
+      },
+      {
         path: 'plans',
         element: (<Suspense fallback={Loading}><SuperAdminPlans /></Suspense>),
       },
@@ -585,7 +594,23 @@ export const router = createBrowserRouter([
         path: 'plans/:name/edit',
         element: (<Suspense fallback={Loading}><SuperAdminPlanForm /></Suspense>),
       },
-      // Catch-all stub sections: modules / users / settings / letterheads
+      {
+        path: 'modules',
+        element: (<Suspense fallback={Loading}><SuperAdminModules /></Suspense>),
+      },
+      {
+        path: 'subscriptions',
+        element: (<Suspense fallback={Loading}><SuperAdminSubscriptions /></Suspense>),
+      },
+      {
+        path: 'users',
+        element: (<Suspense fallback={Loading}><SuperAdminUsers /></Suspense>),
+      },
+      {
+        path: 'settings',
+        element: (<Suspense fallback={Loading}><SuperAdminSettings /></Suspense>),
+      },
+      // Catch-all stub for remaining sections (letterheads, etc.)
       {
         path: ':section',
         element: (<Suspense fallback={Loading}><SuperAdminList /></Suspense>),
