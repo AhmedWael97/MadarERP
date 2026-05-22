@@ -248,8 +248,30 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      // NOTE: accounting/cost-centers, chart-of-accounts, fiscal-years, treasury pages
-      // are now auto-resolved via import.meta.glob in the `generated` array below.
+      // NOTE: accounting/cost-centers, chart-of-accounts, fiscal-years are now
+      // auto-resolved via import.meta.glob in the `generated` array below.
+      // Treasury sub-pages below are NOT in the manifest, so must be wired explicitly.
+      {
+        path: 'treasury/bank-institutions',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/bank-institutions/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/currencies',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/currencies/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/exchange-rates',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/exchange-rates/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Accounting: Fiscal Year detail (periods, close/open) ---
       {
         path: 'accounting/fiscal-years/:id',
