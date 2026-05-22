@@ -242,6 +242,7 @@ const SECTIONS: Section[] = [
           {
             leaves: [
               { to: '/sales/dashboard',         labelAr: 'لوحة المعلومات' },
+              { to: '/retail/pos',              labelAr: 'نقطة البيع (كاشير)' },
               { to: '/sales/invoices',          labelAr: 'فواتير المبيعات' },
               { to: '/sales/invoices/create',   labelAr: 'فاتورة جديدة' },
               { to: '/sales/quotations',        labelAr: 'عروض الأسعار' },
@@ -813,7 +814,8 @@ const SECTIONS: Section[] = [
           {
             headerAr: 'التشغيل',
             leaves: [
-              { to: '/restaurant/pos',              labelAr: 'نقطة البيع POS' },
+              { to: '/retail/pos',                  labelAr: 'نقطة البيع (كاشير)' },
+              { to: '/restaurant/pos',              labelAr: 'ملفات نقطة البيع' },
               { to: '/restaurant/kitchen/display',  labelAr: 'شاشة المطبخ' },
               { to: '/restaurant/orders',           labelAr: 'الطلبات' },
               { to: '/restaurant/delivery',         labelAr: 'التوصيل' },

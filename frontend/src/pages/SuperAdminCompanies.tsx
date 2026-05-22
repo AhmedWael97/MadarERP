@@ -56,6 +56,7 @@ const ALL_MODULES: Array<{ key: string; nameAr: string; isCore: boolean }> = [
   { key: 'assets',        nameAr: 'الأصول الثابتة',       isCore: false },
   { key: 'events',        nameAr: 'الفعاليات',            isCore: false },
   { key: 'lms',           nameAr: 'منصة التعليم',         isCore: false },
+  { key: 'pos',           nameAr: 'نقطة البيع (POS)',     isCore: false },
 ];
 
 interface TenantRow {

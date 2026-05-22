@@ -27,6 +27,7 @@ const AVAILABLE_MODULES: Array<{ key: string; nameAr: string; nameEn: string }> 
   { key: 'assets',        nameAr: 'الأصول الثابتة',     nameEn: 'Fixed Assets' },
   { key: 'events',        nameAr: 'الفعاليات',          nameEn: 'Events' },
   { key: 'lms',           nameAr: 'منصة التعليم',       nameEn: 'LMS' },
+  { key: 'pos',           nameAr: 'نقطة البيع',         nameEn: 'POS' },
 ];
 
 interface PlanRow {

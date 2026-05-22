@@ -519,3 +519,248 @@ def list_admin_activity(limit: int = 100, offset: int = 0) -> dict[str, Any]:
     )
     total = frappe.db.count("Madaar Admin Activity Log")
     return {"rows": rows, "total": total, "limit": int(limit), "offset": int(offset)}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Retail POS
+# Endpoints powering the React cashier UI at /retail/pos. Combine ERPNext's
+# POS Profile / POS Opening Entry / POS Invoice with our barcode + price-list
+# helpers so the cashier doesn't have to round-trip the Desk.
+# ──────────────────────────────────────────────────────────────────────────────
+
+@frappe.whitelist()
+def get_pos_payment_modes(pos_profile: str | None = None) -> list[dict[str, Any]]:
+    """Active payment modes available at the POS.
+
+    If `pos_profile` is given, return only modes attached to that profile
+    (POS Profile Payment Method child table). Otherwise return every enabled
+    Mode of Payment so a profile-less cashier UI still has something to show.
+
+    Each row: {mode, type, default}.
+    """
+    if pos_profile and frappe.db.exists("POS Profile", pos_profile):
+        rows = frappe.get_all(
+            "Sales Invoice Payment",
+            filters={"parent": pos_profile, "parenttype": "POS Profile"},
+            fields=["mode_of_payment as mode", "default"],
+            order_by="idx asc",
+        )
+        modes = [r for r in rows if r.get("mode")]
+        if modes:
+            type_map: dict[str, str] = {}
+            for m in modes:
+                t = frappe.db.get_value("Mode of Payment", m["mode"], "type")
+                type_map[m["mode"]] = t or "Cash"
+            return [
+                {"mode": m["mode"], "type": type_map.get(m["mode"], "Cash"), "default": int(m.get("default") or 0)}
+                for m in modes
+            ]
+    return [
+        {"mode": r["name"], "type": r.get("type") or "Cash", "default": 0}
+        for r in frappe.get_all(
+            "Mode of Payment",
+            filters={"enabled": 1},
+            fields=["name", "type"],
+            order_by="name asc",
+        )
+    ]
+
+
+@frappe.whitelist()
+def list_pos_profiles() -> list[dict[str, Any]]:
+    """POS Profiles the current user can operate.
+
+    Filters by `applicable_for_users` when populated on the profile; otherwise
+    every non-disabled profile is returned (so a fresh tenant with one profile
+    "just works" without per-user wiring).
+    """
+    user = frappe.session.user
+    profiles = frappe.get_all(
+        "POS Profile",
+        filters={"disabled": 0},
+        fields=[
+            "name", "company", "warehouse", "currency", "customer",
+            "selling_price_list", "country", "letter_head",
+            "write_off_account", "write_off_cost_center", "cost_center",
+        ],
+        order_by="modified desc",
+    )
+    out: list[dict[str, Any]] = []
+    for p in profiles:
+        users = frappe.get_all(
+            "POS Profile User",
+            filters={"parent": p["name"], "parenttype": "POS Profile"},
+            pluck="user",
+        )
+        if users and user not in users:
+            continue
+        out.append(dict(p))
+    return out
+
+
+@frappe.whitelist()
+def get_pos_profile(name: str) -> dict[str, Any]:
+    """Full POS Profile + its payment modes, for the cashier UI."""
+    if not frappe.db.exists("POS Profile", name):
+        frappe.throw(f"POS Profile not found: {name}")
+    doc = frappe.get_doc("POS Profile", name).as_dict()
+    doc["payment_modes"] = get_pos_payment_modes(name)
+    return doc
+
+
+@frappe.whitelist()
+def current_pos_opening() -> dict[str, Any] | None:
+    """Current user's open POS shift, if any.
+
+    Returns the matching POS Opening Entry (status=Open, submitted) plus a
+    rollup of POS Invoices issued since opening so the cashier can resume
+    mid-shift after a refresh.
+    """
+    user = frappe.session.user
+    rows = frappe.get_all(
+        "POS Opening Entry",
+        filters={"user": user, "status": "Open", "docstatus": 1},
+        fields=["name", "pos_profile", "company", "period_start_date", "posting_date"],
+        order_by="creation desc",
+        limit=1,
+    )
+    if not rows:
+        return None
+    opening = dict(rows[0])
+    summary = frappe.db.sql(
+        """
+        SELECT COUNT(*) AS invoice_count,
+               COALESCE(SUM(grand_total), 0) AS total_sales
+        FROM `tabPOS Invoice`
+        WHERE pos_profile = %s
+          AND owner = %s
+          AND docstatus = 1
+          AND creation >= %s
+        """,
+        (opening["pos_profile"], user, opening["period_start_date"]),
+        as_dict=True,
+    )
+    opening["summary"] = summary[0] if summary else {"invoice_count": 0, "total_sales": 0}
+    return opening
+
+
+@frappe.whitelist()
+def open_pos_shift(
+    pos_profile: str,
+    opening_amount: float = 0,
+    mode_of_payment: str = "Cash",
+) -> dict[str, Any]:
+    """Create + submit a POS Opening Entry for the current user."""
+    if not frappe.db.exists("POS Profile", pos_profile):
+        frappe.throw(f"POS Profile not found: {pos_profile}")
+    profile = frappe.get_doc("POS Profile", pos_profile)
+
+    balance = []
+    if float(opening_amount or 0) > 0:
+        balance.append({"mode_of_payment": mode_of_payment, "opening_amount": float(opening_amount)})
+
+    doc = frappe.get_doc({
+        "doctype": "POS Opening Entry",
+        "pos_profile": pos_profile,
+        "company": profile.company,
+        "user": frappe.session.user,
+        "period_start_date": frappe.utils.now(),
+        "posting_date": frappe.utils.today(),
+        "set_posting_date": 1,
+        "status": "Open",
+        "balance_details": balance,
+    })
+    doc.insert(ignore_permissions=True)
+    doc.submit()
+    frappe.db.commit()
+    return {"name": doc.name, "status": doc.status, "pos_profile": pos_profile}
+
+
+@frappe.whitelist()
+def close_pos_shift(pos_opening_entry: str) -> dict[str, Any]:
+    """Mark a POS Opening Entry as Closed, summarise the shift, and return totals.
+
+    The full POS Closing Entry workflow lives in ERPNext Desk for now — this
+    endpoint just flips the status so the cashier can open a new shift without
+    leaving the SPA. Settlement happens later from the Desk.
+    """
+    if not frappe.db.exists("POS Opening Entry", pos_opening_entry):
+        frappe.throw(f"POS Opening Entry not found: {pos_opening_entry}")
+    opening = frappe.get_doc("POS Opening Entry", pos_opening_entry)
+    summary = frappe.db.sql(
+        """
+        SELECT COUNT(*) AS invoice_count,
+               COALESCE(SUM(grand_total), 0) AS total_sales,
+               COALESCE(SUM(total_qty), 0) AS total_qty
+        FROM `tabPOS Invoice`
+        WHERE pos_profile = %s
+          AND owner = %s
+          AND docstatus = 1
+          AND creation >= %s
+        """,
+        (opening.pos_profile, opening.user, opening.period_start_date),
+        as_dict=True,
+    )
+    opening.db_set("status", "Closed", commit=True)
+    return {"name": opening.name, "status": "Closed", "summary": summary[0] if summary else {}}
+
+
+@frappe.whitelist()
+def lookup_item_by_barcode(barcode: str, price_list: str | None = None) -> dict[str, Any] | None:
+    """Find one Item by barcode or item_code.
+
+    Tries (in order):
+      1. `Item Barcode` child table — exact match.
+      2. `Item.madaar_barcode` custom field — exact match.
+      3. `Item.item_code` — exact match (lets you scan unbarcoded SKUs).
+
+    Returns the Item row + resolved selling price (from `price_list` if given,
+    otherwise the first selling Item Price). Returns None if nothing matches.
+    """
+    code = (barcode or "").strip()
+    if not code:
+        return None
+
+    item_code: str | None = None
+
+    rows = frappe.get_all(
+        "Item Barcode",
+        filters={"barcode": code},
+        fields=["parent"],
+        limit=1,
+    )
+    if rows:
+        item_code = rows[0]["parent"]
+
+    if not item_code and frappe.db.has_column("Item", "madaar_barcode"):
+        item_code = frappe.db.get_value("Item", {"madaar_barcode": code}, "item_code")
+
+    if not item_code:
+        match = frappe.db.get_value("Item", {"item_code": code, "disabled": 0}, "item_code")
+        if match:
+            item_code = match
+
+    if not item_code:
+        return None
+
+    item = frappe.db.get_value(
+        "Item",
+        item_code,
+        ["name", "item_code", "item_name", "item_group", "image", "stock_uom", "disabled"],
+        as_dict=True,
+    )
+    if not item or item.get("disabled"):
+        return None
+
+    pf: list[list[Any]] = [["item_code", "=", item["item_code"]], ["selling", "=", 1]]
+    if price_list:
+        pf.append(["price_list", "=", price_list])
+    price_row = frappe.get_all(
+        "Item Price",
+        filters=pf,
+        fields=["price_list_rate"],
+        order_by="modified desc",
+        limit=1,
+    )
+    item["price"] = float(price_row[0]["price_list_rate"] or 0) if price_row else 0.0
+    return item

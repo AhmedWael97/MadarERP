@@ -39,6 +39,7 @@ const SupplierStatement = lazy(() => import('../modules/suppliers/SupplierStatem
 const JournalEntryDetail = lazy(() => import('../modules/accounting/JournalEntryDetail'));
 const SalesDocumentDetail = lazy(() => import('../modules/sales/SalesDocumentDetail'));
 const PurchaseDocumentDetail = lazy(() => import('../modules/purchases/PurchaseDocumentDetail'));
+const POSPage = lazy(() => import('../pages/POSPage'));
 const LMS = lazy(() => import('../pages/LMS'));
 const LMSList = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSList })));
 const LMSForm = lazy(() => import('../pages/LMS').then((m) => ({ default: m.LMSForm })));
@@ -186,6 +187,15 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={Loading}>
             <SettingsSection />
+          </Suspense>
+        ),
+      },
+      // --- Retail POS — full-screen cashier UI (shift, barcode, payment) ---
+      {
+        path: 'retail/pos',
+        element: (
+          <Suspense fallback={Loading}>
+            <POSPage />
           </Suspense>
         ),
       },
