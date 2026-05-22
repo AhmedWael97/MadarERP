@@ -16,13 +16,12 @@
  * Switching doctype just changes the title, the create/update target, and one
  * or two field labels (e.g. "فاتورة" → "أمر بيع" → "عرض سعر").
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
 import {
   useFrappeCreateDoc,
-  useFrappeGetCall,
   useFrappeGetDoc,
   useFrappeGetDocList,
   useFrappeUpdateDoc,
@@ -31,7 +30,7 @@ import { toast } from 'sonner';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
-import { LineItemsTable } from '@/components/erp/LineItemsTable';
+import { InvoiceItemsTable } from '@/components/erp/InvoiceItemsTable';
 import { INPUT, Card, Field, Footer } from '../accounting/AccountForm';
 
 export type SalesVariant = 'invoice' | 'order' | 'quotation' | 'return';
@@ -85,15 +84,6 @@ function Body({ cfg, variant, mode, name, onDone }: { cfg: VariantConfig; varian
   const form = useForm<Record<string, unknown>>({
     defaultValues: { [cfg.dateField]: today, is_return: cfg.isReturn ? 1 : 0 },
   });
-
-  // Fetch the parent doctype's meta so LineItemsTable can render the items child table.
-  const { data: metaResp } = useFrappeGetCall<{ docs?: Array<{ fields: any[] }> }>(
-    'frappe.desk.form.load.getdoctype',
-    { doctype: cfg.doctype },
-    `meta:${cfg.doctype}`,
-  );
-  const allFields: any[] = metaResp?.docs?.[0]?.fields ?? [];
-  const itemsField = useMemo(() => allFields.find((f) => f.fieldname === 'items' && f.fieldtype === 'Table'), [allFields]);
 
   // Load existing doc when editing.
   const { data: existing } = useFrappeGetDoc<Record<string, unknown>>(
@@ -223,16 +213,7 @@ function Body({ cfg, variant, mode, name, onDone }: { cfg: VariantConfig; varian
           <h3 className="text-base font-bold text-slate-800 dark:text-white">الأصناف</h3>
         </div>
         <div className="p-4">
-          {itemsField ? (
-            <LineItemsTable
-              parentDoctype={cfg.doctype}
-              parentField={itemsField}
-              childDoctype={itemsField.options}
-              form={form as any}
-            />
-          ) : (
-            <p className="text-sm text-slate-500 text-center py-6">جاري تحميل خصائص جدول الأصناف...</p>
-          )}
+          <InvoiceItemsTable form={form as any} fieldname="items" priceField="standard_rate" />
         </div>
       </div>
 
