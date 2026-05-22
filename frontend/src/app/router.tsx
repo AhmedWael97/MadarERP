@@ -1,10 +1,16 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
 import { AppShell } from './AppShell';
 import { RequireAuth } from '../lib/auth/RequireAuth';
 import { routes as generatedRoutes } from '../_generated/pages.manifest';
 import { ModuleHub } from '../components/erp/ModuleHub';
 import { SuperAdminShell } from '../components/super-admin/SuperAdminShell';
+
+// Collect ALL hand-written override pages at build time (Vite static analysis).
+// When a module/slug pair has an override, the generated route is swapped out.
+const overridePages = import.meta.glob<{ default: ComponentType }>(
+  '../modules/**/overrides/page.tsx',
+);
 
 const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
@@ -107,6 +113,12 @@ const generated = generatedRoutes
   .map((r) => ({
     path: r.path.replace(/^\//, ''),
     lazy: async () => {
+      // Use the hand-written override when one exists for this module/slug.
+      const overrideKey = `../modules/${r.module}/${r.slug}/overrides/page.tsx`;
+      if (overridePages[overrideKey]) {
+        const mod = await overridePages[overrideKey]();
+        return { Component: mod.default };
+      }
       const mod = await r.importFn();
       return { Component: mod.default };
     },
@@ -236,59 +248,13 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      // --- Accounting: Cost Centers tree (override uses TreeOrTableList with explicit fields) ---
-      {
-        path: 'accounting/cost-centers',
-        lazy: async () => {
-          const mod = await import('../modules/accounting/cost-centers/overrides/page');
-          return { Component: mod.default };
-        },
-      },
-      // --- Accounting: Chart of Accounts tree (override uses TreeOrTableList with explicit fields) ---
-      {
-        path: 'accounting/chart-of-accounts',
-        lazy: async () => {
-          const mod = await import('../modules/accounting/chart-of-accounts/overrides/page');
-          return { Component: mod.default };
-        },
-      },
-      // --- Accounting: Fiscal Years list (override has rich Arabic UI with period formatter) ---
-      {
-        path: 'accounting/fiscal-years',
-        lazy: async () => {
-          const mod = await import('../modules/accounting/fiscal-years/overrides/page');
-          return { Component: mod.default };
-        },
-      },
-      // --- Treasury: Bank institutions (separate from Bank Account) ---
-      {
-        path: 'treasury/bank-institutions',
-        lazy: async () => {
-          const mod = await import('../modules/treasury/bank-institutions/overrides/page');
-          return { Component: mod.default };
-        },
-      },
+      // NOTE: accounting/cost-centers, chart-of-accounts, fiscal-years, treasury pages
+      // are now auto-resolved via import.meta.glob in the `generated` array below.
       // --- Accounting: Fiscal Year detail (periods, close/open) ---
       {
         path: 'accounting/fiscal-years/:id',
         lazy: async () => {
           const mod = await import('../modules/accounting/FiscalYearDetail');
-          return { Component: mod.default };
-        },
-      },
-      // --- Treasury: Currencies CRUD (Frappe Currency doctype) ---
-      {
-        path: 'treasury/currencies',
-        lazy: async () => {
-          const mod = await import('../modules/treasury/currencies/overrides/page');
-          return { Component: mod.default };
-        },
-      },
-      // --- Treasury: Exchange Rate Periods (Madaar Currency Rate Period) ---
-      {
-        path: 'treasury/exchange-rates',
-        lazy: async () => {
-          const mod = await import('../modules/treasury/exchange-rates/overrides/page');
           return { Component: mod.default };
         },
       },
