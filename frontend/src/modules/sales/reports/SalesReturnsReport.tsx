@@ -5,7 +5,7 @@ import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '@/mod
 const COLUMNS: ReportColumn[] = [
   { label: 'رقم المرتجع', fieldname: 'name' },
   { label: 'التاريخ', fieldname: 'posting_date' },
-  { label: 'العميل', fieldname: 'customer' },
+  { label: 'العميل', fieldname: 'customer_name' },
   { label: 'الفاتورة الأصلية', fieldname: 'return_against' },
   { label: 'الإجمالي', fieldname: 'grand_total', numeric: true },
 ];

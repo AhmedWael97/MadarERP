@@ -83,7 +83,7 @@ export function FinancialReportShell({
 }: Props) {
   const [refreshKey, setRefreshKey] = useState(0);
   const { call, result, loading } = useFrappePostCall<{
-    message?: { columns?: any[]; result?: Array<Record<string, unknown>> };
+    message?: { columns?: Array<{ fieldname: string; label: string; fieldtype?: string }>; result?: Array<unknown> };
   }>('frappe.desk.query_report.run');
 
   // Fetch results — fires on first render (when autoFetch) and on every search click.
@@ -98,7 +98,26 @@ export function FinancialReportShell({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
-  const rows = overrideResults ?? result?.message?.result ?? [];
+  const rawRows: Array<unknown> = overrideResults ?? result?.message?.result ?? [];
+  const reportCols = result?.message?.columns ?? [];
+
+  // ERPNext script reports return rows as arrays (not objects).
+  // Convert them to objects using the column definitions from the response.
+  const rows: Array<Record<string, unknown>> = useMemo(() => {
+    if (!rawRows.length) return [];
+    const first = rawRows[0];
+    if (Array.isArray(first)) {
+      return (rawRows as unknown[][]).map((row) => {
+        const obj: Record<string, unknown> = {};
+        row.forEach((val, i) => {
+          const colDef = reportCols[i];
+          if (colDef?.fieldname) obj[colDef.fieldname] = val;
+        });
+        return obj;
+      });
+    }
+    return rawRows as Array<Record<string, unknown>>;
+  }, [rawRows, reportCols]);
 
   // Wire toolbar export columns to the report's display columns.
   const toolbarColumns: ToolbarColumn[] = columns.map((c) => ({ id: c.fieldname, header: c.label }));

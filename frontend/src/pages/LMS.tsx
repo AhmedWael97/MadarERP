@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,7 +23,7 @@ interface LmsSection {
   titleEn: string;
   fields: string[];
   columns: Array<{ id: string; ar: string; en: string; render?: (v: any) => React.ReactNode }>;
-  createForm?: 'course' | 'lesson' | 'enrollment' | 'batch' | 'auto';
+  createForm?: 'course' | 'lesson' | 'enrollment' | 'batch' | 'auto' | 'payment';
   /** Used by the generic 'auto' form: list of editable fields with optional input hints. */
   formFields?: Array<{
     name: string;
@@ -362,12 +362,25 @@ export default function LMS() {
   const { data: lessonsCount }     = useFrappeGetDocCount('Madaar LMS Lesson');
   const { data: enrollmentsCount } = useFrappeGetDocCount('Madaar LMS Enrollment');
   const { data: batchesCount }     = useFrappeGetDocCount('Madaar LMS Batch');
+  const { data: studentsCount }    = useFrappeGetDocCount('Madaar LMS Student');
+  const { data: paymentsCount }    = useFrappeGetDocCount('Madaar LMS Payment');
 
   const SUB_LINKS = [
-    { to: '/lms/courses',     ar: 'الدورات',     en: 'Courses',     icon: BookOpen,    color: 'cyan' },
-    { to: '/lms/lessons',     ar: 'الدروس',     en: 'Lessons',     icon: BookOpen,    color: 'blue' },
-    { to: '/lms/batches',     ar: 'الدفعات',    en: 'Batches',     icon: Users,       color: 'violet' },
-    { to: '/lms/enrollments', ar: 'التسجيلات', en: 'Enrollments', icon: BadgeCheck,  color: 'emerald' },
+    { to: '/lms/courses',      ar: 'الدورات',            en: 'Courses',         icon: BookOpen,     color: 'cyan' },
+    { to: '/lms/lessons',      ar: 'الدروس',             en: 'Lessons',         icon: BookMarked,   color: 'blue' },
+    { to: '/lms/batches',      ar: 'الدفعات',            en: 'Batches',         icon: Users,        color: 'violet' },
+    { to: '/lms/enrollments',  ar: 'التسجيلات',          en: 'Enrollments',     icon: BadgeCheck,   color: 'emerald' },
+    { to: '/lms/students',     ar: 'الطلاب',             en: 'Students',        icon: UserCheck,    color: 'amber' },
+    { to: '/lms/instructors',  ar: 'المدرسين',           en: 'Instructors',     icon: GraduationCap, color: 'rose' },
+    { to: '/lms/payments',     ar: 'الرسوم والمدفوعات', en: 'Payments',        icon: CreditCard,   color: 'teal' },
+    { to: '/lms/grades',       ar: 'الدرجات',            en: 'Grades',          icon: BarChart3,    color: 'orange' },
+    { to: '/lms/certificates', ar: 'الشهادات',           en: 'Certificates',    icon: Award,        color: 'yellow' },
+    { to: '/lms/schedule',     ar: 'الجدول الزمني',     en: 'Schedule',        icon: CalendarDays, color: 'indigo' },
+    { to: '/lms/attendance',   ar: 'الحضور',             en: 'Attendance',      icon: CheckSquare,  color: 'green' },
+    { to: '/lms/progress',     ar: 'متابعة التقدم',     en: 'Progress',        icon: BarChart3,    color: 'blue' },
+    { to: '/lms/programs',     ar: 'البرامج التعليمية', en: 'Programs',        icon: Layers,       color: 'purple' },
+    { to: '/lms/quizzes',      ar: 'الاختبارات',         en: 'Quizzes',         icon: FileCheck2,   color: 'red' },
+    { to: '/lms/assignments',  ar: 'الواجبات',           en: 'Assignments',     icon: FilePlus2,    color: 'cyan' },
   ];
 
   return (
@@ -381,11 +394,13 @@ export default function LMS() {
         </Link>
       }
     >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard color="cyan"    icon={<BookOpen size={22} />}   label={isAr ? 'الدورات' : 'Courses'}        value={coursesCount ?? '—'} />
-        <StatCard color="blue"    icon={<BookOpen size={22} />}   label={isAr ? 'الدروس' : 'Lessons'}         value={lessonsCount ?? '—'} />
-        <StatCard color="violet"  icon={<Users size={22} />}      label={isAr ? 'الدفعات' : 'Batches'}        value={batchesCount ?? '—'} />
-        <StatCard color="emerald" icon={<BadgeCheck size={22} />} label={isAr ? 'التسجيلات' : 'Enrollments'}  value={enrollmentsCount ?? '—'} />
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+        <StatCard color="cyan"    icon={<BookOpen size={22} />}     label={isAr ? 'الدورات' : 'Courses'}        value={coursesCount ?? '—'} />
+        <StatCard color="blue"    icon={<BookOpen size={22} />}     label={isAr ? 'الدروس' : 'Lessons'}         value={lessonsCount ?? '—'} />
+        <StatCard color="violet"  icon={<Users size={22} />}        label={isAr ? 'الدفعات' : 'Batches'}        value={batchesCount ?? '—'} />
+        <StatCard color="emerald" icon={<BadgeCheck size={22} />}   label={isAr ? 'التسجيلات' : 'Enrollments'}  value={enrollmentsCount ?? '—'} />
+        <StatCard color="amber"   icon={<UserCheck size={22} />}    label={isAr ? 'الطلاب' : 'Students'}        value={studentsCount ?? '—'} />
+        <StatCard color="teal"    icon={<CreditCard size={22} />}   label={isAr ? 'المدفوعات' : 'Payments'}     value={paymentsCount ?? '—'} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -520,6 +535,42 @@ export function LMSForm() {
   const [form, setForm] = useState<Record<string, any>>({});
   const [error, setError] = useState<string | null>(null);
 
+  // ── Reference data for linked-field dropdowns ─────────────────────────────
+  const { data: coursesRef } = useFrappeGetDocList<{ name: string; title_ar?: string; course_code?: string }>(
+    'Madaar LMS Course', { fields: ['name', 'title_ar', 'course_code'], limit: 200 },
+  );
+  const { data: instructorsRef } = useFrappeGetDocList<{ name: string; full_name?: string; instructor_code?: string }>(
+    'Madaar LMS Instructor', { fields: ['name', 'full_name', 'instructor_code'], limit: 200 },
+  );
+  const { data: allBatchesRef } = useFrappeGetDocList<{ name: string; batch_code?: string; course?: string }>(
+    'Madaar LMS Batch', { fields: ['name', 'batch_code', 'course'], limit: 200 },
+  );
+  const { data: studentsRef } = useFrappeGetDocList<{ name: string; full_name?: string; student_id?: string }>(
+    'Madaar LMS Student', { fields: ['name', 'full_name', 'student_id'], limit: 200 },
+  );
+  const { data: enrollmentsRef } = useFrappeGetDocList<{ name: string; student?: string; course?: string }>(
+    'Madaar LMS Enrollment', { fields: ['name', 'student', 'course'], limit: 200 },
+  );
+  // ── Accounting integration data ───────────────────────────────────────────
+  const { data: modesOfPaymentRef } = useFrappeGetDocList<{ name: string }>(
+    'Mode of Payment', { fields: ['name'], limit: 50 },
+  );
+  const { data: bankCashAccountsRef } = useFrappeGetDocList<{ name: string }>(
+    'Account',
+    { fields: ['name'], filters: [['account_type', 'in', ['Cash', 'Bank']]] as any, limit: 100 },
+  );
+  const { data: globalDefaults } = useFrappeGetDoc<{ default_company?: string }>(
+    'Global Defaults', 'Global Defaults', 'global-defaults',
+  );
+  // Batches filtered by course currently selected in the form
+  const courseBatchesRef = useMemo(
+    () => (form.course ? (allBatchesRef ?? []).filter((b) => b.course === form.course) : (allBatchesRef ?? [])),
+    [allBatchesRef, form.course],
+  );
+  // Payment Entry accounting state
+  const [postToAccounting, setPostToAccounting] = useState(true);
+  const [paidToAccount, setPaidToAccount] = useState('');
+
   // Hydrate form from existing doc — must be a useEffect, not a render-time setState.
   useEffect(() => {
     if (existing && Object.keys(form).length === 0) {
@@ -540,6 +591,25 @@ export function LMSForm() {
         await updateDoc(cfg.doctype, name!, form);
       } else {
         await createDoc(cfg.doctype, { doctype: cfg.doctype, ...form });
+        // ── Accounting integration: LMS Payment → ERPNext Payment Entry ──────
+        if (section === 'payments' && postToAccounting && form.status !== 'Pending' && form.status !== 'Failed') {
+          try {
+            await createDoc('Payment Entry', {
+              payment_type: 'Receive',
+              mode_of_payment: form.method || 'Cash',
+              company: globalDefaults?.default_company ?? '',
+              paid_to: paidToAccount || undefined,
+              paid_amount: Number(form.amount) || 0,
+              received_amount: Number(form.amount) || 0,
+              reference_no: form.reference_no ?? '',
+              reference_date: form.payment_date || new Date().toISOString().slice(0, 10),
+              remarks: `LMS Payment — Student: ${form.student ?? ''} — Course: ${form.course ?? ''} — Enrollment: ${form.enrollment ?? ''}`,
+            } as any);
+          } catch (accErr: any) {
+            // Non-blocking: LMS record already saved
+            console.warn('ERPNext Payment Entry creation (non-blocking):', accErr?.message ?? accErr);
+          }
+        }
       }
       navigate(`/lms/${cfg.key}`);
     } catch (err: any) {
@@ -568,7 +638,12 @@ export function LMSForm() {
             <input value={form.title_en ?? ''} onChange={(e) => setForm({ ...form, title_en: e.target.value })} required dir="ltr" className={FIELD_INPUT_CLASS} />
           </FormField>
           <FormField label={isAr ? 'المدرس' : 'Instructor'}>
-            <input value={form.instructor ?? ''} onChange={(e) => setForm({ ...form, instructor: e.target.value })} placeholder="user@madaar.app" dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select value={form.instructor ?? ''} onChange={(e) => setForm({ ...form, instructor: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر مدرساً' : 'Select instructor'} —</option>
+              {(instructorsRef ?? []).map((i) => (
+                <option key={i.name} value={i.name}>{i.instructor_code ? `[${i.instructor_code}] ` : ''}{i.full_name ?? i.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'المدة (ساعات)' : 'Duration (hours)'}>
             <input type="number" step="0.5" min={0} value={form.duration_hours ?? ''} onChange={(e) => setForm({ ...form, duration_hours: parseFloat(e.target.value) || 0 })} className={FIELD_INPUT_CLASS} />
@@ -589,7 +664,12 @@ export function LMSForm() {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField label={isAr ? 'الدورة' : 'Course'} required>
-            <input value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} required dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select required value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر دورة' : 'Select course'} —</option>
+              {(coursesRef ?? []).map((c) => (
+                <option key={c.name} value={c.name}>{c.course_code ? `[${c.course_code}] ` : ''}{c.title_ar ?? c.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'العنوان' : 'Title'} required>
             <input value={form.title ?? ''} onChange={(e) => setForm({ ...form, title: e.target.value })} required className={FIELD_INPUT_CLASS} />
@@ -616,10 +696,20 @@ export function LMSForm() {
             <input value={form.batch_code ?? ''} onChange={(e) => setForm({ ...form, batch_code: e.target.value })} required disabled={isEdit} dir="ltr" className={FIELD_INPUT_CLASS} />
           </FormField>
           <FormField label={isAr ? 'الدورة' : 'Course'} required>
-            <input value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} required dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select required value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر دورة' : 'Select course'} —</option>
+              {(coursesRef ?? []).map((c) => (
+                <option key={c.name} value={c.name}>{c.course_code ? `[${c.course_code}] ` : ''}{c.title_ar ?? c.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'المدرس' : 'Instructor'}>
-            <input value={form.instructor ?? ''} onChange={(e) => setForm({ ...form, instructor: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select value={form.instructor ?? ''} onChange={(e) => setForm({ ...form, instructor: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر مدرساً' : 'Select instructor'} —</option>
+              {(instructorsRef ?? []).map((i) => (
+                <option key={i.name} value={i.name}>{i.instructor_code ? `[${i.instructor_code}] ` : ''}{i.full_name ?? i.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'تاريخ البداية' : 'Start date'}>
             <input type="date" value={form.start_date ?? ''} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={FIELD_INPUT_CLASS} />
@@ -689,13 +779,28 @@ export function LMSForm() {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField label={isAr ? 'الطالب' : 'Student'} required>
-            <input value={form.student ?? ''} onChange={(e) => setForm({ ...form, student: e.target.value })} required dir="ltr" placeholder="user@example.com" className={FIELD_INPUT_CLASS} />
+            <select required value={form.student ?? ''} onChange={(e) => setForm({ ...form, student: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر طالباً' : 'Select student'} —</option>
+              {(studentsRef ?? []).map((s) => (
+                <option key={s.name} value={s.name}>{s.student_id ? `[${s.student_id}] ` : ''}{s.full_name ?? s.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'الدورة' : 'Course'} required>
-            <input value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} required dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select required value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value, batch: '' })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر دورة' : 'Select course'} —</option>
+              {(coursesRef ?? []).map((c) => (
+                <option key={c.name} value={c.name}>{c.course_code ? `[${c.course_code}] ` : ''}{c.title_ar ?? c.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'الدفعة' : 'Batch'}>
-            <input value={form.batch ?? ''} onChange={(e) => setForm({ ...form, batch: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            <select value={form.batch ?? ''} onChange={(e) => setForm({ ...form, batch: e.target.value })} className={FIELD_INPUT_CLASS}>
+              <option value="">— {isAr ? 'اختر دفعة' : 'Select batch'} —</option>
+              {courseBatchesRef.map((b) => (
+                <option key={b.name} value={b.name}>{b.batch_code ?? b.name}</option>
+              ))}
+            </select>
           </FormField>
           <FormField label={isAr ? 'تاريخ التسجيل' : 'Enrolled on'}>
             <input type="date" value={form.enrolled_on ?? ''} onChange={(e) => setForm({ ...form, enrolled_on: e.target.value })} className={FIELD_INPUT_CLASS} />
@@ -714,12 +819,114 @@ export function LMSForm() {
         </div>
       );
     }
+    if (cfg.createForm === 'payment') {
+      return (
+        <div className="space-y-6">
+          {/* LMS payment fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField label={isAr ? 'الطالب' : 'Student'} required>
+              <select required value={form.student ?? ''} onChange={(e) => setForm({ ...form, student: e.target.value })} className={FIELD_INPUT_CLASS}>
+                <option value="">— {isAr ? 'اختر طالباً' : 'Select student'} —</option>
+                {(studentsRef ?? []).map((s) => (
+                  <option key={s.name} value={s.name}>{s.student_id ? `[${s.student_id}] ` : ''}{s.full_name ?? s.name}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'الدورة' : 'Course'}>
+              <select value={form.course ?? ''} onChange={(e) => setForm({ ...form, course: e.target.value })} className={FIELD_INPUT_CLASS}>
+                <option value="">— {isAr ? 'اختر دورة' : 'Select course'} —</option>
+                {(coursesRef ?? []).map((c) => (
+                  <option key={c.name} value={c.name}>{c.course_code ? `[${c.course_code}] ` : ''}{c.title_ar ?? c.name}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'التسجيل' : 'Enrollment'}>
+              <select value={form.enrollment ?? ''} onChange={(e) => setForm({ ...form, enrollment: e.target.value })} className={FIELD_INPUT_CLASS}>
+                <option value="">— {isAr ? 'اختر تسجيلاً' : 'Select enrollment'} —</option>
+                {(enrollmentsRef ?? [])
+                  .filter((en) => !form.student || en.student === form.student)
+                  .map((en) => <option key={en.name} value={en.name}>{en.name}</option>)}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'المبلغ' : 'Amount'} required>
+              <input type="number" step="0.01" min={0} required value={form.amount ?? ''} onChange={(e) => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'العملة' : 'Currency'}>
+              <input value={form.currency ?? 'EGP'} onChange={(e) => setForm({ ...form, currency: e.target.value })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'تاريخ الدفع' : 'Payment date'}>
+              <input type="date" value={form.payment_date ?? ''} onChange={(e) => setForm({ ...form, payment_date: e.target.value })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'وسيلة الدفع' : 'Method'}>
+              <select value={form.method ?? ''} onChange={(e) => setForm({ ...form, method: e.target.value })} className={FIELD_INPUT_CLASS}>
+                <option value="">—</option>
+                {(modesOfPaymentRef ?? []).length > 0
+                  ? (modesOfPaymentRef ?? []).map((m) => <option key={m.name} value={m.name}>{m.name}</option>)
+                  : ['Cash', 'Bank Transfer', 'Card', 'Mobile Wallet', 'Other'].map((m) => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'رقم المرجع' : 'Reference No'}>
+              <input value={form.reference_no ?? ''} onChange={(e) => setForm({ ...form, reference_no: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'الحالة' : 'Status'}>
+              <select value={form.status ?? 'Paid'} onChange={(e) => setForm({ ...form, status: e.target.value })} className={FIELD_INPUT_CLASS}>
+                <option value="Paid">{isAr ? 'مدفوع' : 'Paid'}</option>
+                <option value="Pending">{isAr ? 'معلق' : 'Pending'}</option>
+                <option value="Refunded">{isAr ? 'مسترد' : 'Refunded'}</option>
+                <option value="Failed">{isAr ? 'فشل' : 'Failed'}</option>
+              </select>
+            </FormField>
+            <FormField label={isAr ? 'ملاحظات' : 'Notes'} span="full">
+              <textarea rows={3} value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={FIELD_INPUT_CLASS} />
+            </FormField>
+          </div>
+          {/* Accounting integration — only shown on create */}
+          {!isEdit && (
+            <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-900/10 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CreditCard size={18} className="text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+                    {isAr ? 'الترحيل المحاسبي — ERPNext' : 'Post to Accounting (ERPNext)'}
+                  </span>
+                </div>
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={postToAccounting} onChange={(e) => setPostToAccounting(e.target.checked)} />
+                  <span className="text-xs text-emerald-700 dark:text-emerald-400">{isAr ? 'إنشاء قيد دفع' : 'Create Payment Entry'}</span>
+                </label>
+              </div>
+              {postToAccounting && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField label={isAr ? 'حساب الإيداع (صندوق/بنك)' : 'Deposit Account (Cash/Bank)'}>
+                    <select value={paidToAccount} onChange={(e) => setPaidToAccount(e.target.value)} className={FIELD_INPUT_CLASS}>
+                      <option value="">— {isAr ? 'اختر حساباً' : 'Select account'} —</option>
+                      {(bankCashAccountsRef ?? []).map((a) => (
+                        <option key={a.name} value={a.name}>{a.name}</option>
+                      ))}
+                    </select>
+                  </FormField>
+                  <FormField label={isAr ? 'الشركة' : 'Company'}>
+                    <input value={globalDefaults?.default_company ?? ''} readOnly className={`${FIELD_INPUT_CLASS} opacity-70 cursor-default`} />
+                  </FormField>
+                  <p className="col-span-full text-xs text-emerald-700 dark:text-emerald-500">
+                    {isAr
+                      ? '* سيتم إنشاء قيد قبض (Receive) في ERPNext تلقائياً. في حالة فشل الترحيل سيتم حفظ سجل LMS بدون قيد.'
+                      : '* A Receive Payment Entry will be auto-created in ERPNext. If accounting fails the LMS record is still saved.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
     return null;
   }
 
   const color = cfg.createForm === 'course' ? 'brand'
               : cfg.createForm === 'enrollment' ? 'emerald'
               : cfg.createForm === 'batch' ? 'violet'
+              : cfg.createForm === 'payment' ? 'amber'
               : cfg.createForm === 'auto' ? 'cyan'
               : 'amber';
 

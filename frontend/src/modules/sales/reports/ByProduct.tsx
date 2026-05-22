@@ -3,11 +3,15 @@ import { useState } from 'react';
 import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '@/modules/accounting/FinancialReportShell';
 
 const COLUMNS: ReportColumn[] = [
-  { label: 'الصنف', fieldname: 'item_code' },
+  { label: 'رقم الفاتورة', fieldname: 'parent' },
+  { label: 'التاريخ', fieldname: 'posting_date' },
+  { label: 'العميل', fieldname: 'customer_name' },
+  { label: 'كود الصنف', fieldname: 'item_code' },
   { label: 'اسم الصنف', fieldname: 'item_name' },
   { label: 'الكمية', fieldname: 'qty', numeric: true },
   { label: 'الوحدة', fieldname: 'stock_uom' },
-  { label: 'إجمالي المبيعات', fieldname: 'amount', numeric: true },
+  { label: 'سعر الوحدة', fieldname: 'base_rate', numeric: true },
+  { label: 'إجمالي المبيعات', fieldname: 'base_net_amount', numeric: true },
 ];
 
 export default function ByProductPage() {

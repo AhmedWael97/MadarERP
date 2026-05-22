@@ -189,7 +189,7 @@ export default function Page() {
                   <Pie data={donutData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value">
                     {donutData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                   </Pie>
-                  <Tooltip formatter={(v: number) => [v, '']} />
+                  <Tooltip formatter={((v: number) => [v, '']) as any} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex gap-4 mt-2 text-xs">
@@ -220,7 +220,7 @@ export default function Page() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v: number) => [`${fmt(v)} ج.م`, '']} />
+                <Tooltip formatter={((v: number) => [`${fmt(v)} ج.م`, '']) as any} />
                 <Legend iconType="circle" iconSize={8} />
                 <Area type="monotone" dataKey="مبيعات" stroke="#6366f1" fill="url(#gradSales)" strokeWidth={2} dot={false} />
                 <Area type="monotone" dataKey="مشتريات" stroke="#10b981" fill="url(#gradPurch)" strokeWidth={2} dot={false} />
@@ -235,7 +235,7 @@ export default function Page() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v: number) => [`${fmt(v)} ج.م`, '']} />
+                <Tooltip formatter={((v: number) => [`${fmt(v)} ج.م`, '']) as any} />
                 <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {cashFlowData.map((d, i) => <Cell key={i} fill={d.fill} />)}
                 </Bar>

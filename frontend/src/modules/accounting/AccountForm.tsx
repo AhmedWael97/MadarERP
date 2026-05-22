@@ -113,7 +113,9 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
       .map((c) => parseInt(c.slice(parentCode.length), 10))
       .filter((n) => !isNaN(n));
     const nextSuffix = nums.length > 0 ? Math.max(...nums) + 1 : 1;
-    const suggested = parentCode + String(nextSuffix).padStart(2, '0');
+    // 1-digit parent → 1-digit suffix (1→11,12…); longer parent → 2-digit padded (11→1101,1102…)
+    const paddingLen = parentCode.length <= 1 ? 1 : 2;
+    const suggested = parentCode + String(nextSuffix).padStart(paddingLen, '0');
     setValues((v) => ({ ...v, account_number: suggested }));
   }, [values.parent_account, siblings, parents, isEdit]);
 

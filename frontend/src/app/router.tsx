@@ -4,6 +4,7 @@ import { AppShell } from './AppShell';
 import { RequireAuth } from '../lib/auth/RequireAuth';
 import { routes as generatedRoutes } from '../_generated/pages.manifest';
 import { ModuleHub } from '../components/erp/ModuleHub';
+import { SuperAdminShell } from '../components/super-admin/SuperAdminShell';
 
 const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
@@ -45,6 +46,14 @@ const ViolationForm = lazy(() => import('../modules/fleet/violations/ViolationFo
 const ConstructionProjectForm = lazy(() => import('../modules/construction/projects/ConstructionProjectForm'));
 const ConstructionEquipmentForm = lazy(() => import('../modules/construction/equipment/ConstructionEquipmentForm'));
 const ConstructionContractForm = lazy(() => import('../modules/construction/contracts/ConstructionContractForm'));
+
+// --- Supplier Groups ---
+const SupplierGroupList = lazy(() => import('../modules/supplier-groups/SupplierGroups'));
+const SupplierGroupForm = lazy(() => import('../modules/supplier-groups/SupplierGroups').then((m) => ({ default: m.SupplierGroupForm })));
+
+// --- Sales Price Lists ---
+const PriceListPage = lazy(() => import('../modules/sales/PriceLists'));
+const PriceListForm = lazy(() => import('../modules/sales/PriceLists').then((m) => ({ default: m.PriceListForm })));
 
 const Loading = (
   <div className="grid min-h-[40vh] place-items-center text-(--color-muted)">…</div>
@@ -148,82 +157,6 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={Loading}>
             <SettingsSection />
-          </Suspense>
-        ),
-      },
-      // --- Super Admin panel — hand-written, mirrors the reference's super-admin/* views ---
-      {
-        path: 'super-admin',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdmin />
-          </Suspense>
-        ),
-      },
-      // --- Super Admin: Companies CRUD ---
-      {
-        path: 'super-admin/companies',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminCompanies />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'super-admin/companies/create',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminCompanyForm />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'super-admin/companies/:name/edit',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminCompanyForm />
-          </Suspense>
-        ),
-      },
-      // --- Super Admin: Plans CRUD ---
-      {
-        path: 'super-admin/plans',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminPlans />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'super-admin/plans/create',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminPlanForm />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'super-admin/plans/:name/edit',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminPlanForm />
-          </Suspense>
-        ),
-      },
-      // --- Super Admin: remaining stub sections (modules/users/settings/letterheads) ---
-      {
-        path: 'super-admin/:section',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminList />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'super-admin/:section/:id',
-        element: (
-          <Suspense fallback={Loading}>
-            <SuperAdminList />
           </Suspense>
         ),
       },
@@ -481,6 +414,32 @@ export const router = createBrowserRouter([
         path: 'construction/contracts/:id/edit',
         element: (<Suspense fallback={Loading}><ConstructionContractForm mode="edit" /></Suspense>),
       },
+      // --- Supplier Groups CRUD ---
+      {
+        path: 'supplier-groups',
+        element: (<Suspense fallback={Loading}><SupplierGroupList /></Suspense>),
+      },
+      {
+        path: 'supplier-groups/create',
+        element: (<Suspense fallback={Loading}><SupplierGroupForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'supplier-groups/:id/edit',
+        element: (<Suspense fallback={Loading}><SupplierGroupForm mode="edit" /></Suspense>),
+      },
+      // --- Sales Price Lists CRUD ---
+      {
+        path: 'sales/price-lists',
+        element: (<Suspense fallback={Loading}><PriceListPage /></Suspense>),
+      },
+      {
+        path: 'sales/price-lists/create',
+        element: (<Suspense fallback={Loading}><PriceListForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'sales/price-lists/:id/edit',
+        element: (<Suspense fallback={Loading}><PriceListForm mode="edit" /></Suspense>),
+      },
       // --- Events (Culture Wheel) — hand-written, not auto-generated from a scan ---
       {
         path: 'events',
@@ -522,6 +481,55 @@ export const router = createBrowserRouter([
             <NotFound />
           </Suspense>
         ),
+      },
+    ],
+  },
+
+  // ── Super Admin — completely separate layout, no sidebar ─────────────────
+  {
+    path: '/super-admin',
+    element: (
+      <RequireAuth>
+        <SuperAdminShell />
+      </RequireAuth>
+    ),
+    children: [
+      {
+        index: true,
+        element: (<Suspense fallback={Loading}><SuperAdmin /></Suspense>),
+      },
+      {
+        path: 'companies',
+        element: (<Suspense fallback={Loading}><SuperAdminCompanies /></Suspense>),
+      },
+      {
+        path: 'companies/create',
+        element: (<Suspense fallback={Loading}><SuperAdminCompanyForm /></Suspense>),
+      },
+      {
+        path: 'companies/:name/edit',
+        element: (<Suspense fallback={Loading}><SuperAdminCompanyForm /></Suspense>),
+      },
+      {
+        path: 'plans',
+        element: (<Suspense fallback={Loading}><SuperAdminPlans /></Suspense>),
+      },
+      {
+        path: 'plans/create',
+        element: (<Suspense fallback={Loading}><SuperAdminPlanForm /></Suspense>),
+      },
+      {
+        path: 'plans/:name/edit',
+        element: (<Suspense fallback={Loading}><SuperAdminPlanForm /></Suspense>),
+      },
+      // Catch-all stub sections: modules / users / settings / letterheads
+      {
+        path: ':section',
+        element: (<Suspense fallback={Loading}><SuperAdminList /></Suspense>),
+      },
+      {
+        path: ':section/:id',
+        element: (<Suspense fallback={Loading}><SuperAdminList /></Suspense>),
       },
     ],
   },

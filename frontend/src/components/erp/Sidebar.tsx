@@ -20,7 +20,6 @@ import {
   Package,
   Receipt,
   Settings,
-  ShieldCheck,
   ShoppingCart,
   Truck,
   UserCog,
@@ -780,42 +779,6 @@ const SECTIONS: Section[] = [
     headerAr: 'إعدادات الشركة',
     items: [
       { to: '/settings', labelAr: 'إعدادات الشركة', icon: Settings, accent: 'slate' },
-    ],
-  },
-
-  // ── 11. System admin ─────────────────────────────────────────────────────
-  {
-    headerAr: 'إدارة النظام',
-    items: [
-      {
-        to: '/super-admin',
-        labelAr: 'إعدادات مدير النظام',
-        icon: ShieldCheck,
-        accent: 'rose',
-        groups: [
-          {
-            headerAr: 'الشركات والاشتراكات',
-            leaves: [
-              { to: '/super-admin/companies', labelAr: 'إدارة الشركات' },
-              { to: '/super-admin/plans',     labelAr: 'الباقات والأسعار' },
-            ],
-          },
-          {
-            headerAr: 'إدارة النظام',
-            leaves: [
-              { to: '/super-admin/modules',   labelAr: 'إدارة الموديولات' },
-              { to: '/super-admin/users',     labelAr: 'المستخدمين' },
-              { to: '/super-admin/settings',  labelAr: 'إعدادات النظام' },
-            ],
-          },
-          {
-            headerAr: 'المبيعات والعقود',
-            leaves: [
-              { to: '/super-admin/letterheads', labelAr: 'عقود الترخيص' },
-            ],
-          },
-        ],
-      },
     ],
   },
 

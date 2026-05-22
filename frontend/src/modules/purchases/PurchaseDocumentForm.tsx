@@ -8,7 +8,8 @@
  */
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { Plus, Trash2, ArrowRight } from 'lucide-react';
 import {
   useFrappeCreateDoc,
   useFrappeGetCall,
@@ -17,7 +18,6 @@ import {
   useFrappeUpdateDoc,
 } from 'frappe-react-sdk';
 import { toast } from 'sonner';
-import { ArrowRight } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 import { LineItemsTable } from '@/components/erp/LineItemsTable';
@@ -57,13 +57,13 @@ export default function PurchaseDocumentForm({ variant, mode }: { variant: Purch
           </button>
         }
       >
-        <Body cfg={cfg} mode={mode} name={id} onDone={() => navigate(cfg.listPath)} />
+        <Body cfg={cfg} variant={variant} mode={mode} name={id} onDone={() => navigate(cfg.listPath)} />
       </PageShell>
     </RequirePerm>
   );
 }
 
-function Body({ cfg, mode, name, onDone }: { cfg: VariantConfig; mode: 'create' | 'edit'; name?: string; onDone: () => void }) {
+function Body({ cfg, variant, mode, name, onDone }: { cfg: VariantConfig; variant: PurchaseVariant; mode: 'create' | 'edit'; name?: string; onDone: () => void }) {
   const isEdit = mode === 'edit';
   const today = new Date().toISOString().slice(0, 10);
   const form = useForm<Record<string, unknown>>({
@@ -84,6 +84,14 @@ function Body({ cfg, mode, name, onDone }: { cfg: VariantConfig; mode: 'create' 
     isEdit && name ? `pd:${cfg.doctype}:${name}` : null,
   );
   useEffect(() => { if (existing) form.reset(existing); }, [existing]);
+
+  const { data: modesOfPayment } = useFrappeGetDocList<{ name: string }>('Mode of Payment', { fields: ['name'], limit: 100 });
+
+  const { fields: paymentRows, append: addPayment, remove: removePayment } = useFieldArray({
+    control: form.control,
+    // @ts-ignore – name type is 'never' with Record<string,unknown> form
+    name: 'payments',
+  });
 
   const { data: suppliers } = useFrappeGetDocList<{ name: string; supplier_name?: string; madaar_supplier_code?: string }>('Supplier', {
     fields: ['name', 'supplier_name', 'madaar_supplier_code'],
@@ -197,6 +205,54 @@ function Body({ cfg, mode, name, onDone }: { cfg: VariantConfig; mode: 'create' 
           )}
         </div>
       </div>
+
+      {/* Payment distribution — invoice and return variants only */}
+      {(variant === 'invoice' || variant === 'return') && (
+        <Card title="توزيع الدفع" subtitle="وزّع المبلغ الإجمالي على وسائل الدفع المختلفة (بنك، نقدي، إلخ)">
+          <div className="space-y-3">
+            {paymentRows.map((row, idx) => (
+              <div key={row.id} className="flex items-center gap-3">
+                <div className="flex-1">
+                  <select
+                    {...form.register(`payments.${idx}.mode_of_payment` as const)}
+                    className={INPUT}
+                  >
+                    <option value="">— طريقة الدفع —</option>
+                    {(modesOfPayment ?? []).map((m) => (
+                      <option key={m.name} value={m.name}>{m.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-44">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    dir="ltr"
+                    placeholder="المبلغ"
+                    {...form.register(`payments.${idx}.amount` as const, { valueAsNumber: true })}
+                    className={INPUT + ' font-mono'}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removePayment(idx)}
+                  className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => addPayment({ mode_of_payment: '', amount: 0 })}
+            className="mt-3 inline-flex items-center gap-2 text-sm text-[color:var(--color-brand-600)] hover:text-[color:var(--color-brand-500)] font-medium"
+          >
+            <Plus size={15} /> إضافة وسيلة دفع
+          </button>
+        </Card>
+      )}
 
       <Card title="الإجماليات">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

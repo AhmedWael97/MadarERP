@@ -76,8 +76,43 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
     limit: 200,
   });
 
+  // Siblings — needed to auto-suggest the next code when parent changes.
+  const { data: siblings } = useFrappeGetDocList<{ cost_center_number?: string }>('Cost Center', {
+    fields: ['cost_center_number'],
+    filters: values.parent_cost_center
+      ? [['parent_cost_center', '=', values.parent_cost_center]]
+      : [['parent_cost_center', '=', '']],
+    limit: 200,
+    enabled: !isEdit,
+  } as any);
+
+  // Auto-suggest cost_center_number when parent changes (create mode only).
+  useEffect(() => {
+    if (isEdit) return;
+    if (values.cost_center_number) return; // user typed something — don't overwrite
+    const parent = (parents ?? []).find((p) => p.name === values.parent_cost_center);
+    const parentCode = parent?.cost_center_number ?? '';
+    if (!parentCode) return;
+    const nums = (siblings ?? [])
+      .map((s) => s.cost_center_number ?? '')
+      .filter((c) => c.startsWith(parentCode) && c !== parentCode)
+      .map((c) => parseInt(c.slice(parentCode.length), 10))
+      .filter((n) => !isNaN(n));
+    const nextSuffix = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    const paddingLen = parentCode.length <= 1 ? 1 : 2;
+    const suggested = parentCode + String(nextSuffix).padStart(paddingLen, '0');
+    setValues((v) => ({ ...v, cost_center_number: suggested }));
+  }, [values.parent_cost_center, siblings, parents, isEdit]);
+
   function set<K extends keyof CostCenterDoc>(key: K, val: CostCenterDoc[K]) {
-    setValues((p) => ({ ...p, [key]: val }));
+    setValues((p) => {
+      // Clear the suggested code whenever the user changes the parent so the
+      // auto-suggest effect re-runs with the new parent's siblings.
+      if (key === 'parent_cost_center' && !isEdit) {
+        return { ...p, [key]: val, cost_center_number: '' };
+      }
+      return { ...p, [key]: val };
+    });
   }
 
   async function onSubmit(e: React.FormEvent) {
