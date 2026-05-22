@@ -64,42 +64,72 @@ export default function SuperAdminPlans() {
         </Link>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rows.map((p) => {
-          const mods = (p.modules ?? '').split(',').map((m) => m.trim()).filter(Boolean);
-          return (
-            <div key={p.name} className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 bg-gradient-to-l from-[color:var(--color-brand-700)] to-[color:var(--color-brand-500)] text-white">
-                <p className="text-[10px] font-semibold uppercase tracking-wide opacity-80">{p.plan_code}</p>
-                <h3 className="text-xl font-extrabold">{isAr ? p.name_ar : p.name_en}</h3>
-                <p className="mt-1 text-sm opacity-90">
-                  <span className="text-2xl font-black">{Number(p.monthly_price ?? 0).toLocaleString()}</span> {p.currency ?? 'EGP'} / {isAr ? 'شهر' : 'mo'}
-                </p>
-              </div>
-              <div className="p-5 space-y-2 text-xs text-slate-600 dark:text-slate-400">
-                <p>👤 {p.max_users_per_company ?? 0} {isAr ? 'مستخدم' : 'users'}</p>
-                <p>🏢 {p.max_branches ?? 0} {isAr ? 'فروع' : 'branches'}</p>
-                <p>📦 {p.max_warehouses ?? 0} {isAr ? 'مخازن' : 'warehouses'}</p>
-                <p>📅 {p.trial_days ?? 0} {isAr ? 'يوم تجريبي' : 'trial days'}</p>
-                <p>🧩 {mods.length} {isAr ? 'موديول' : 'modules'}</p>
-              </div>
-              <div className="px-5 pb-4 flex items-center justify-between">
-                <span className={p.is_active ? 'text-[10px] px-2 py-0.5 rounded-lg font-bold bg-emerald-100 text-emerald-700' : 'text-[10px] px-2 py-0.5 rounded-lg font-bold bg-slate-100 text-slate-600'}>
-                  {p.is_active ? (isAr ? 'نشطة' : 'Active') : (isAr ? 'متوقفة' : 'Inactive')}
-                </span>
-                <Link to={`/super-admin/plans/${encodeURIComponent(p.name)}/edit`} className="inline-flex items-center gap-1 text-xs text-[color:var(--color-brand-600)] font-bold hover:underline">
-                  <Edit3 size={12} />{isAr ? 'تعديل' : 'Edit'}
+      {/* Matching reference palette: rotating gradients per card */}
+      {(() => {
+        const PALETTES = [
+          { bg: 'from-blue-600 to-indigo-700',    shadow: 'hover:shadow-blue-500/30',    sub: 'text-blue-200'   },
+          { bg: 'from-violet-600 to-purple-700',  shadow: 'hover:shadow-violet-500/30',  sub: 'text-violet-200' },
+          { bg: 'from-cyan-600 to-teal-700',      shadow: 'hover:shadow-cyan-500/30',    sub: 'text-cyan-200'   },
+          { bg: 'from-amber-500 to-orange-600',   shadow: 'hover:shadow-amber-500/30',   sub: 'text-amber-200'  },
+          { bg: 'from-emerald-600 to-teal-700',   shadow: 'hover:shadow-emerald-500/30', sub: 'text-emerald-200'},
+          { bg: 'from-rose-600 to-red-700',       shadow: 'hover:shadow-rose-500/30',    sub: 'text-rose-200'   },
+        ];
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {rows.map((p, i) => {
+              const c = PALETTES[i % PALETTES.length];
+              const mods = (p.modules ?? '').split(',').map((m) => m.trim()).filter(Boolean);
+              return (
+                <Link
+                  key={p.name}
+                  to={`/super-admin/plans/${encodeURIComponent(p.name)}/edit`}
+                  className={`group block rounded-2xl bg-gradient-to-br ${c.bg} p-6 transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl ${c.shadow} cursor-pointer h-[220px] flex flex-col justify-between`}
+                >
+                  {/* Top */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      {p.trial_days > 0 ? (
+                        <span className="px-2.5 py-1 bg-white/15 rounded-full text-[10px] font-bold text-white">
+                          🎁 {isAr ? 'تجريبية' : 'Trial'}
+                        </span>
+                      ) : <span />}
+                      <span className="px-2.5 py-1 bg-white/15 rounded-full text-[10px] font-bold text-white">
+                        {mods.length} {isAr ? 'موديول' : 'modules'}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-black text-white mb-1">{isAr ? p.name_ar : p.name_en}</h3>
+                    {p.name_en && isAr && (
+                      <p className={`text-xs opacity-70 ${c.sub}`}>{p.name_en}</p>
+                    )}
+                  </div>
+
+                  {/* Bottom */}
+                  <div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-black text-white">{Number(p.monthly_price ?? 0).toLocaleString()}</span>
+                      <span className="text-xs text-white/70 font-bold">{p.currency ?? 'EGP'} / {isAr ? 'شهرياً' : 'mo'}</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className={`text-[11px] text-white/50`}>
+                        {Number(p.yearly_price ?? 0).toLocaleString()} {p.currency ?? 'EGP'} / {isAr ? 'سنوياً' : 'yr'}
+                      </span>
+                      <span className="text-xs text-white/60 group-hover:text-white transition flex items-center gap-1">
+                        {isAr ? 'تعديل' : 'Edit'}
+                        <Edit3 size={12} className="group-hover:-translate-x-0.5 transition-transform" />
+                      </span>
+                    </div>
+                  </div>
                 </Link>
+              );
+            })}
+            {rows.length === 0 && (
+              <div className="col-span-full rounded-2xl bg-white/10 p-12 text-center text-sm text-white/60">
+                {isAr ? 'لا توجد باقات بعد — أنشئ أول باقة' : 'No plans yet — create your first one'}
               </div>
-            </div>
-          );
-        })}
-        {rows.length === 0 && (
-          <div className="col-span-full rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-12 text-center text-sm text-slate-400">
-            {isAr ? 'لا توجد باقات بعد — أنشئ أول باقة' : 'No plans yet — create your first one'}
+            )}
           </div>
-        )}
-      </div>
+        );
+      })()}
     </PageShell>
   );
 }

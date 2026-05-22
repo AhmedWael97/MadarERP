@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useFrappeGetCall, useFrappeGetDoc, useFrappeCreateDoc, useFrappeUpdateDoc } from 'frappe-react-sdk';
-import { Plus, Search, Building2, DollarSign, User as UserIcon, Save, Globe, Package, Settings } from 'lucide-react';
+import { useFrappeGetCall, useFrappeGetDoc, useFrappeCreateDoc, useFrappeUpdateDoc, useFrappeDeleteDoc, useFrappePostCall } from 'frappe-react-sdk';
+import { Plus, Search, Building2, DollarSign, User as UserIcon, Save, Globe, Package, Settings, AlertTriangle, Trash2, KeyRound } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 import { FormCard } from '../components/erp/FormCard';
 import { FormField, FIELD_INPUT_CLASS, FormSubmit, FormCancel, FormInfoBanner, FormBackButton } from '../components/erp/FormField';
@@ -220,9 +220,11 @@ export function SuperAdminCompanyForm() {
     chart_of_accounts: existing?.chart_of_accounts ?? '',
     fy_start_date:     existing?.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
     fy_end_date:       existing?.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
-    name_en:       existing?.name_en       ?? '',
-    city:          existing?.city          ?? '',
-    tax_number:    existing?.tax_number    ?? '',
+    name_en:              existing?.name_en              ?? '',
+    city:                 existing?.city                 ?? '',
+    tax_number:           existing?.tax_number           ?? '',
+    mobile:               existing?.mobile               ?? '',
+    commercial_register:  existing?.commercial_register  ?? '',
     admin_name_ar: '',
     admin_name_en: '',
     admin_email: '',
@@ -265,9 +267,11 @@ export function SuperAdminCompanyForm() {
         chart_of_accounts: existing.chart_of_accounts ?? '',
         fy_start_date:     existing.fy_start_date     ?? `${new Date().getFullYear()}-01-01`,
         fy_end_date:       existing.fy_end_date       ?? `${new Date().getFullYear()}-12-31`,
-        name_en:       existing.name_en       ?? '',
-        city:          existing.city          ?? '',
-        tax_number:    existing.tax_number    ?? '',
+        name_en:              existing.name_en              ?? '',
+        city:                 existing.city                 ?? '',
+        tax_number:           existing.tax_number           ?? '',
+        mobile:               existing.mobile               ?? '',
+        commercial_register:  existing.commercial_register  ?? '',
         admin_name_ar: '',
         admin_name_en: '',
         admin_email: '',
@@ -287,6 +291,32 @@ export function SuperAdminCompanyForm() {
     setEnabledModules((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
+  }
+
+  // Delete company
+  const { deleteDoc } = useFrappeDeleteDoc();
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // Company users (edit mode only)
+  const { data: usersData } = useFrappeGetCall<{ message: any[] }>(
+    'madaar_core.api.get_company_users',
+    { company: name },
+    name ? `company-users-${name}` : null,
+  );
+  const companyUsers = usersData?.message ?? [];
+
+  async function handleDelete(e: React.FormEvent) {
+    e.preventDefault();
+    const confirmName = form.name_ar || name!;
+    if (deleteConfirm !== confirmName) return;
+    setDeleteError(null);
+    try {
+      await deleteDoc('Madaar Tenant Subscription', name!);
+      navigate('/super-admin/companies');
+    } catch (err: any) {
+      setDeleteError(err?.response?.data?.message || err?.message || String(err));
+    }
   }
 
   const [error, setError] = useState<string | null>(null);
@@ -361,6 +391,12 @@ export function SuperAdminCompanyForm() {
             </FormField>
             <FormField label={isAr ? 'الرقم الضريبي' : 'Tax number'} hint={isAr ? 'رقم التسجيل الضريبي (VAT/Tax ID)' : 'VAT / Tax registration number'}>
               <input value={form.tax_number} onChange={(e) => setForm({ ...form, tax_number: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'الموبايل' : 'Mobile'}>
+              <input value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
+            </FormField>
+            <FormField label={isAr ? 'السجل التجاري' : 'Commercial register'}>
+              <input value={form.commercial_register} onChange={(e) => setForm({ ...form, commercial_register: e.target.value })} dir="ltr" className={FIELD_INPUT_CLASS} />
             </FormField>
             <FormField label={isAr ? 'النطاق الفرعي (Subdomain)' : 'Subdomain'} hint={isAr ? 'مثال: company-name — سيظهر كـ company-name.madaar.app' : 'e.g. company-name → company-name.madaar.app'}>
               <div className="flex items-center gap-0">
@@ -541,6 +577,77 @@ export function SuperAdminCompanyForm() {
           </FormField>
         </FormCard>
 
+        {/* ── Company users — password reset (edit only) ─────────────────── */}
+        {isEdit && (
+          <FormCard color="blue" title={isAr ? 'مستخدمي الشركة — تغيير كلمة المرور' : 'Company users — password reset'} icon={<KeyRound size={20} />}>
+            <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10 mb-4">
+              <p className="text-xs text-blue-700 dark:text-blue-400">
+                {isAr
+                  ? 'يمكنك تغيير كلمة المرور لأي مستخدم في الشركة من هنا. اضغط على "تغيير كلمة المرور" بجانب المستخدم المراد.'
+                  : 'You can reset the password for any company user below. Click "Change password" next to the user.'}
+              </p>
+            </div>
+            {companyUsers.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-6">
+                {isAr ? 'لا يوجد مستخدمين مسجلين لهذه الشركة' : 'No users registered for this company'}
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {companyUsers.map((u: any) => (
+                  <CompanyUserRow key={u.name} user={u} company={name!} isAr={isAr} />
+                ))}
+              </div>
+            )}
+          </FormCard>
+        )}
+
+        {/* ── Danger zone — delete company (edit only) ──────────────────── */}
+        {isEdit && (
+          <FormCard color="rose" title={isAr ? 'منطقة الخطر' : 'Danger zone'} icon={<AlertTriangle size={20} />}>
+            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/5 border border-rose-200 dark:border-rose-500/20">
+              <div className="flex items-start gap-3">
+                <Trash2 className="w-6 h-6 text-rose-500 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="text-sm font-bold text-rose-700 dark:text-rose-400 mb-1">
+                    {isAr ? 'حذف الشركة بالكامل' : 'Delete this company'}
+                  </h4>
+                  <p className="text-xs text-rose-600 dark:text-rose-400/80 mb-4">
+                    {isAr
+                      ? 'سيتم تعطيل جميع مستخدمي الشركة وحذف بيانات الشركة من النظام. هذا الإجراء لا يمكن التراجع عنه بسهولة.'
+                      : 'All company users will be disabled and the company data removed from the system. This action cannot be easily undone.'}
+                  </p>
+                  <form onSubmit={handleDelete} className="flex items-end gap-3 flex-wrap">
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-xs font-bold text-rose-600 dark:text-rose-400 mb-1">
+                        {isAr ? 'اكتب اسم الشركة للتأكيد:' : 'Type the company name to confirm:'}{' '}
+                        <span className="font-mono bg-rose-100 dark:bg-rose-500/10 px-1.5 py-0.5 rounded text-rose-700 dark:text-rose-300">
+                          {form.name_ar || name}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        value={deleteConfirm}
+                        onChange={(e) => setDeleteConfirm(e.target.value)}
+                        placeholder={form.name_ar || name}
+                        className="w-full px-3 py-2 text-sm rounded-xl border border-rose-300 dark:border-rose-500/30 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={deleteConfirm !== (form.name_ar || name!)}
+                      className="inline-flex items-center gap-2 px-5 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-500 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={14} />
+                      {isAr ? 'حذف الشركة نهائياً' : 'Delete company permanently'}
+                    </button>
+                  </form>
+                  {deleteError && <p className="text-xs text-rose-600 mt-2">{deleteError}</p>}
+                </div>
+              </div>
+            </div>
+          </FormCard>
+        )}
+
         {error && <p className="text-sm text-rose-600">{error}</p>}
 
         <div className="flex items-center gap-3">
@@ -551,5 +658,119 @@ export function SuperAdminCompanyForm() {
         </div>
       </form>
     </PageShell>
+  );
+}
+
+/** Per-user password-reset row (rendered inside the edit-mode users card). */
+function CompanyUserRow({ user, company, isAr }: { user: any; company: string; isAr: boolean }) {
+  const [show, setShow] = useState(false);
+  const [pwd, setPwd] = useState('');
+  const [pwdConfirm, setPwdConfirm] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const { call, loading } = useFrappePostCall<{ message: string }>('madaar_core.api.reset_company_user_password');
+
+  const userTypeLabels: Record<string, { ar: string; en: string }> = {
+    super_admin:    { ar: 'سوبر أدمن', en: 'Super admin' },
+    company_owner:  { ar: 'مالك الشركة', en: 'Company owner' },
+    employee:       { ar: 'موظف', en: 'Employee' },
+  };
+  const typeLabel = userTypeLabels[user.user_type] ?? { ar: user.user_type, en: user.user_type };
+  const initials = (user.name_ar ?? user.name ?? '?').slice(0, 1);
+
+  async function handleReset(e: React.FormEvent) {
+    e.preventDefault();
+    setMsg(null);
+    if (pwd !== pwdConfirm) {
+      setMsg(isAr ? 'كلمتا المرور غير متطابقتين' : 'Passwords do not match');
+      return;
+    }
+    try {
+      await call({ company, user: user.name, new_password: pwd });
+      setMsg(isAr ? '✓ تم تغيير كلمة المرور بنجاح' : '✓ Password changed successfully');
+      setShow(false);
+      setPwd('');
+      setPwdConfirm('');
+    } catch (err: any) {
+      setMsg(err?.response?.data?.message || err?.message || String(err));
+    }
+  }
+
+  return (
+    <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700/30 bg-slate-50 dark:bg-slate-800/50">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">
+            {initials}
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-700 dark:text-white">{user.name_ar ?? user.name}</p>
+            <p className="text-xs text-slate-500">{user.email}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] px-2 py-0.5 rounded-lg font-bold ${user.user_type === 'company_owner' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+            {isAr ? typeLabel.ar : typeLabel.en}
+          </span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-lg font-bold ${user.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
+            {user.is_active ? (isAr ? 'نشط' : 'Active') : (isAr ? 'معطل' : 'Inactive')}
+          </span>
+        </div>
+      </div>
+
+      <div className="pt-3 border-t border-slate-200 dark:border-slate-700/30">
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition"
+        >
+          <KeyRound size={14} />
+          {show ? (isAr ? 'إخفاء' : 'Hide') : (isAr ? 'تغيير كلمة المرور' : 'Change password')}
+        </button>
+
+        {show && (
+          <form onSubmit={handleReset} className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                {isAr ? 'كلمة المرور الجديدة *' : 'New password *'}
+              </label>
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={pwd}
+                onChange={(e) => setPwd(e.target.value)}
+                placeholder={isAr ? '8 أحرف على الأقل' : 'At least 8 chars'}
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                {isAr ? 'تأكيد كلمة المرور *' : 'Confirm password *'}
+              </label>
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={pwdConfirm}
+                onChange={(e) => setPwdConfirm(e.target.value)}
+                placeholder={isAr ? 'أعد كتابة كلمة المرور' : 'Repeat password'}
+                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-500 transition-all shadow-sm disabled:opacity-60"
+              >
+                <KeyRound size={14} />
+                {isAr ? 'حفظ كلمة المرور' : 'Save password'}
+              </button>
+            </div>
+            {msg && <p className="col-span-full text-xs mt-1 text-blue-600 dark:text-blue-400">{msg}</p>}
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
