@@ -32,6 +32,10 @@ export default function JournalEntryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: je, isLoading } = useFrappeGetDoc<JEDoc>('Journal Entry', id);
 
+  // Hooks must be called unconditionally — compute before any early return.
+  const totalDebit = useMemo(() => (je?.accounts ?? []).reduce((s, l) => s + Number(l.debit_in_account_currency ?? 0), 0), [je?.accounts]);
+  const totalCredit = useMemo(() => (je?.accounts ?? []).reduce((s, l) => s + Number(l.credit_in_account_currency ?? 0), 0), [je?.accounts]);
+
   if (isLoading || !je) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
   }
@@ -42,8 +46,6 @@ export default function JournalEntryDetailPage() {
     posted: { label: 'مرحّل', cls: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700' },
     cancelled: { label: 'ملغى', cls: 'bg-red-100 dark:bg-red-500/10 text-red-700' },
   };
-  const totalDebit = useMemo(() => (je.accounts ?? []).reduce((s, l) => s + Number(l.debit_in_account_currency ?? 0), 0), [je.accounts]);
-  const totalCredit = useMemo(() => (je.accounts ?? []).reduce((s, l) => s + Number(l.credit_in_account_currency ?? 0), 0), [je.accounts]);
 
   return (
     <RequirePerm doctype="Journal Entry" action="read">
