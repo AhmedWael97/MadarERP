@@ -57,6 +57,18 @@ const ConstructionContractForm = lazy(() => import('../modules/construction/cont
 const SupplierGroupList = lazy(() => import('../modules/supplier-groups/SupplierGroups'));
 const SupplierGroupForm = lazy(() => import('../modules/supplier-groups/SupplierGroups').then((m) => ({ default: m.SupplierGroupForm })));
 
+// --- Customer Groups ---
+const CustomerGroupList = lazy(() => import('../modules/customer-groups/CustomerGroups').then((m) => ({ default: m.CustomerGroupList })));
+const CustomerGroupForm = lazy(() => import('../modules/customer-groups/CustomerGroups').then((m) => ({ default: m.CustomerGroupForm })));
+
+// --- Item Groups (product-categories / product-groups) ---
+const ItemGroupListCategories = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupList({ title: 'تصنيفات المنتجات', subtitle: 'إدارة تصنيفات المنتجات والأصناف', basePath: '/inventory/product-categories' }) })));
+const ItemGroupListGroups = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupList({ title: 'مجموعات المنتجات', subtitle: 'إدارة مجموعات المنتجات والأصناف', basePath: '/inventory/product-groups' }) })));
+const ItemGroupFormCategories = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupForm({ mode: 'create', basePath: '/inventory/product-categories' }) })));
+const ItemGroupFormCategoriesEdit = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupForm({ mode: 'edit', basePath: '/inventory/product-categories' }) })));
+const ItemGroupFormGroups = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupForm({ mode: 'create', basePath: '/inventory/product-groups' }) })));
+const ItemGroupFormGroupsEdit = lazy(() => import('../modules/inventory/ItemGroups').then((m) => ({ default: () => m.ItemGroupForm({ mode: 'edit', basePath: '/inventory/product-groups' }) })));
+
 // --- Sales Price Lists ---
 const PriceListPage = lazy(() => import('../modules/sales/PriceLists'));
 const PriceListForm = lazy(() => import('../modules/sales/PriceLists').then((m) => ({ default: m.PriceListForm })));
@@ -438,6 +450,45 @@ export const router = createBrowserRouter([
       {
         path: 'supplier-groups/:id/edit',
         element: (<Suspense fallback={Loading}><SupplierGroupForm mode="edit" /></Suspense>),
+      },
+      // --- Customer Groups CRUD ---
+      {
+        path: 'customer-groups',
+        element: (<Suspense fallback={Loading}><CustomerGroupList /></Suspense>),
+      },
+      {
+        path: 'customer-groups/create',
+        element: (<Suspense fallback={Loading}><CustomerGroupForm mode="create" /></Suspense>),
+      },
+      {
+        path: 'customer-groups/:id/edit',
+        element: (<Suspense fallback={Loading}><CustomerGroupForm mode="edit" /></Suspense>),
+      },
+      // --- Inventory: Product Categories (Item Group) ---
+      {
+        path: 'inventory/product-categories',
+        element: (<Suspense fallback={Loading}><ItemGroupListCategories /></Suspense>),
+      },
+      {
+        path: 'inventory/product-categories/create',
+        element: (<Suspense fallback={Loading}><ItemGroupFormCategories /></Suspense>),
+      },
+      {
+        path: 'inventory/product-categories/:id/edit',
+        element: (<Suspense fallback={Loading}><ItemGroupFormCategoriesEdit /></Suspense>),
+      },
+      // --- Inventory: Product Groups (Item Group) ---
+      {
+        path: 'inventory/product-groups',
+        element: (<Suspense fallback={Loading}><ItemGroupListGroups /></Suspense>),
+      },
+      {
+        path: 'inventory/product-groups/create',
+        element: (<Suspense fallback={Loading}><ItemGroupFormGroups /></Suspense>),
+      },
+      {
+        path: 'inventory/product-groups/:id/edit',
+        element: (<Suspense fallback={Loading}><ItemGroupFormGroupsEdit /></Suspense>),
       },
       // --- Sales Price Lists CRUD ---
       {
