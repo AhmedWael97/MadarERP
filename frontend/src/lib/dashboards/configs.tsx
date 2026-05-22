@@ -514,7 +514,7 @@ export const mfgCfg: DashboardCfg = {
 export const constructionCfg: DashboardCfg = {
   title: 'المقاولات',
   subtitle: 'المشاريع والمستخلصات والعقود',
-  permDoctype: 'Contract',
+  permDoctype: 'Madaar Construction Contract',
   queries: {
     projects: {
       doctype: 'Project',
@@ -522,8 +522,8 @@ export const constructionCfg: DashboardCfg = {
       limit: 500,
     },
     contracts: {
-      doctype: 'Contract',
-      fields: ['name', 'status'],
+      doctype: 'Madaar Construction Contract',
+      fields: ['name', 'contract_number', 'project', 'client', 'contract_value', 'status'],
       limit: 500,
     },
     bills: {
