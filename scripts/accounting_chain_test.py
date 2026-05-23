@@ -51,6 +51,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# Force UTF-8 on stdout so the ✓ / ✗ glyphs don't crash on Windows cp1252.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+except (AttributeError, ValueError):
+    pass
+
 try:
     import requests
 except ImportError:
@@ -116,16 +123,45 @@ class FrappeClient:
         )
         r.raise_for_status()
 
-        # 2. Pull CSRF token off the bootinfo. It's required for any
-        #    mutating call once we're logged in via session.
-        r = self.session.post(
-            f"{self.base}/api/method/frappe.boot.get_bootinfo",
-            timeout=30,
-        )
-        r.raise_for_status()
-        token = (r.json().get("message") or {}).get("csrf_token")
+        # 2. Best-effort CSRF token. Frappe's CSRF policy varies by site:
+        #    - Dev sites usually have ignore_csrf=true → all POSTs work without it.
+        #    - Production sites require the header on mutating calls.
+        # Try a couple of endpoints; if none give us a token, continue
+        # anyway — the actual chain calls will surface a clear 403 if CSRF
+        # turns out to be enforced.
+        token = self._fetch_csrf_token()
         if token:
             self.session.headers["X-Frappe-CSRF-Token"] = token
+
+    def _fetch_csrf_token(self) -> str | None:
+        # Some Frappe builds return it on bootinfo; others on a custom auth
+        # endpoint. We try several, swallowing 403/404 from each, since none
+        # of them is strictly required for the rest of the run.
+        candidates = [
+            ("POST", "/api/method/frappe.boot.get_bootinfo"),
+            ("GET",  "/api/method/frappe.boot.get_bootinfo"),
+            ("GET",  "/api/method/frappe.sessions.get_csrf_token"),
+            ("GET",  "/api/method/frappe.auth.get_logged_user"),
+        ]
+        for method, path in candidates:
+            try:
+                r = self.session.request(method, f"{self.base}{path}", timeout=15)
+                if r.status_code != 200:
+                    continue
+                body = r.json()
+                msg = body.get("message")
+                if isinstance(msg, dict):
+                    if msg.get("csrf_token"):
+                        return msg["csrf_token"]
+                elif isinstance(msg, str) and len(msg) >= 32:
+                    # `frappe.sessions.get_csrf_token` returns the token as
+                    # the bare `message` string.
+                    return msg
+            except (requests.RequestException, ValueError):
+                continue
+        # Fall back to the cookie that the login response sometimes drops on us.
+        ck = self.session.cookies.get("csrf_token") or self.session.cookies.get("sid_csrf")
+        return ck
 
     # ── Convenience wrappers ────────────────────────────────────────────────
 
