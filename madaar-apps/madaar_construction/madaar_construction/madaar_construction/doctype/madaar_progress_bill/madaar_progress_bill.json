@@ -5,6 +5,7 @@
  "creation": "2026-05-15 00:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
+ "is_submittable": 1,
  "field_order": [
   "project",
   "contract",
@@ -19,7 +20,9 @@
   "retention_amount",
   "net_amount",
   "status",
-  "linked_sales_invoice"
+  "linked_sales_invoice",
+  "linked_retention_je",
+  "amended_from"
  ],
  "fields": [
   {
@@ -104,6 +107,23 @@
    "label": "Sales Invoice",
    "options": "Sales Invoice",
    "read_only": 1
+  },
+  {
+   "fieldname": "linked_retention_je",
+   "fieldtype": "Link",
+   "label": "Retention Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1,
+   "description": "JV that moves retention out of Debtors into the Retention Receivable account."
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Madaar Progress Bill",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "istable": 0,
@@ -125,6 +145,9 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1,
    "write": 1
   }
  ],
