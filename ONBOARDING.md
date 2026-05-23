@@ -262,7 +262,7 @@ Run `git log --oneline -20` to see what landed in the last day.
 
 | Term | Meaning |
 |---|---|
-| **مدار / Madaar** | The reference ERP system being cloned (Delta Enterprise's Laravel app at `delta-enterprise.net`) |
+| **مدار / Madaar** | The reference ERP system being cloned (Delta Enterprise's Laravel app at `delta-enterprise.net` and `H:\coupons\Madaar ERP\Madaar ERP`) |
 | **DocType** | A Frappe entity definition — like a SQL table + form + permissions + lifecycle hooks all in one |
 | **Site** | A Frappe tenant — has its own MariaDB database, its own apps installed, its own URL |
 | **Bench** | The Frappe runtime — a directory containing all apps, sites, and configs |
