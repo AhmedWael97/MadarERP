@@ -193,15 +193,25 @@ export function FinancialReportShell({
   }, [rows, hideSubAccounts, rowTransform]);
 
   const totals = useMemo(() => {
+    const pickNumber = (row: Record<string, unknown>, keys: string[]): number | null => {
+      for (const key of keys) {
+        const raw = row[key];
+        if (raw === undefined || raw === null || raw === '') continue;
+        const n = Number(raw);
+        if (Number.isFinite(n)) return n;
+      }
+      return null;
+    };
+
     const debit = visibleRows.reduce((s, r) => {
-      const v = Number(r.debit ?? r.closing_debit ?? 0);
-      if (Number.isFinite(v)) return s + v;
+      const v = pickNumber(r, ['debit', 'closing_debit']);
+      if (v !== null) return s + v;
       const t = Number(r.total ?? 0);
       return t > 0 ? s + t : s;
     }, 0);
     const credit = visibleRows.reduce((s, r) => {
-      const v = Number(r.credit ?? r.closing_credit ?? 0);
-      if (Number.isFinite(v)) return s + v;
+      const v = pickNumber(r, ['credit', 'closing_credit']);
+      if (v !== null) return s + v;
       const t = Number(r.total ?? 0);
       return t < 0 ? s + Math.abs(t) : s;
     }, 0);

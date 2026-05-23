@@ -239,7 +239,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
 
   if (metaLoading) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-6 text-center text-sm text-[color:var(--color-muted)] shadow-[var(--shadow-card)]">
+      <div className="rounded-(--radius-card) border border-(--color-border) bg-card p-6 text-center text-sm text-(--color-muted) shadow-(--shadow-card)">
         {t('common.loading')}
       </div>
     );
@@ -262,20 +262,20 @@ export function FormShell<T extends FieldValues = FieldValues>({
     if (!isEdit) return null;
     if (isCancelled) {
       return (
-        <span className="rounded-full bg-[color:var(--color-rose-100)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-rose-700)]">
+        <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-rose-700">
           {t('docstatus.cancelled', { defaultValue: 'Cancelled' })}
         </span>
       );
     }
     if (isSubmitted) {
       return (
-        <span className="rounded-full bg-[color:var(--color-emerald-100)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-emerald-700)]">
+        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
           {t('docstatus.submitted', { defaultValue: 'Submitted' })}
         </span>
       );
     }
     return (
-      <span className="rounded-full bg-[color:var(--color-amber-100)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-amber-700)]">
+      <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
         {t('docstatus.draft', { defaultValue: 'Draft' })}
       </span>
     );
@@ -287,9 +287,9 @@ export function FormShell<T extends FieldValues = FieldValues>({
           submission status badge so the user can see at a glance whether the
           form is editable. */}
       {isEdit && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] px-5 py-3 shadow-[var(--shadow-card)]">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-(--radius-card) border border-(--color-border) bg-card px-5 py-3 shadow-(--shadow-card)">
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[color:var(--color-muted)]">{doctype}</span>
+            <span className="text-xs text-(--color-muted)">{doctype}</span>
             <span className="font-semibold">{name}</span>
             {statusBadge}
           </div>
@@ -308,17 +308,17 @@ export function FormShell<T extends FieldValues = FieldValues>({
        *  the auto-discovered Section-Break grouping. */}
 
       {submitError && (
-        <div className="rounded-[var(--radius-card)] border border-[color:var(--color-rose-600)]/20 bg-[color:var(--color-rose-600)]/10 px-4 py-3 text-sm text-[color:var(--color-rose-600)]">
+        <div className="rounded-(--radius-card) border border-rose-600/20 bg-rose-600/10 px-4 py-3 text-sm text-rose-600">
           {submitError}
         </div>
       )}
 
       {/* Action bar — reference style: emerald primary, slate secondary,
           icons match the reference create.blade.php footer row. */}
-      <div className="flex flex-wrap items-center gap-3 mt-2">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 mt-2">
         {/* Save — emerald with check icon (matches reference's primary action). */}
         {!formReadOnly && (
-          <FormSubmit loading={saving}>
+          <FormSubmit loading={saving} className="w-full sm:w-auto justify-center">
             {saving ? t('common.loading') : t('action.save')}
           </FormSubmit>
         )}
@@ -329,7 +329,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
             type="button"
             onClick={handleSubmitDoc}
             disabled={submitting || saving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-500 transition-all shadow-sm disabled:opacity-60"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-500 transition-all shadow-sm disabled:opacity-60"
           >
             <Send size={15} />
             {submitting ? t('common.loading') : t('action.submit', { defaultValue: 'Submit' })}
@@ -342,7 +342,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
             type="button"
             onClick={handleCancelDoc}
             disabled={cancelling}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-rose-600 text-white text-sm font-bold rounded-xl hover:bg-rose-500 transition-all shadow-sm disabled:opacity-60"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-2.5 bg-rose-600 text-white text-sm font-bold rounded-xl hover:bg-rose-500 transition-all shadow-sm disabled:opacity-60"
           >
             <Undo2 size={15} />
             {cancelling ? t('common.loading') : t('action.cancel_doc', { defaultValue: 'Cancel' })}
@@ -354,7 +354,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-slate-600 text-white text-sm font-bold rounded-xl hover:bg-slate-500 transition-all shadow-sm"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-2.5 bg-slate-600 text-white text-sm font-bold rounded-xl hover:bg-slate-500 transition-all shadow-sm"
             title={t('action.print')}
           >
             <Printer size={15} />
@@ -367,7 +367,7 @@ export function FormShell<T extends FieldValues = FieldValues>({
           <button
             type="button"
             onClick={() => form.reset(initialValues)}
-            className="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
+            className="w-full sm:w-auto px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
           >
             {t('action.reset', { defaultValue: 'Reset' })}
           </button>
@@ -407,7 +407,7 @@ function FormTabs({ sections, formReadOnly, form, doctype, t }: FormTabsProps) {
     >
       {!onlyOneUnnamed && (
         <div className="border-b border-slate-100 dark:border-white/5 overflow-x-auto">
-          <nav className="flex items-center gap-1 px-2 sm:px-4 min-w-max">
+          <nav className="flex items-center gap-1 px-2 sm:px-4 min-w-max py-1">
             {sections.map((s, i) => {
               const label = s.label ? translateSection(t, s.label) : t('common.general', { defaultValue: 'General' });
               const active = i === safeIdx;
@@ -417,15 +417,15 @@ function FormTabs({ sections, formReadOnly, form, doctype, t }: FormTabsProps) {
                   type="button"
                   onClick={() => setActiveIdx(i)}
                   className={[
-                    'relative px-4 py-3 text-sm font-bold transition-colors whitespace-nowrap',
+                    'relative px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-bold transition-colors whitespace-nowrap',
                     active
-                      ? 'text-[color:var(--color-brand-600)] dark:text-[color:var(--color-brand-400)]'
+                      ? 'text-(--color-brand-600) dark:text-brand-400'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
                   ].join(' ')}
                 >
                   {label}
                   {active && (
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[color:var(--color-brand-500)]" />
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-(--color-brand-500)" />
                   )}
                 </button>
               );
@@ -434,8 +434,8 @@ function FormTabs({ sections, formReadOnly, form, doctype, t }: FormTabsProps) {
         </div>
       )}
 
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-4 sm:p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {sections[safeIdx]?.fields.map((f) => (
             <FieldRow
               key={f.fieldname}
@@ -472,7 +472,7 @@ function FieldRow({ field, form, doctype, readOnly: parentReadOnly }: FieldRowPr
     // inline editable grid backed by the same react-hook-form instance.
     if (!field.options) {
       return (
-        <div className="md:col-span-2 rounded-[var(--radius-input)] border border-dashed border-[color:var(--color-border)] px-3 py-2 text-xs text-[color:var(--color-muted)]">
+        <div className="md:col-span-2 rounded-(--radius-input) border border-dashed border-(--color-border) px-3 py-2 text-xs text-(--color-muted)">
           {field.label || field.fieldname}: missing child DocType options
         </div>
       );
@@ -509,7 +509,7 @@ function FieldRow({ field, form, doctype, readOnly: parentReadOnly }: FieldRowPr
     <label className={span}>
       <span className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
         {labelText}
-        {reqd && <em className="ms-1 not-italic text-[color:var(--color-rose-600)]">*</em>}
+        {reqd && <em className="ms-1 not-italic text-rose-600">*</em>}
       </span>
 
       {(() => {
@@ -574,9 +574,9 @@ function FieldRow({ field, form, doctype, readOnly: parentReadOnly }: FieldRowPr
       })()}
 
       {field.description && !err && (
-        <span className="mt-1 block text-xs text-[color:var(--color-muted)]">{field.description}</span>
+        <span className="mt-1 block text-xs text-(--color-muted)">{field.description}</span>
       )}
-      {err && <span className="mt-1 block text-xs text-[color:var(--color-rose-600)]">{err}</span>}
+      {err && <span className="mt-1 block text-xs text-rose-600">{err}</span>}
     </label>
   );
 }
@@ -644,7 +644,7 @@ function LinkPicker({ doctype, value, onChange, placeholder, disabled }: LinkPic
   const results: Array<{ name: string }> = (data?.message ?? []) as any;
 
   return (
-    <div className="relative">
+        <div className="relative">
       <input
         type="text"
         value={value ?? ''}
@@ -656,7 +656,7 @@ function LinkPicker({ doctype, value, onChange, placeholder, disabled }: LinkPic
         className={FIELD_INPUT_CLASS + ' disabled:opacity-60'}
       />
       {open && doctype && results.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] shadow-[var(--shadow-elev)]">
+        <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-(--radius-input) border border-(--color-border) bg-card shadow-(--shadow-elev)">
           {results.map((r) => (
             <li
               key={r.name}

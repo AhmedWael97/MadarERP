@@ -103,7 +103,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     titleKey: 'settings.section.website.title',
     defaultTitle: 'الموقع الإلكتروني',
     descKey: 'settings.section.website.desc',
-    defaultDesc: 'عنوان الموقع، كود HTML للعلامة التجارية، الروابط الاجتماعية، robots.txt.',
+    defaultDesc: 'عنوان الموقع، العلامة التجارية، التذييل، الروابط الاجتماعية، وملف robots.txt.',
   },
 
   // Accounting & Finance
@@ -147,7 +147,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: Coins,
     titleKey: 'settings.section.currency-exchange.title',
-    defaultTitle: 'أسعار الصرف',
+    defaultTitle: 'إعدادات أسعار الصرف',
     descKey: 'settings.section.currency-exchange.desc',
     defaultDesc: 'مزود أسعار الصرف (الرابط، مفتاح الطلب، حقل الاستجابة).',
   },
@@ -158,9 +158,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: Banknote,
     titleKey: 'settings.section.banking.title',
-    defaultTitle: 'البنوك (Plaid)',
+    defaultTitle: 'إعدادات البنوك (Plaid)',
     descKey: 'settings.section.banking.desc',
-    defaultDesc: 'تكامل Plaid للتغذية المصرفية المباشرة ومزامنة المعاملات.',
+    defaultDesc: 'تكامل Plaid لمزامنة الحركات البنكية مباشرةً.',
   },
 
   // Selling, Buying & CRM
@@ -173,7 +173,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     titleKey: 'settings.section.selling.title',
     defaultTitle: 'إعدادات المبيعات',
     descKey: 'settings.section.selling.desc',
-    defaultDesc: 'تسمية العملاء، متطلبات أوامر البيع، شمول الضريبة، الإعدادات الافتراضية.',
+    defaultDesc: 'تسمية العملاء، اشتراط أمر البيع، تضمين الضريبة، والقيم الافتراضية.',
   },
   {
     key: 'buying',
@@ -184,7 +184,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     titleKey: 'settings.section.buying.title',
     defaultTitle: 'إعدادات المشتريات',
     descKey: 'settings.section.buying.desc',
-    defaultDesc: 'تسمية الموردين، متطلبات أوامر الشراء، حدود الفوترة، الإعدادات الافتراضية.',
+    defaultDesc: 'تسمية الموردين، اشتراط أمر الشراء، حدود الفوترة، والقيم الافتراضية.',
   },
   {
     key: 'crm',
@@ -307,7 +307,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'operations',
     icon: PhoneCall,
     titleKey: 'settings.section.telephony.title',
-    defaultTitle: 'الاتصالات الهاتفية',
+    defaultTitle: 'إعدادات الاتصالات الهاتفية',
     descKey: 'settings.section.telephony.desc',
     defaultDesc: 'توجيه المكالمات الواردة وقواعد تعيين الموظفين.',
   },
@@ -333,7 +333,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     titleKey: 'settings.section.email-domain.title',
     defaultTitle: 'نطاقات البريد الإلكتروني',
     descKey: 'settings.section.email-domain.desc',
-    defaultDesc: 'إعدادات SMTP / IMAP المشتركة بين حسابات البريد الإلكتروني.',
+    defaultDesc: 'إعدادات SMTP / IMAP المشتركة لحسابات البريد الإلكتروني.',
   },
   {
     key: 'notification',

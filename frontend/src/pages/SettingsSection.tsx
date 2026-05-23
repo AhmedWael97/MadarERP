@@ -29,7 +29,9 @@ export default function SettingsSection() {
       <PageShell title={t('common.error')}>
         <ErrorPanel
           error={{
-            message: `Unknown settings section "${sectionKey}".`,
+            message: t('settings.section.unknown', {
+              defaultValue: `قسم الإعدادات غير معروف: "${sectionKey}".`,
+            }),
             exc: 'NotFound',
           }}
         />
@@ -44,10 +46,10 @@ export default function SettingsSection() {
     <button
       type="button"
       onClick={() => navigate('/settings')}
-      className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] border border-[color:var(--color-border)] bg-app px-4 py-2 text-sm font-medium hover:bg-[color:var(--color-card)]"
+      className="inline-flex w-full items-center justify-center gap-1.5 rounded-(--radius-input) border border-(--color-border) bg-app px-4 py-2 text-sm font-medium hover:bg-card sm:w-auto"
     >
       <Back size={16} />
-      {t('action.back', { defaultValue: 'Back' })}
+      {t('action.back', { defaultValue: 'رجوع' })}
     </button>
   );
 
@@ -100,7 +102,7 @@ function CompanySettingsForm() {
 
   if (defaultsLoading || listLoading) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-6 text-center text-sm text-[color:var(--color-muted)] shadow-[var(--shadow-card)]">
+      <div className="rounded-(--radius-card) border border-(--color-border) bg-card p-6 text-center text-sm text-(--color-muted) shadow-(--shadow-card)">
         {t('common.loading')}
       </div>
     );
@@ -108,17 +110,17 @@ function CompanySettingsForm() {
 
   if (!companyName) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-card)] px-6 py-10 text-center text-sm text-[color:var(--color-muted)] shadow-[var(--shadow-card)]">
+      <div className="rounded-(--radius-card) border border-dashed border-(--color-border) bg-card px-6 py-10 text-center text-sm text-(--color-muted) shadow-(--shadow-card)">
         <p className="mb-3">
           {t('settings.company.empty', {
-            defaultValue: 'No company exists yet. Create one to manage company settings.',
+            defaultValue: 'لا توجد شركة حتى الآن. أنشئ شركة لإدارة إعداداتها.',
           })}
         </p>
         <Link
           to="/companies"
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-input)] bg-[color:var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+          className="inline-flex items-center gap-1.5 rounded-(--radius-input) bg-(--color-primary) px-4 py-2 text-sm font-medium text-white hover:opacity-90"
         >
-          {t('action.create', { defaultValue: 'Add New' })}
+          {t('action.create', { defaultValue: 'إضافة جديد' })}
         </Link>
       </div>
     );
@@ -130,16 +132,15 @@ function CompanySettingsForm() {
 function NonSingleNotice({ doctype, sectionKey }: { doctype: string; sectionKey: string }) {
   const { t } = useTranslation();
   return (
-    <div className="rounded-[var(--radius-card)] border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-card)] px-6 py-10 text-center text-sm text-[color:var(--color-muted)] shadow-[var(--shadow-card)]">
+    <div className="rounded-(--radius-card) border border-dashed border-(--color-border) bg-card px-6 py-10 text-center text-sm text-(--color-muted) shadow-(--shadow-card)">
       <p>
         {t('settings.nonSingle.hint', {
-          defaultValue:
-            'This section manages multiple records. Open the list to add or edit entries.',
+          defaultValue: 'هذا القسم يدير سجلات متعددة. افتح القائمة لإضافة أو تعديل السجلات.',
         })}
       </p>
       <p className="mt-2 text-xs">
         DocType: <code className="rounded bg-app px-1.5 py-0.5">{doctype}</code> ·{' '}
-        <span className="opacity-70">section: {sectionKey}</span>
+        <span className="opacity-70">القسم: {sectionKey}</span>
       </p>
     </div>
   );
