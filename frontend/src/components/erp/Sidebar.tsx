@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useTenantStore } from '../../lib/store/tenantStore';
 import {
   BookOpen,
   Briefcase,
@@ -56,6 +57,14 @@ interface Item {
   labelAr: string;
   icon: LucideIcon;
   accent: AccentColor;
+  /**
+   * Module-catalog key. When the super-admin "opens" a tenant company via
+   * the SuperAdminCompanyDetail page, the active-tenant store is populated
+   * with the company's `enabled_modules`. The sidebar then hides any item
+   * whose `moduleKey` isn't in that list. Items without a `moduleKey`
+   * (Dashboard, Settings, User Management) are always visible.
+   */
+  moduleKey?: string;
   /** When present, item is a collapsible group; sub-section headers can split children. */
   groups?: Group[];
 }
@@ -83,6 +92,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الحسابات العامة',
         icon: BookOpen,
         accent: 'emerald',
+        moduleKey: 'accounting',
         groups: [
           {
             leaves: [
@@ -112,6 +122,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الخزائن والسندات',
         icon: Wallet,
         accent: 'violet',
+        moduleKey: 'treasury',
         groups: [
           {
             headerAr: 'الخزائن والبنوك',
@@ -156,6 +167,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الإشعارات المدينة والدائنة',
         icon: FileText,
         accent: 'amber',
+        moduleKey: 'accounting',
         groups: [
           {
             leaves: [
@@ -170,6 +182,7 @@ const SECTIONS: Section[] = [
         labelAr: 'العملاء',
         icon: Users,
         accent: 'blue',
+        moduleKey: 'sales',
         groups: [
           {
             leaves: [
@@ -193,6 +206,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الموردين',
         icon: Truck,
         accent: 'teal',
+        moduleKey: 'purchases',
         groups: [
           {
             leaves: [
@@ -209,6 +223,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الأصول الثابتة',
         icon: Building2,
         accent: 'amber',
+        moduleKey: 'assets',
         groups: [
           {
             leaves: [
@@ -238,6 +253,7 @@ const SECTIONS: Section[] = [
         labelAr: 'المبيعات',
         icon: Receipt,
         accent: 'brand',
+        moduleKey: 'sales',
         groups: [
           {
             leaves: [
@@ -269,6 +285,7 @@ const SECTIONS: Section[] = [
         labelAr: 'المشتريات',
         icon: ShoppingCart,
         accent: 'blue',
+        moduleKey: 'purchases',
         groups: [
           {
             leaves: [
@@ -296,6 +313,7 @@ const SECTIONS: Section[] = [
         labelAr: 'المخزون',
         icon: Package,
         accent: 'teal',
+        moduleKey: 'inventory',
         groups: [
           {
             leaves: [
@@ -327,6 +345,7 @@ const SECTIONS: Section[] = [
         labelAr: 'مندوبين المبيعات',
         icon: UserCog,
         accent: 'pink',
+        moduleKey: 'sales',
         groups: [
           {
             leaves: [
@@ -341,6 +360,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة الموارد البشرية',
         icon: Briefcase,
         accent: 'teal',
+        moduleKey: 'hr',
         groups: [
           { leaves: [{ to: '/hr', labelAr: 'لوحة المعلومات' }] },
           {
@@ -387,6 +407,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة علاقات العملاء',
         icon: Users,
         accent: 'violet',
+        moduleKey: 'crm',
         groups: [
           {
             leaves: [
@@ -413,6 +434,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة التصنيع',
         icon: Factory,
         accent: 'teal',
+        moduleKey: 'manufacturing',
         groups: [
           {
             leaves: [
@@ -441,6 +463,7 @@ const SECTIONS: Section[] = [
         labelAr: 'المقاولات',
         icon: HardHat,
         accent: 'orange',
+        moduleKey: 'construction',
         groups: [
           {
             leaves: [
@@ -488,6 +511,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة الأسطول',
         icon: Truck,
         accent: 'cyan',
+        moduleKey: 'fleet',
         groups: [
           {
             headerAr: 'لوحة التحكم والتعريفات',
@@ -535,6 +559,7 @@ const SECTIONS: Section[] = [
         labelAr: 'الامتثال الضريبي',
         icon: Calculator,
         accent: 'rose',
+        moduleKey: 'tax',
         groups: [
           {
             headerAr: 'لوحة التحكم والتعريفات',
@@ -578,6 +603,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة اللوجستيك',
         icon: Package,
         accent: 'cyan',
+        moduleKey: 'logistics',
         groups: [
           {
             headerAr: 'لوحة التحكم والتعريفات',
@@ -635,6 +661,7 @@ const SECTIONS: Section[] = [
         labelAr: 'المتجر الإلكتروني',
         icon: Globe,
         accent: 'violet',
+        moduleKey: 'ecommerce',
         groups: [
           {
             leaves: [
@@ -665,6 +692,7 @@ const SECTIONS: Section[] = [
         labelAr: 'منصة التعليم LMS',
         icon: GraduationCap,
         accent: 'cyan',
+        moduleKey: 'lms',
         groups: [
           { leaves: [{ to: '/lms', labelAr: 'لوحة التحكم' }] },
           {
@@ -719,6 +747,7 @@ const SECTIONS: Section[] = [
         labelAr: 'عجلة الثقافة',
         icon: CalendarRange,
         accent: 'pink',
+        moduleKey: 'events',
         groups: [
           { leaves: [{ to: '/events', labelAr: 'لوحة التحكم' }] },
           {
@@ -762,6 +791,7 @@ const SECTIONS: Section[] = [
         labelAr: 'تذاكر الدعم',
         icon: LifeBuoy,
         accent: 'amber',
+        moduleKey: 'support',
         groups: [
           {
             leaves: [
@@ -792,6 +822,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة المطاعم',
         icon: Utensils,
         accent: 'orange',
+        moduleKey: 'restaurant',
         groups: [
           { leaves: [{ to: '/restaurant', labelAr: 'لوحة التحكم' }] },
           {
@@ -843,6 +874,7 @@ const SECTIONS: Section[] = [
         labelAr: 'إدارة مراكز الصيانة',
         icon: Wrench,
         accent: 'amber',
+        moduleKey: 'workshop',
         groups: [
           { leaves: [{ to: '/workshop', labelAr: 'لوحة التحكم' }] },
           {
@@ -1035,6 +1067,17 @@ export function Sidebar() {
   const isAr = i18n.language === 'ar';
   const sections = useMemo(() => SECTIONS, []);
 
+  // Active tenant's enabled modules (null = super-admin mode, show all).
+  // When set, sidebar items whose `moduleKey` isn't in this list are hidden.
+  // Items without a `moduleKey` (Dashboard, Settings, User Management) stay
+  // visible regardless.
+  const enabledModules = useTenantStore((s) => s.enabledModules);
+  const isModuleVisible = (item: Item): boolean => {
+    if (!item.moduleKey) return true;
+    if (enabledModules === null) return true;
+    return enabledModules.includes(item.moduleKey);
+  };
+
   return (
     <aside className="h-dvh w-[17rem] bg-slate-900 text-slate-100 flex flex-col overflow-y-auto">
       {/* Brand block — gradient logo tile + wordmark, mirrors the reference. */}
@@ -1057,18 +1100,25 @@ export function Sidebar() {
       <div className="h-px w-full bg-white/5" />
 
       <nav className="flex-1 space-y-4 px-3 py-4">
-        {sections.map((section, i) => (
-          <div key={i}>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2 mt-1">
-              {section.headerAr}
-            </p>
-            <div className="space-y-0.5">
-              {section.items.map((item) => (
-                <NavItem key={item.to} item={item} />
-              ))}
+        {sections.map((section, i) => {
+          const visibleItems = section.items.filter(isModuleVisible);
+          // Hide the entire section header when every item under it is hidden
+          // (e.g., if the tenant has no fleet/workshop modules, the headers
+          // for those sections shouldn't be rendered either).
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={i}>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-2 mt-1">
+                {section.headerAr}
+              </p>
+              <div className="space-y-0.5">
+                {visibleItems.map((item) => (
+                  <NavItem key={item.to} item={item} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="border-t border-white/5 px-4 py-3 text-[10px] text-slate-500">

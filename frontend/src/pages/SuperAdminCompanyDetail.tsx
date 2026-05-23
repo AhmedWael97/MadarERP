@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   useFrappeGetDoc,
@@ -8,11 +8,12 @@ import {
   useFrappeGetCall,
 } from 'frappe-react-sdk';
 import {
-  Building2, Package, Users, Settings2, ChevronLeft, Save, CheckCircle2,
+  Building2, Package, Users, Settings2, ChevronLeft, ChevronRight, Save, CheckCircle2,
 } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 import { FormCard } from '../components/erp/FormCard';
 import { FormField, FIELD_INPUT_CLASS, FormSubmit, FormBackButton } from '../components/erp/FormField';
+import { useTenantStore } from '../lib/store/tenantStore';
 
 /* ─── Constants ───────────────────────────────────────────────────────────── */
 
@@ -155,6 +156,21 @@ export default function SuperAdminCompanyDetail() {
 
   const [error, setError] = useState<string | null>(null);
 
+  /* ── Open Company: stash tenant + enabled modules in the global store and
+       jump to /dashboard. The sidebar will then hide every module the
+       tenant doesn't have enabled. ── */
+  const navigate = useNavigate();
+  const setActiveTenant = useTenantStore((s) => s.setActiveTenant);
+  function openCompany() {
+    const label =
+      (tenant as any)?.name_ar ||
+      (tenant as any)?.tenant_company ||
+      name ||
+      '';
+    setActiveTenant(name ?? '', label, enabledModules);
+    navigate('/dashboard');
+  }
+
   async function saveAccountingConfig(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -205,6 +221,20 @@ export default function SuperAdminCompanyDetail() {
       subtitle={(tenant as any)?.tenant_company || ''}
       actions={
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={openCompany}
+            disabled={enabledModules.length === 0}
+            title={
+              enabledModules.length === 0
+                ? (isAr ? 'فعّل وحدات أولاً من تبويب "الوحدات"' : 'Enable some modules first from the Modules tab')
+                : (isAr ? 'افتح هذه الشركة وأرَ ما يراه مدير الشركة' : 'Open this company — see exactly what its admin sees')
+            }
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronRight size={14} className={isAr ? '' : 'rotate-180'} />
+            {isAr ? 'فتح الشركة' : 'Open Company'}
+          </button>
           <Link
             to={`/super-admin/companies/${encodeURIComponent(name ?? '')}/edit`}
             className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-white/5 transition"
