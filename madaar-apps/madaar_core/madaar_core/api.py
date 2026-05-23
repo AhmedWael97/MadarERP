@@ -706,6 +706,99 @@ def close_pos_shift(pos_opening_entry: str) -> dict[str, Any]:
 
 
 @frappe.whitelist()
+def create_default_pos_profile(
+    name: str | None = None,
+    company: str | None = None,
+) -> dict[str, Any]:
+    """One-click bootstrap: spin up a POS Profile with sensible defaults.
+
+    Picks the user's default Company (or the first Company that exists),
+    finds the first non-group Warehouse, ensures a Walk-in Customer + "Standard
+    Selling" price list + Cash Mode of Payment exist, then assembles a POS
+    Profile with Cash as the default payment mode.
+
+    Idempotent: returns the existing profile (created=False) if one with the
+    same name already exists.
+    """
+    company = company or frappe.defaults.get_user_default("Company") or frappe.db.get_value(
+        "Company", filters={}, fieldname="name", order_by="creation asc",
+    )
+    if not company:
+        frappe.throw("No Company exists yet. Create a Company first.")
+
+    co = frappe.get_doc("Company", company)
+    pname = name or f"POS - {co.name}"
+
+    if frappe.db.exists("POS Profile", pname):
+        return {"name": pname, "created": False, "company": company}
+
+    warehouse = frappe.db.get_value(
+        "Warehouse", {"company": company, "is_group": 0, "disabled": 0}, "name"
+    )
+    if not warehouse:
+        frappe.throw(f"No warehouse found for company {company}. Create a Warehouse first.")
+
+    walk_in = "Walk-in Customer"
+    if not frappe.db.exists("Customer", walk_in):
+        frappe.get_doc({
+            "doctype": "Customer",
+            "customer_name": walk_in,
+            "customer_type": "Individual",
+        }).insert(ignore_permissions=True)
+
+    price_list = "Standard Selling"
+    if not frappe.db.exists("Price List", price_list):
+        frappe.get_doc({
+            "doctype": "Price List",
+            "price_list_name": price_list,
+            "currency": co.default_currency or "EGP",
+            "selling": 1,
+            "enabled": 1,
+        }).insert(ignore_permissions=True)
+
+    if not frappe.db.exists("Mode of Payment", "Cash"):
+        frappe.get_doc({
+            "doctype": "Mode of Payment",
+            "mode_of_payment": "Cash",
+            "type": "Cash",
+            "enabled": 1,
+        }).insert(ignore_permissions=True)
+
+    income_account = frappe.db.get_value(
+        "Account",
+        {"company": company, "account_type": "Income Account", "is_group": 0},
+        "name",
+    )
+    cost_center = co.cost_center or frappe.db.get_value(
+        "Cost Center", {"company": company, "is_group": 0}, "name",
+    )
+
+    profile = frappe.get_doc({
+        "doctype": "POS Profile",
+        "name": pname,
+        "company": company,
+        "warehouse": warehouse,
+        "customer": walk_in,
+        "currency": co.default_currency or "EGP",
+        "selling_price_list": price_list,
+        "cost_center": cost_center,
+        "income_account": income_account,
+        "disabled": 0,
+        "payments": [
+            {"mode_of_payment": "Cash", "default": 1},
+        ],
+    })
+    profile.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {
+        "name": profile.name,
+        "created": True,
+        "company": company,
+        "warehouse": warehouse,
+    }
+
+
+@frappe.whitelist()
 def lookup_item_by_barcode(barcode: str, price_list: str | None = None) -> dict[str, Any] | None:
     """Find one Item by barcode or item_code.
 

@@ -383,11 +383,15 @@ function ProfilePicker({
   profiles,
   loading,
   onPick,
+  onBootstrap,
+  bootstrapping,
 }: {
   isAr: boolean;
   profiles: POSProfile[];
   loading: boolean;
   onPick: (profile: POSProfile, openingAmount: number) => void;
+  onBootstrap: () => void;
+  bootstrapping: boolean;
 }) {
   const [selected, setSelected] = useState<string>('');
   const [openingAmount, setOpeningAmount] = useState<number>(0);
@@ -414,10 +418,30 @@ function ProfilePicker({
             {isAr ? 'ملف نقطة البيع' : 'POS Profile'}
           </label>
           {profiles.length === 0 ? (
-            <div className="text-sm text-slate-400 py-6 text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
-              {loading
-                ? (isAr ? 'جارٍ التحميل…' : 'Loading…')
-                : (isAr ? 'لا توجد ملفات نقطة بيع مفعّلة لهذا المستخدم' : 'No POS Profiles enabled for this user')}
+            <div className="py-6 px-4 text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
+              <p className="text-sm text-slate-400">
+                {loading
+                  ? (isAr ? 'جارٍ التحميل…' : 'Loading…')
+                  : (isAr ? 'لا توجد ملفات نقطة بيع مفعّلة لهذا المستخدم' : 'No POS Profiles enabled for this user')}
+              </p>
+              {!loading && (
+                <button
+                  type="button"
+                  onClick={onBootstrap}
+                  disabled={bootstrapping}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[color:var(--color-brand-600)] text-white text-sm font-bold hover:bg-[color:var(--color-brand-500)] transition disabled:opacity-50"
+                >
+                  {bootstrapping ? <RefreshCw size={14} className="animate-spin" /> : <Plus size={14} />}
+                  {isAr ? 'إنشاء ملف افتراضي' : 'Create default profile'}
+                </button>
+              )}
+              {!loading && (
+                <p className="text-[10px] text-slate-400">
+                  {isAr
+                    ? 'سيتم اختيار الشركة والمخزن وعملة افتراضية تلقائياً'
+                    : 'Auto-picks your company, first warehouse, default currency, and Cash payment mode'}
+                </p>
+              )}
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 gap-2">
@@ -596,11 +620,9 @@ export default function POSPage() {
   const customerRef = useRef<HTMLDivElement>(null);
 
   // ── Shift / profile state (loaded before catalog) ────────────────────────
-  const { data: profilesResp, isLoading: loadingProfiles } = useFrappeGetCall<{ message: POSProfile[] }>(
-    'madaar_core.api.list_pos_profiles',
-    undefined,
-    'pos-profiles',
-  );
+  const { data: profilesResp, isLoading: loadingProfiles, mutate: refetchProfiles } = useFrappeGetCall<{
+    message: POSProfile[];
+  }>('madaar_core.api.list_pos_profiles', undefined, 'pos-profiles');
   const profiles = profilesResp?.message ?? [];
 
   const { data: openingResp, mutate: refetchOpening } = useFrappeGetCall<{ message: POSOpening | null }>(
@@ -820,6 +842,27 @@ export default function POSPage() {
     }
   }
 
+  // ── Bootstrap default profile (one-click for empty tenants) ──────────────
+  const { call: bootstrapProfile, loading: bootstrappingProfile } = useFrappePostCall<{
+    message: { name: string; created: boolean };
+  }>('madaar_core.api.create_default_pos_profile');
+
+  async function handleBootstrapProfile() {
+    setErrorMsg(null);
+    try {
+      const res = await bootstrapProfile({});
+      setSuccessMsg(
+        isAr
+          ? `✓ تم إنشاء الملف ${res?.message?.name}`
+          : `✓ Created profile ${res?.message?.name}`,
+      );
+      setTimeout(() => setSuccessMsg(null), 4000);
+      await refetchProfiles();
+    } catch (err: any) {
+      setErrorMsg(err?.message || String(err));
+    }
+  }
+
   // ── Shift open / close ────────────────────────────────────────────────────
   const { call: openShift, loading: openingShift } = useFrappePostCall<{ message: { name: string } }>(
     'madaar_core.api.open_pos_shift',
@@ -908,6 +951,8 @@ export default function POSPage() {
           profiles={profiles}
           loading={loadingProfiles || openingShift}
           onPick={handleOpenShift}
+          onBootstrap={handleBootstrapProfile}
+          bootstrapping={bootstrappingProfile}
         />
       )}
 
