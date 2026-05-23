@@ -3,6 +3,11 @@ import { useState } from 'react';
 import { FinancialReportShell, fmtNum, type ReportColumn } from '../FinancialReportShell';
 import { localDate, localYearStart } from '@/lib/formatters/dates';
 
+function cleanName(row: Record<string, unknown>) {
+  const raw = String((row.account_name as string) || (row.account as string) || '—');
+  return raw.replace(/\s-\s[^\s-]+$/, '');
+}
+
 // ERPNext Balance Sheet returns period-named numeric columns (e.g. `dec_2026`
 // for periodicity=Yearly ending in 2026) and a `total` field summing across
 // all periods. There's no `closing_balance` field — we read `total`. The row
@@ -13,7 +18,7 @@ const COLUMNS: ReportColumn[] = [
     label: 'الحساب',
     fieldname: 'account',
     render: (row) => {
-      const name = (row.account_name as string) || (row.account as string) || '—';
+      const name = cleanName(row as Record<string, unknown>);
       const indent = Number(row.indent ?? 0);
       const isGroup = Number(row.is_group ?? 0) === 1;
       return (
@@ -28,6 +33,24 @@ const COLUMNS: ReportColumn[] = [
   },
   {
     label: 'الرصيد',
+    fieldname: 'debit',
+    numeric: true,
+    render: (row) => {
+      const total = Number(row.total ?? 0);
+      return fmtNum(total > 0 ? total : 0);
+    },
+  },
+  {
+    label: 'الدائن',
+    fieldname: 'credit',
+    numeric: true,
+    render: (row) => {
+      const total = Number(row.total ?? 0);
+      return fmtNum(total < 0 ? Math.abs(total) : 0);
+    },
+  },
+  {
+    label: 'الإجمالي',
     fieldname: 'total',
     numeric: true,
     render: (row) => fmtNum(Number(row.total ?? 0)),

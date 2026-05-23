@@ -23,6 +23,7 @@
  *   />
  */
 import { ReactNode, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk';
 import { Download, FileSpreadsheet, Printer, Search } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
@@ -66,6 +67,8 @@ interface Props {
   footer?: ReactNode;
   /** Empty-state message when no rows. */
   emptyMessage?: string;
+  /** Optional row transform (used for tree collapse behavior on some reports). */
+  rowTransform?: (rows: Array<Record<string, unknown>>) => Array<Record<string, unknown>>;
 }
 
 export function FinancialReportShell({
@@ -81,8 +84,10 @@ export function FinancialReportShell({
   results: overrideResults,
   footer,
   emptyMessage = 'لا توجد بيانات للفترة المحددة',
+  rowTransform,
 }: Props) {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [hideSubAccounts, setHideSubAccounts] = useState(false);
   const { call, result, loading } = useFrappePostCall<{
     message?: { columns?: Array<{ fieldname: string; label: string; fieldtype?: string }>; result?: Array<unknown> };
   }>('frappe.desk.query_report.run');
@@ -92,16 +97,15 @@ export function FinancialReportShell({
   // the report either errors or silently returns zero rows. We resolve it in
   // this priority:
   //   1. Caller passed `company` explicitly in the filters object.
-  //   2. Super-admin "opened" a tenant → activeTenantName (which IS the
-  //      Company doc name since tenant_company is a Link to Company).
+  //   2. Super-admin "opened" a tenant → activeCompanyName.
   //   3. First Company in the system (covers the common single-tenant case).
-  const activeTenantName = useTenantStore((s) => s.activeTenantName);
+  const activeCompanyName = useTenantStore((s) => s.activeCompanyName);
   const { data: companiesResp } = useFrappeGetDocList<{ name: string }>('Company', {
     fields: ['name'],
     limit: 1,
     orderBy: { field: 'creation', order: 'asc' },
-  }, activeTenantName || (filters as any)?.company ? null : 'reports:first-company');
-  const fallbackCompany = activeTenantName || companiesResp?.[0]?.name;
+  }, activeCompanyName || (filters as any)?.company ? null : 'reports:first-company');
+  const fallbackCompany = activeCompanyName || companiesResp?.[0]?.name;
 
   // ── Auto-resolve `fiscal_year` filter ─────────────────────────────────────
   // Trial Balance / Balance Sheet / Income Statement / Cash Flow ALL require
@@ -181,6 +185,29 @@ export function FinancialReportShell({
     return rawRows as Array<Record<string, unknown>>;
   }, [rawRows, reportCols]);
 
+  const visibleRows: Array<Record<string, unknown>> = useMemo(() => {
+    const base = hideSubAccounts
+      ? rows.filter((r) => Number(r.indent ?? 0) === 0 || Number(r.is_group ?? 0) === 1)
+      : rows;
+    return rowTransform ? rowTransform(base) : base;
+  }, [rows, hideSubAccounts, rowTransform]);
+
+  const totals = useMemo(() => {
+    const debit = visibleRows.reduce((s, r) => {
+      const v = Number(r.debit ?? r.closing_debit ?? 0);
+      if (Number.isFinite(v)) return s + v;
+      const t = Number(r.total ?? 0);
+      return t > 0 ? s + t : s;
+    }, 0);
+    const credit = visibleRows.reduce((s, r) => {
+      const v = Number(r.credit ?? r.closing_credit ?? 0);
+      if (Number.isFinite(v)) return s + v;
+      const t = Number(r.total ?? 0);
+      return t < 0 ? s + Math.abs(t) : s;
+    }, 0);
+    return { debit, credit, diff: debit - credit };
+  }, [visibleRows]);
+
   // Wire toolbar export columns to the report's display columns.
   const toolbarColumns: ToolbarColumn[] = columns.map((c) => ({ id: c.fieldname, header: c.label }));
 
@@ -201,6 +228,18 @@ export function FinancialReportShell({
           </div>
         </div>
 
+        <div className="mt-3 flex items-center gap-3">
+          <label className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={hideSubAccounts}
+              onChange={(e) => setHideSubAccounts(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+            />
+            إخفاء الحسابات الفرعية
+          </label>
+        </div>
+
         {!hideExport && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-white/10">
             <button type="button" onClick={() => downloadCsv(columns, rows, `${reportName}.csv`)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition flex items-center gap-1.5">
@@ -216,11 +255,26 @@ export function FinancialReportShell({
         )}
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/70 dark:bg-emerald-900/20 p-4">
+          <p className="text-xs text-emerald-700 dark:text-emerald-300 mb-1">إجمالي المدين</p>
+          <p className="text-xl font-black text-emerald-700 dark:text-emerald-200">{fmtNum(totals.debit)}</p>
+        </div>
+        <div className="rounded-xl border border-rose-100 dark:border-rose-900/40 bg-rose-50/70 dark:bg-rose-900/20 p-4">
+          <p className="text-xs text-rose-700 dark:text-rose-300 mb-1">إجمالي الدائن</p>
+          <p className="text-xl font-black text-rose-700 dark:text-rose-200">{fmtNum(totals.credit)}</p>
+        </div>
+        <div className="rounded-xl border border-violet-100 dark:border-violet-900/40 bg-violet-50/70 dark:bg-violet-900/20 p-4">
+          <p className="text-xs text-violet-700 dark:text-violet-300 mb-1">الفرق</p>
+          <p className="text-xl font-black text-violet-700 dark:text-violet-200">{fmtNum(totals.diff)}</p>
+        </div>
+      </div>
+
       {/* Toolbar (copy / hide columns / template / import) — applies to the visible table. */}
       <DataTableToolbar
         doctype={undefined}
         columns={toolbarColumns}
-        rows={rows}
+        rows={visibleRows}
         hide={{ import: true, template: true }}
       />
 
@@ -250,8 +304,8 @@ export function FinancialReportShell({
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/5">
               {loading && (<tr><td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-slate-400">جاري التحميل...</td></tr>)}
-              {!loading && rows.length === 0 && (<tr><td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-slate-400">{emptyMessage}</td></tr>)}
-              {!loading && rows.map((row, i) => (
+              {!loading && visibleRows.length === 0 && (<tr><td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-slate-400">{emptyMessage}</td></tr>)}
+              {!loading && visibleRows.map((row, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
                   {columns.map((c) => (
                     <td
@@ -263,7 +317,22 @@ export function FinancialReportShell({
                       className={'px-5 py-3 text-sm ' + (c.numeric ? 'font-mono text-right' : 'text-start')}
                       dir={c.numeric ? 'ltr' : undefined}
                     >
-                      {c.render ? c.render(row) : c.numeric ? fmtNum(Number(row[c.fieldname] ?? 0)) : (row[c.fieldname] as ReactNode) ?? '—'}
+                      {c.render
+                        ? c.render(row)
+                        : c.numeric
+                          ? fmtNum(Number(row[c.fieldname] ?? 0))
+                          : (() => {
+                              const raw = row[c.fieldname];
+                              const href = resolveReportCellHref(c.fieldname, row, reportName);
+                              if (href && raw) {
+                                return (
+                                  <Link to={href} className="text-[color:var(--color-brand-600)] hover:underline font-semibold">
+                                    {String(raw)}
+                                  </Link>
+                                );
+                              }
+                              return (raw as ReactNode) ?? '—';
+                            })()}
                     </td>
                   ))}
                 </tr>
@@ -284,6 +353,38 @@ export function FinancialReportShell({
     );
   }
   return <PageShell title={title} subtitle={subtitle}>{body}</PageShell>;
+}
+
+function resolveReportCellHref(fieldname: string, row: Record<string, unknown>, reportName: string): string | null {
+  const encode = (v: unknown) => encodeURIComponent(String(v ?? ''));
+  if (fieldname === 'voucher_no' && row.voucher_no) {
+    const v = String(row.voucher_no);
+    const voucherType = String(row.voucher_type ?? '');
+    if (voucherType === 'Journal Entry') return `/accounting/journal-entries/${encode(v)}`;
+    if (voucherType === 'Sales Invoice') return `/sales/invoices/${encode(v)}`;
+    if (voucherType === 'Sales Order') return `/sales/orders/${encode(v)}`;
+    if (voucherType === 'Quotation') return `/sales/quotations/${encode(v)}`;
+    if (voucherType === 'Purchase Invoice') return `/purchases/invoices/${encode(v)}`;
+    if (voucherType === 'Purchase Order') return `/purchases/orders/${encode(v)}`;
+    if (voucherType === 'Purchase Return') return `/purchases/returns/${encode(v)}`;
+    if (voucherType === 'Sales Return') return `/sales/returns/${encode(v)}`;
+    return null;
+  }
+  if (fieldname === 'name' && row.name) {
+    const name = String(row.name);
+    if (reportName === 'Accounts Receivable') return `/sales/invoices/${encode(name)}`;
+    if (reportName === 'Accounts Payable') return `/purchases/invoices/${encode(name)}`;
+    return null;
+  }
+  if (fieldname === 'account' && row.account) {
+    return `/accounting/chart-of-accounts/${encode(row.account)}/edit`;
+  }
+  if (fieldname === 'party' && row.party) {
+    const partyType = String(row.party_type ?? '');
+    if (partyType === 'Customer') return `/customers/${encode(row.party)}`;
+    if (partyType === 'Supplier') return `/suppliers/${encode(row.party)}`;
+  }
+  return null;
 }
 
 // ─── Shared helpers ──────────────────────────────────────────────────────────

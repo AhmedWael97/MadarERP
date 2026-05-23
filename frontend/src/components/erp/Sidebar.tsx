@@ -116,23 +116,19 @@ const SECTIONS: Section[] = [
           },
         ],
       },
-      // ── Task 1: merged Treasuries + Receipt/Payment vouchers under one collapsible tab.
       {
-        to: '/treasury',
-        labelAr: 'الخزائن والسندات',
+        to: '/treasury/treasuries',
+        labelAr: 'الخزائن',
         icon: Wallet,
         accent: 'violet',
         moduleKey: 'treasury',
         groups: [
           {
-            headerAr: 'الخزائن والبنوك',
             leaves: [
-              { to: '/treasury',                   labelAr: 'لوحة المعلومات' },
-              { to: '/treasury/treasuries',        labelAr: 'الخزائن' },
-              { to: '/treasury/bank-institutions', labelAr: 'البنوك' },
-              { to: '/treasury/banks',             labelAr: 'الحسابات البنكية' },
-              { to: '/treasury/currencies',        labelAr: 'العملات' },
-              { to: '/treasury/exchange-rates',    labelAr: 'أسعار الصرف' },
+              { to: '/treasury',                labelAr: 'لوحة المعلومات' },
+              { to: '/treasury/treasuries',     labelAr: 'الخزائن' },
+              { to: '/treasury/currencies',     labelAr: 'العملات' },
+              { to: '/treasury/exchange-rates', labelAr: 'أسعار الصرف' },
             ],
           },
           {
@@ -142,16 +138,39 @@ const SECTIONS: Section[] = [
               { to: '/financial/payment-vouchers', labelAr: 'سندات الصرف' },
             ],
           },
+        ],
+      },
+      {
+        to: '/treasury/banks',
+        labelAr: 'البنوك',
+        icon: Building2,
+        accent: 'blue',
+        moduleKey: 'treasury',
+        groups: [
           {
-            headerAr: 'الشيكات',
             leaves: [
-              { to: '/financial/checks',                  labelAr: 'جميع الشيكات' },
-              { to: '/financial/checks?type=received',    labelAr: 'شيكات مستلمة' },
-              { to: '/financial/checks?type=issued',      labelAr: 'شيكات صادرة' },
+              { to: '/treasury/bank-institutions', labelAr: 'البنوك' },
+              { to: '/treasury/banks',             labelAr: 'الحسابات البنكية' },
             ],
           },
           {
-            headerAr: '📊 تقارير مالية',
+            headerAr: 'الشيكات',
+            leaves: [
+              { to: '/financial/checks',               labelAr: 'جميع الشيكات' },
+              { to: '/financial/checks?type=received', labelAr: 'شيكات مستلمة' },
+              { to: '/financial/checks?type=issued',   labelAr: 'شيكات صادرة' },
+            ],
+          },
+        ],
+      },
+      {
+        to: '/financial/reports/vouchers',
+        labelAr: 'التقارير المالية',
+        icon: FileText,
+        accent: 'amber',
+        moduleKey: 'treasury',
+        groups: [
+          {
             leaves: [
               { to: '/financial/reports/vouchers',       labelAr: 'تقرير السندات' },
               { to: '/financial/reports/checks',         labelAr: 'تقرير الشيكات' },

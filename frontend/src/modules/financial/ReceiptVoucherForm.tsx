@@ -35,6 +35,15 @@ interface PEDoc {
   payment_type?: string;
 }
 
+interface AccountRow {
+  name: string;
+  account_name?: string;
+  account_number?: string;
+  account_type?: string;
+  is_group?: 0 | 1;
+  parent_account?: string;
+}
+
 // ─── Shared classes ───────────────────────────────────────────────────────────
 const INPUT =
   'w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all';
@@ -148,17 +157,9 @@ function Body({
     fields: ['name'],
     limit: 50,
   });
-  const { data: accounts } = useFrappeGetDocList<{
-    name: string;
-    account_name?: string;
-    account_number?: string;
-    account_type?: string;
-  }>('Account', {
-    fields: ['name', 'account_name', 'account_number', 'account_type'],
-    filters: [
-      ['is_group', '=', 0],
-      ['disabled', '=', 0],
-    ],
+  const { data: accounts } = useFrappeGetDocList<AccountRow>('Account', {
+    fields: ['name', 'account_name', 'account_number', 'account_type', 'is_group', 'parent_account'],
+    filters: [['disabled', '=', 0]],
     limit: 500,
     orderBy: { field: 'account_number', order: 'asc' },
   });
@@ -197,8 +198,17 @@ function Body({
 
   // Cash / treasury accounts
   const cashAccounts = (accounts ?? []).filter(
-    (a) => a.account_type === 'Cash' || a.account_type === 'Bank',
+    (a) => (a.account_type === 'Cash' || a.account_type === 'Bank') && !a.is_group,
   );
+
+  const fullTreeAccounts = (accounts ?? []).map((a) => {
+    const depth = Math.max(0, (a.parent_account ? String(a.parent_account).split(' - ').length - 1 : 0));
+    const prefix = depth > 0 ? `${' '.repeat(depth * 2)}└ ` : '';
+    const label = a.account_number ? `${a.account_number} - ${a.account_name ?? a.name}` : (a.account_name ?? a.name);
+    return { ...a, display: `${prefix}${label}` };
+  });
+
+  const isOtherType = !doc.party_type;
 
   // Auto-fill the party-side account (`paid_from` for Receive) from the
   // company default when the user picks a party type. Doesn't override if the
@@ -212,6 +222,19 @@ function Body({
       setDoc((d) => ({ ...d, paid_from: companyDoc.default_payable_account }));
     }
   }, [doc.party_type, companyDoc, isEdit, doc.paid_from]);
+
+  useEffect(() => {
+    if (isEdit) return;
+    if (isOtherType) {
+      setDoc((d) => ({ ...d, paid_from: '' }));
+      return;
+    }
+    if (doc.party_type === 'Customer' && companyDoc?.default_receivable_account) {
+      setDoc((d) => ({ ...d, paid_from: companyDoc.default_receivable_account }));
+    } else if (doc.party_type === 'Supplier' && companyDoc?.default_payable_account) {
+      setDoc((d) => ({ ...d, paid_from: companyDoc.default_payable_account }));
+    }
+  }, [isOtherType, doc.party_type, companyDoc, isEdit]);
 
   async function save(andSubmit: boolean) {
     const amt = Number(doc.paid_amount ?? 0);
@@ -413,21 +436,23 @@ function Body({
               </select>
             </Field>
             <Field label={`حساب ${doc.party_type === 'Supplier' ? 'المورد' : 'العميل'} (من)`} required>
-              <select
-                required
-                value={doc.paid_from ?? ''}
-                onChange={(e) => set('paid_from', e.target.value)}
-                className={INPUT}
-              >
-                <option value="">— اختر الحساب —</option>
-                {(accounts ?? []).map((a) => (
-                  <option key={a.name} value={a.name}>
-                    {a.account_number
-                      ? `${a.account_number} - ${a.account_name ?? a.name}`
-                      : (a.account_name ?? a.name)}
-                  </option>
-                ))}
-              </select>
+              {isOtherType ? (
+                <select
+                  required
+                  value={doc.paid_from ?? ''}
+                  onChange={(e) => set('paid_from', e.target.value)}
+                  className={INPUT}
+                >
+                  <option value="">— اختر من شجرة الحسابات —</option>
+                  {fullTreeAccounts.map((a) => (
+                    <option key={a.name} value={a.name}>
+                      {a.display}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input type="text" value={doc.paid_from ?? ''} readOnly className={INPUT + ' bg-slate-50 dark:bg-white/10'} />
+              )}
             </Field>
             <Field label="الحساب البنكي (اختياري)">
               <select

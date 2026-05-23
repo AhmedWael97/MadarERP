@@ -25,11 +25,13 @@ import { persist } from 'zustand/middleware';
 interface TenantState {
   /** Frappe doc name of the Madaar Tenant Subscription (unique key). */
   activeTenantName: string | null;
+  /** ERPNext Company name used by accounting reports and company-scoped filters. */
+  activeCompanyName: string | null;
   /** Display label — `name_ar` if present, else `tenant_company`, else the doc name. */
   activeTenantLabel: string | null;
   /** Module keys enabled on the tenant. `null` means "no override, show everything". */
   enabledModules: string[] | null;
-  setActiveTenant: (name: string, label: string, modules: string[]) => void;
+  setActiveTenant: (name: string, company: string, label: string, modules: string[]) => void;
   clearActiveTenant: () => void;
 }
 
@@ -37,11 +39,13 @@ export const useTenantStore = create<TenantState>()(
   persist(
     (set) => ({
       activeTenantName: null,
+      activeCompanyName: null,
       activeTenantLabel: null,
       enabledModules: null,
-      setActiveTenant: (name, label, modules) =>
+      setActiveTenant: (name, company, label, modules) =>
         set({
           activeTenantName: name,
+          activeCompanyName: company,
           activeTenantLabel: label,
           // Always store as an array so the sidebar's `.includes()` check
           // never has to deal with stray `undefined`s after a JSON round-trip.
@@ -50,6 +54,7 @@ export const useTenantStore = create<TenantState>()(
       clearActiveTenant: () =>
         set({
           activeTenantName: null,
+          activeCompanyName: null,
           activeTenantLabel: null,
           enabledModules: null,
         }),

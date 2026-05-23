@@ -162,12 +162,13 @@ export default function SuperAdminCompanyDetail() {
   const navigate = useNavigate();
   const setActiveTenant = useTenantStore((s) => s.setActiveTenant);
   function openCompany() {
+    const companyName = (tenant as any)?.tenant_company || '';
     const label =
       (tenant as any)?.name_ar ||
-      (tenant as any)?.tenant_company ||
+      companyName ||
       name ||
       '';
-    setActiveTenant(name ?? '', label, enabledModules);
+    setActiveTenant(name ?? '', companyName, label, enabledModules);
     navigate('/dashboard');
   }
 

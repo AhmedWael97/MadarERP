@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useFrappeGetDocList } from 'frappe-react-sdk';
 import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '../FinancialReportShell';
-import { localDate, localDaysAgo } from '@/lib/formatters/dates';
+import { localDate, localYearStart } from '@/lib/formatters/dates';
 
 const COLUMNS: ReportColumn[] = [
   { label: 'التاريخ', fieldname: 'posting_date' },
@@ -16,7 +16,7 @@ const COLUMNS: ReportColumn[] = [
 ];
 
 export default function AccountStatementPage() {
-  const [fromDate, setFromDate] = useState(localDaysAgo(30));
+  const [fromDate, setFromDate] = useState(localYearStart());
   const [toDate, setToDate] = useState(localDate());
   const [account, setAccount] = useState('');
 
@@ -41,10 +41,19 @@ export default function AccountStatementPage() {
         <>
           <div className="sm:col-span-2 lg:col-span-1">
             <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">الحساب</label>
-            <select value={account} onChange={(e) => setAccount(e.target.value)} className="w-full px-3 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm">
-              <option value="">— اختر حساب —</option>
-              {(accounts ?? []).map((a) => (<option key={a.name} value={a.name}>{a.account_number ?? ''} — {a.account_name ?? a.name}</option>))}
-            </select>
+            <input
+              type="text"
+              list="account-statement-options"
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
+              placeholder="— اختر حساب —"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm"
+            />
+            <datalist id="account-statement-options">
+              {(accounts ?? []).map((a) => (
+                <option key={a.name} value={a.name} label={`${a.account_number ?? ''} — ${a.account_name ?? a.name}`} />
+              ))}
+            </datalist>
           </div>
           <DateRangeFilters fromDate={fromDate} toDate={toDate} onFromDate={setFromDate} onToDate={setToDate} />
         </>

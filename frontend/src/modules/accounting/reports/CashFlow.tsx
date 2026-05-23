@@ -3,6 +3,11 @@ import { useState } from 'react';
 import { FinancialReportShell, DateRangeFilters, fmtNum, type ReportColumn } from '../FinancialReportShell';
 import { localDate, localYearStart } from '@/lib/formatters/dates';
 
+function cleanName(row: Record<string, unknown>) {
+  const raw = String((row.account_name as string) || (row.account as string) || '—');
+  return raw.replace(/\s-\s[^\s-]+$/, '');
+}
+
 // Same column shape as Balance Sheet / P&L — see BalanceSheet.tsx for the
 // rationale.
 const COLUMNS: ReportColumn[] = [
@@ -10,7 +15,7 @@ const COLUMNS: ReportColumn[] = [
     label: 'البند',
     fieldname: 'account',
     render: (row) => {
-      const name = (row.account_name as string) || (row.account as string) || '—';
+      const name = cleanName(row as Record<string, unknown>);
       const indent = Number(row.indent ?? 0);
       const isGroup = Number(row.is_group ?? 0) === 1;
       return (

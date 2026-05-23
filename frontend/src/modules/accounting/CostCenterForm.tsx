@@ -37,6 +37,14 @@ interface CostCenterDoc {
   madaar_description?: string;
 }
 
+interface ParentCostCenter {
+  name: string;
+  cost_center_name?: string;
+  cost_center_number?: string;
+  company?: string;
+  parent_cost_center?: string;
+}
+
 export default function CostCenterFormPage({ mode }: { mode: 'create' | 'edit' }) {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -70,12 +78,28 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   // Parents: only group CCs are eligible. Leave the dropdown's empty option in
   // place so the user can create a root-level CC by NOT picking a parent.
-  const { data: parents } = useFrappeGetDocList<{ name: string; cost_center_name?: string; cost_center_number?: string; company?: string }>('Cost Center', {
-    fields: ['name', 'cost_center_name', 'cost_center_number', 'company'],
+  const { data: parents } = useFrappeGetDocList<ParentCostCenter>('Cost Center', {
+    fields: ['name', 'cost_center_name', 'cost_center_number', 'company', 'parent_cost_center'],
     filters: [['is_group', '=', 1]],
     limit: 200,
   });
   const { data: companies } = useFrappeGetDocList<{ name: string }>('Company', { fields: ['name'], limit: 50 });
+
+  function resolveCompanyRoot(companyName?: string) {
+    if (!companyName) return undefined;
+    const byCompany = (parents ?? []).filter((p) => p.company === companyName);
+    const roots = byCompany.filter((p) => !p.parent_cost_center);
+    return roots[0]?.name ?? byCompany[0]?.name;
+  }
+
+  useEffect(() => {
+    if (isEdit) return;
+    if (values.parent_cost_center) return;
+    const root = resolveCompanyRoot(values.company);
+    if (root) {
+      setValues((v) => ({ ...v, parent_cost_center: root }));
+    }
+  }, [values.company, values.parent_cost_center, parents, isEdit]);
 
   // Siblings — needed to auto-suggest the next code when parent changes.
   const { data: siblings } = useFrappeGetDocList<{ cost_center_number?: string }>('Cost Center', {
@@ -118,8 +142,11 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const parentForSubmit = values.parent_cost_center || resolveCompanyRoot(values.company);
+    const submitValues = parentForSubmit ? { ...values, parent_cost_center: parentForSubmit } : values;
+
     const cleaned: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(values)) {
+    for (const [k, v] of Object.entries(submitValues)) {
       if (v === '' || v === null || v === undefined) continue;
       cleaned[k] = v;
     }
@@ -151,9 +178,9 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
               className={INPUT + ' font-mono'}
             />
           </Field>
-          <Field label="المركز الأب (اختياري)">
+          <Field label="المركز الأب">
             <select value={values.parent_cost_center ?? ''} onChange={(e) => set('parent_cost_center', e.target.value)} className={INPUT}>
-              <option value="">— جذر (بدون أب) —</option>
+              <option value="">— اختر المركز الأب —</option>
               {(parents ?? []).map((p) => (
                 <option key={p.name} value={p.name}>
                   {p.cost_center_number ? `${p.cost_center_number} — ${p.cost_center_name ?? p.name}` : (p.cost_center_name ?? p.name)}
