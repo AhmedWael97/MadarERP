@@ -114,8 +114,30 @@ def list_periods(fiscal_year: str) -> list[dict]:
             r["total_out"] = cash_out
             continue
 
-        # Fallback: if Cash/Bank classified flow is zero, use all non-cancelled
-        # GL activity so the fiscal year page still reflects real movement.
+        # Fallback #1: if company-scoped flow is zero, try the same period
+        # across all companies. This handles fiscal years shared across
+        # companies where Accounting Period.company doesn't match posting data.
+        fallback_any_company = frappe.db.sql(
+            """
+            select
+                coalesce(sum(gl.debit),  0) as debit_in,
+                coalesce(sum(gl.credit), 0) as credit_out
+            from `tabGL Entry` gl
+            where gl.is_cancelled = 0
+              and gl.posting_date between %s and %s
+            """,
+            (r["start_date"], r["end_date"]),
+            as_dict=True,
+        )
+        any_in = float((fallback_any_company[0]["debit_in"] if fallback_any_company else 0) or 0)
+        any_out = float((fallback_any_company[0]["credit_out"] if fallback_any_company else 0) or 0)
+        if any_in > 0 or any_out > 0:
+            r["total_in"] = any_in
+            r["total_out"] = any_out
+            continue
+
+        # Fallback #2: if still zero, keep company-scoped all-account totals
+        # as a defensive last result.
         fallback = frappe.db.sql(
             """
             select
