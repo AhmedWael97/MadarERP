@@ -122,7 +122,7 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
   }, [baseFilters, search, statusFilter, from, to, cfg]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<SDRow>(cfg.doctype, {
-    fields: ['name', 'posting_date', 'transaction_date', 'customer', 'party_name', 'grand_total', 'status', 'docstatus'],
+    fields: ['name', cfg.dateField, cfg.customerField, 'grand_total', 'status', 'docstatus'],
     filters,
     limit: 100,
     orderBy: { field: cfg.dateField, order: 'desc' },
