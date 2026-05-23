@@ -814,7 +814,7 @@ const SECTIONS: Section[] = [
           {
             headerAr: 'التشغيل',
             leaves: [
-              { to: '/retail/pos',                  labelAr: 'نقطة البيع (كاشير)' },
+              { to: '/restaurant/cashier',          labelAr: 'نقطة البيع (كاشير)' },
               { to: '/restaurant/pos',              labelAr: 'ملفات نقطة البيع' },
               { to: '/restaurant/kitchen/display',  labelAr: 'شاشة المطبخ' },
               { to: '/restaurant/orders',           labelAr: 'الطلبات' },

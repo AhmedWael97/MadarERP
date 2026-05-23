@@ -773,6 +773,15 @@ def create_default_pos_profile(
         "Cost Center", {"company": company, "is_group": 0}, "name",
     )
 
+    # write_off_account / write_off_cost_center are required on POS Profile.
+    # Prefer the company's own write-off account; fall back to any Expense account.
+    write_off_account = co.write_off_account or frappe.db.get_value(
+        "Account",
+        {"company": company, "account_type": "Expense Account", "is_group": 0},
+        "name",
+    )
+    write_off_cost_center = cost_center
+
     profile = frappe.get_doc({
         "doctype": "POS Profile",
         "name": pname,
@@ -783,6 +792,9 @@ def create_default_pos_profile(
         "selling_price_list": price_list,
         "cost_center": cost_center,
         "income_account": income_account,
+        "write_off_account": write_off_account,
+        "write_off_cost_center": write_off_cost_center,
+        "write_off_limit": 1,
         "disabled": 0,
         "payments": [
             {"mode_of_payment": "Cash", "default": 1},

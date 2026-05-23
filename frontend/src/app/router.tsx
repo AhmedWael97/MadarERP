@@ -199,6 +199,15 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      // --- Restaurant POS — same cashier UI, scoped to restaurant navigation ---
+      {
+        path: 'restaurant/cashier',
+        element: (
+          <Suspense fallback={Loading}>
+            <POSPage />
+          </Suspense>
+        ),
+      },
       // --- LMS — Madaar Learning Management System (Course/Lesson/Batch/Enrollment) ---
       {
         path: 'lms',
