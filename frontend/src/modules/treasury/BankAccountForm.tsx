@@ -23,6 +23,7 @@ interface BankAccountDoc {
   account_currency?: string;
   account_type?: string;       // Checking / Savings / …
   account_subtype?: string;
+  company?: string;
   is_default?: 0 | 1;
   is_company_account?: 0 | 1;
   disabled?: 0 | 1;
@@ -70,11 +71,19 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   useEffect(() => { if (existing) setDoc((d) => ({ ...d, ...existing })); }, [existing]);
 
   // Reference lists.
+  const { data: companies } = useFrappeGetDocList<{ name: string }>('Company', { fields: ['name'], limit: 50 });
+  // Auto-select company when only one exists.
+  useEffect(() => {
+    if (!isEdit && companies?.length === 1 && !doc.company) {
+      setDoc((d) => ({ ...d, company: companies[0].name }));
+    }
+  }, [companies, isEdit, doc.company]);
+
   const { data: banks } = useFrappeGetDocList<{ name: string; bank_name?: string }>('Bank', { fields: ['name', 'bank_name'], limit: 200 });
   const { data: currencies } = useFrappeGetDocList<{ name: string }>('Currency', { fields: ['name'], filters: [['enabled', '=', 1]], limit: 100 });
   const { data: glAccounts } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string; account_type?: string }>('Account', {
     fields: ['name', 'account_name', 'account_number', 'account_type'],
-    filters: [['is_group', '=', 0], ['disabled', '=', 0], ['account_type', 'in', ['Bank', 'Cash']]],
+    filters: [['is_group', '=', 0], ['disabled', '=', 0], ['account_type', '=', 'Bank']],
     limit: 500,
     orderBy: { field: 'account_number', order: 'asc' },
   });
@@ -127,6 +136,12 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
                 placeholder="مثال: الحساب الجاري - الراجحي"
                 className={INPUT}
               />
+            </Field>
+            <Field label="الشركة" required>
+              <select required value={doc.company ?? ''} onChange={(e) => set('company', e.target.value)} className={INPUT}>
+                <option value="">— اختر الشركة —</option>
+                {(companies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
+              </select>
             </Field>
             <Field label="البنك" required>
               <select required value={doc.bank ?? ''} onChange={(e) => set('bank', e.target.value)} className={INPUT}>
