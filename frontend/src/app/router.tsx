@@ -303,9 +303,44 @@ export const router = createBrowserRouter(
         },
       },
       {
+        path: 'treasury/currencies/create',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/currencies--create/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/currencies/:id/edit',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/currencies--$id--edit/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
         path: 'treasury/exchange-rates',
         lazy: async () => {
           const mod = await import('../modules/treasury/exchange-rates/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/exchange-rates/create',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/exchange-rates--create/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/exchange-rates/:id/edit',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/exchange-rates--$id--edit/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'treasury/banks/create',
+        lazy: async () => {
+          const mod = await import('../modules/treasury/banks--create/overrides/page');
           return { Component: mod.default };
         },
       },
