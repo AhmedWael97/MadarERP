@@ -13,7 +13,7 @@ const overridePages = import.meta.glob<{ default: ComponentType }>(
 );
 
 const Login = lazy(() => import('../pages/Login'));
-const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Dashboard = lazy(() => import('../modules/core/dashboard/overrides/page'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const Settings = lazy(() => import('../pages/Settings'));
 const SettingsSection = lazy(() => import('../pages/SettingsSection'));
