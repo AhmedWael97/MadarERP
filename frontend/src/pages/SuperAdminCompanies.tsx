@@ -197,6 +197,14 @@ export function SuperAdminCompanyForm() {
 
   const { data: existing } = useFrappeGetDoc('Madaar Tenant Subscription', name ?? '', name ? `tenant-${name}` : null);
   const { createDoc, loading: creating } = useFrappeCreateDoc();
+  // The Tenant Subscription's `tenant_company` is a Link to ERPNext Company —
+  // we need to create the Company first or the insert throws
+  // LinkValidationError. `create_company_with_subscription` does both in one
+  // shot and filters out form-only fields (subdomain, max_users, etc.) that
+  // don't exist on the subscription doctype.
+  const { call: createCompanyWithSubscription, loading: creatingViaApi } = useFrappePostCall<{
+    message: { ok: boolean; tenant_company: string; subscription: string; company_created: boolean };
+  }>('madaar_core.api.create_company_with_subscription');
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
   const { data: plansResp } = useFrappeGetCall<{ message: any[] }>('madaar_core.api.list_subscription_plans');
   const plans = plansResp?.message ?? [];
@@ -339,12 +347,36 @@ export function SuperAdminCompanyForm() {
       if (isEdit) {
         await updateDoc('Madaar Tenant Subscription', name!, payload);
       } else {
-        payload.doctype = 'Madaar Tenant Subscription';
-        await createDoc('Madaar Tenant Subscription', payload);
+        // Two-step create lives behind a single whitelisted method on the
+        // backend — it creates the ERPNext Company first (seeds CoA), then
+        // the Madaar Tenant Subscription linked to it. Calling the regular
+        // `createDoc('Madaar Tenant Subscription', ...)` was throwing
+        // LinkValidationError because tenant_company → Company hadn't
+        // been created yet.
+        await createCompanyWithSubscription(payload);
       }
       navigate('/super-admin/companies');
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || String(err));
+      // Surface the actual Frappe error if present — _server_messages is a
+      // stringified array of stringified JSON objects, so unwrap one level.
+      let msg: string | undefined;
+      try {
+        const sm = err?.response?.data?._server_messages;
+        if (typeof sm === 'string') {
+          const arr = JSON.parse(sm);
+          if (Array.isArray(arr) && arr.length) {
+            const first = typeof arr[0] === 'string' ? JSON.parse(arr[0]) : arr[0];
+            msg = first?.message;
+          }
+        }
+      } catch { /* fall through */ }
+      setError(
+        msg ||
+        err?.response?.data?.exception ||
+        err?.response?.data?.message ||
+        err?.message ||
+        String(err),
+      );
     }
   }
 
@@ -652,7 +684,7 @@ export function SuperAdminCompanyForm() {
         {error && <p className="text-sm text-rose-600">{error}</p>}
 
         <div className="flex items-center gap-3">
-          <FormSubmit loading={creating || updating}>
+          <FormSubmit loading={creating || creatingViaApi || updating}>
             {isEdit ? (isAr ? 'تحديث الشركة' : 'Update company') : (isAr ? 'إنشاء الشركة' : 'Create company')}
           </FormSubmit>
           <FormCancel href="/super-admin/companies">{isAr ? 'إلغاء' : 'Cancel'}</FormCancel>

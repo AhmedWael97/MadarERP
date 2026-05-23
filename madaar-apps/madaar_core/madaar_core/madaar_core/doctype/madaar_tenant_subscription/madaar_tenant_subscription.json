@@ -29,6 +29,7 @@
   "current_warehouses",
   "current_invoices_this_month",
   "modules_section",
+  "enabled_modules",
   "module_toggles",
   "notes_section",
   "notes"
@@ -174,6 +175,12 @@
    "fieldtype": "Section Break",
    "label": "Module Toggles",
    "description": "Plan-level modules can be overridden here per tenant. Leave empty to inherit the plan."
+  },
+  {
+   "fieldname": "enabled_modules",
+   "fieldtype": "Long Text",
+   "label": "Enabled Modules (JSON)",
+   "description": "JSON array of module keys enabled for this tenant. Drives the React sidebar filter when a super-admin clicks Open Company."
   },
   {
    "fieldname": "module_toggles",

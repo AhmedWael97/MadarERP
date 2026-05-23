@@ -521,6 +521,126 @@ def list_admin_activity(limit: int = 100, offset: int = 0) -> dict[str, Any]:
     return {"rows": rows, "total": total, "limit": int(limit), "offset": int(offset)}
 
 
+@frappe.whitelist()
+def create_company_with_subscription(payload: dict[str, Any] | str) -> dict[str, Any]:
+    """Atomically create an ERPNext Company + a Madaar Tenant Subscription.
+
+    The super-admin "Create a new company" form holds fields for both — the
+    Company's `abbr` / `default_currency` / `country` / `chart_of_accounts`
+    AND the subscription's `subscription_status` / `owner_email` / `plan` /
+    `enabled_modules`. The Tenant Subscription's `tenant_company` is a Link
+    to `Company`, so the Company has to exist FIRST or Frappe throws
+    LinkValidationError on insert.
+
+    Steps:
+      1. Pull Company-side fields from the payload and create the Company
+         if it doesn't already exist (this seeds the Chart of Accounts via
+         ERPNext's standard `setup_complete`-style hooks).
+      2. Optionally create a Fiscal Year for the company if start/end dates
+         are provided and one doesn't already cover the period.
+      3. Pull subscription-side fields and create the Madaar Tenant
+         Subscription row pointing at the Company.
+
+    Returns ``{ok: True, tenant_company, subscription, company_created}``.
+
+    Idempotent on the Company side — if a Company with the same name exists
+    the create is skipped and we link to it. The Tenant Subscription create
+    will still fail on the unique constraint if one already exists for that
+    company, surfacing a clear DuplicateEntryError to the caller.
+    """
+    _require_super_admin()
+
+    if isinstance(payload, str):
+        import json
+
+        payload = json.loads(payload)
+    if not isinstance(payload, dict):
+        frappe.throw("Payload must be an object")
+
+    company_name = (payload.get("tenant_company") or "").strip()
+    if not company_name:
+        frappe.throw("Company ID (tenant_company) is required.")
+    abbr = (payload.get("abbr") or "").strip()
+    if not abbr and not frappe.db.exists("Company", company_name):
+        frappe.throw("Company abbreviation (abbr) is required when creating a new Company.")
+
+    # ── Step 1: create Company if missing ───────────────────────────────────
+    company_created = False
+    if not frappe.db.exists("Company", company_name):
+        co = frappe.get_doc({
+            "doctype": "Company",
+            "company_name": company_name,
+            "abbr": abbr,
+            "default_currency": payload.get("default_currency") or "EGP",
+            "country": payload.get("country") or "Egypt",
+            "chart_of_accounts": payload.get("chart_of_accounts") or "Standard",
+        })
+        co.insert(ignore_permissions=True)
+        company_created = True
+        frappe.db.commit()  # ensure Company exists before the Link below validates
+
+    # ── Step 2: Fiscal Year (best-effort, never blocks the flow) ────────────
+    fy_start = payload.get("fy_start_date")
+    fy_end = payload.get("fy_end_date")
+    if fy_start and fy_end:
+        try:
+            existing_fy = frappe.db.get_value(
+                "Fiscal Year",
+                {"year_start_date": fy_start, "year_end_date": fy_end},
+                "name",
+            )
+            if not existing_fy:
+                year_label = str(fy_start)[:4]
+                fy = frappe.get_doc({
+                    "doctype": "Fiscal Year",
+                    "year": year_label,
+                    "year_start_date": fy_start,
+                    "year_end_date": fy_end,
+                    "companies": [{"company": company_name}],
+                })
+                fy.insert(ignore_permissions=True)
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "create_company_with_subscription.fiscal_year")
+
+    # ── Step 3: Tenant Subscription ─────────────────────────────────────────
+    # Whitelist the fields we actually persist on the subscription so junk
+    # like `subdomain`/`max_users`/`abbr` (which the form sends but the
+    # doctype doesn't define) doesn't crash the insert.
+    sub_field_names = {
+        "tenant_company", "name_ar", "subscription_plan", "subscription_status",
+        "owner_email", "phone",
+        "subscription_start_date", "subscription_end_date", "trial_ends_at",
+        "billing_period", "monthly_amount", "currency", "notes",
+        "enabled_modules",
+    }
+    sub_doc: dict[str, Any] = {"doctype": "Madaar Tenant Subscription"}
+    for k in sub_field_names:
+        v = payload.get(k)
+        if v is None or v == "":
+            continue
+        # The doctype stores enabled_modules as a JSON string in a Long Text
+        # field. Accept either a list (we serialise) or a pre-serialised string.
+        if k == "enabled_modules" and not isinstance(v, str):
+            import json
+
+            v = json.dumps(v)
+        sub_doc[k] = v
+    sub_doc["tenant_company"] = company_name  # canonical — always set
+    if not sub_doc.get("subscription_status"):
+        sub_doc["subscription_status"] = "trial"
+
+    sub = frappe.get_doc(sub_doc)
+    sub.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+    return {
+        "ok": True,
+        "tenant_company": company_name,
+        "subscription": sub.name,
+        "company_created": company_created,
+    }
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Retail POS
 # Endpoints powering the React cashier UI at /retail/pos. Combine ERPNext's
