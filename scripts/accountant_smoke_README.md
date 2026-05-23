@@ -112,3 +112,90 @@ The script does **not** delete the entities it created — that's deliberate so
 an accountant can inspect them after the run. They're all prefixed with
 `SMOKE-`, so you can filter and bulk-delete from the relevant list pages
 once you're done auditing.
+
+---
+
+# Companion: accounting_chain_test.py
+
+`accountant_smoke.py` verifies that **pages render**. The companion script
+[`accounting_chain_test.py`](./accounting_chain_test.py) verifies that **the
+data chain works** — that ERPNext is correctly linking Products → Stock →
+Sales Invoices → GL → Reports under the hood.
+
+It uses the **REST API** (no browser, no Playwright) so it's fast (~10 s) and
+deterministic. The output reads the actual `GL Entry` and `Stock Ledger Entry`
+tables directly, so the report shows the real numbers that landed.
+
+## What it does
+
+1. **Login + discovery** — picks the first Company, first non-group Warehouse, first non-group Item Group (override with `--company` / `--warehouse`).
+2. **Create test Item** — `SMOKE-ITEM-<ts>`, `is_stock_item=1`, `is_sales_item=1`.
+3. **Receive 100 units of stock** via Stock Entry (Material Receipt) at cost 10.00.
+   - Verifies `Stock Ledger Entry`: `+100`, balance 100, valuation_rate 10.00.
+4. **Create test Customer** — `SMOKE-CUST-<ts>`.
+5. **Submit Sales Invoice** — 10 units @ 15.00 = 150.00, `update_stock=1`.
+6. **Verify the side-effects** — directly off the tables:
+   - `GL Entry` rows for this voucher: prints every line (account + debit/credit + party).
+   - `GL Entry` invariant: total debit == total credit.
+   - `Stock Ledger Entry`: `-10`, balance now 90.
+   - `Bin.actual_qty == 90` (this is what the Stock Balance report reads).
+   - `Sales Invoice.outstanding_amount == 150.00` (this is what Customer Aging reads).
+
+If every step passes, the markdown report's verdict says:
+
+> ✓ Full accounting chain verified end-to-end. An accountant can trust that submitting a Sales Invoice debits the customer's Debtors and credits Sales income, that `update_stock=1` decrements the warehouse, that `Bin.actual_qty` matches the new ledger total, and that GL Entry debit == credit.
+
+If any step fails, the report lists the **common causes** (missing default Income Account on Company, missing default Receivable Account, etc.) so you know exactly what to set in Frappe Desk to fix it.
+
+## Install
+
+```bash
+pip install requests
+```
+
+## Run
+
+```bash
+python scripts/accounting_chain_test.py \
+  --site http://165.232.75.30 \
+  --user Administrator \
+  --password admin
+```
+
+Override the discovered defaults if you want a specific company / warehouse:
+
+```bash
+python scripts/accounting_chain_test.py \
+  --site http://165.232.75.30 \
+  --user Administrator --password admin \
+  --company "Acme Co" --warehouse "Stores - ACM"
+```
+
+## What the report looks like
+
+Console output is one line per step, e.g.:
+
+```
+▸ Phase 5 — verify GL Entry + Stock Ledger
+  ✓ GL Entry rows — 4 row(s)
+  ✓ GL Entry balance — debit = credit = 150.00
+  ✓   GL row — Debtors - ACM [Customer SMOKE-CUST-20260523-150412] — +150.00 debit
+  ✓   GL row — Sales - ACM — +150.00 credit
+  ✓   GL row — Cost of Goods Sold - ACM — +100.00 debit
+  ✓   GL row — Stock In Hand - ACM — +100.00 credit
+  ✓ Stock Ledger row (invoice) — -10 → balance 90 (Stores - ACM)
+```
+
+The third and fourth GL rows only appear if the Company has **Perpetual
+Inventory** enabled (Company → "Enable Perpetual Inventory" check). Without
+them, only the AR + Income postings are made on Sales Invoice; COGS lands
+when you submit a separate Stock Entry.
+
+## When you'd run each script
+
+| Question | Tool |
+|---|---|
+| Do all the pages render? Can an accountant navigate the app? | `accountant_smoke.py` |
+| Are submitted invoices actually posting to GL? Do the reports reflect them? | `accounting_chain_test.py` |
+| Both — full health check | Run them in order: smoke first (cheap), then chain (proves the data) |
+

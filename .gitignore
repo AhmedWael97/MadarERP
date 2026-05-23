@@ -39,5 +39,6 @@ docker/data/
 # Accountant smoke test per-run artifacts (report + screenshots)
 scripts/accountant_smoke_report.md
 scripts/accountant_smoke_screenshots/
+scripts/accounting_chain_report.md
 
 /scan_output
