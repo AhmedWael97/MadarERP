@@ -22,7 +22,8 @@
   "amount_section",
   "amount",
   "currency",
-  "linked_account"
+  "linked_account",
+  "journal_entry"
  ],
  "fields": [
   {
@@ -125,6 +126,14 @@
    "fieldtype": "Link",
    "label": "Linked Bank Account",
    "options": "Bank Account"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1,
+   "description": "Auto-posted JV that records the bank/party movement for this cheque."
   }
  ],
  "links": [],

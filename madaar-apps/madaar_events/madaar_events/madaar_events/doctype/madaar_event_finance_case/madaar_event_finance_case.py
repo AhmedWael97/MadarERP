@@ -63,6 +63,16 @@ class MadaarEventFinanceCase(Document):
             "description": f"Event Revenue — {self.event_request}",
         })
         invoice.insert(ignore_permissions=True)
+        # Submit immediately so the Sales Invoice actually hits GL (debits the
+        # customer's receivable, credits the income account on the item). The
+        # previous behaviour left the invoice as a draft, which meant the
+        # event's revenue never appeared on the P&L. If submit fails (missing
+        # taxes template, FX rate, etc.) we keep the draft so finance can
+        # rescue it manually instead of silently dropping the case.
+        try:
+            invoice.submit()
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "MadaarEventFinanceCase.submit_sales_invoice")
 
         self.db_set("linked_sales_invoice", invoice.name)
 
