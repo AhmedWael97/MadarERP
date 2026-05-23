@@ -103,13 +103,44 @@ export function FinancialReportShell({
   }, activeTenantName || (filters as any)?.company ? null : 'reports:first-company');
   const fallbackCompany = activeTenantName || companiesResp?.[0]?.name;
 
+  // ── Auto-resolve `fiscal_year` filter ─────────────────────────────────────
+  // Trial Balance / Balance Sheet / Income Statement / Cash Flow ALL require
+  // `fiscal_year` in addition to `company` — without it they throw
+  // "Fiscal Year None is required". We pick the FY whose date range contains
+  // the report's `to_date` (or `report_date`, for the Aging variant), falling
+  // back to today.
+  const { data: fyResp } = useFrappeGetDocList<{ name: string; year_start_date: string; year_end_date: string }>(
+    'Fiscal Year',
+    {
+      fields: ['name', 'year_start_date', 'year_end_date'],
+      limit: 20,
+      orderBy: { field: 'year_start_date', order: 'desc' },
+    },
+    'reports:fiscal-years',
+  );
+
   const resolvedFilters = useMemo(() => {
     const out: Record<string, unknown> = { ...filters };
     if (!out.company && fallbackCompany) {
       out.company = fallbackCompany;
     }
+    // Fiscal year picker: only if the caller hasn't supplied one. Pick the FY
+    // that contains the report's reference date — `to_date` for date-range
+    // reports, `report_date` for Aging, today for everything else.
+    if (!out.fiscal_year && fyResp && fyResp.length) {
+      const refDate =
+        (out.to_date as string) ||
+        (out.report_date as string) ||
+        new Date().toISOString().slice(0, 10);
+      const fy = fyResp.find(
+        (f) => f.year_start_date <= refDate && refDate <= f.year_end_date,
+      );
+      // String comparison is fine here because both sides are `YYYY-MM-DD`.
+      if (fy) out.fiscal_year = fy.name;
+      else out.fiscal_year = fyResp[0].name; // fall back to the most recent FY
+    }
     return out;
-  }, [filters, fallbackCompany]);
+  }, [filters, fallbackCompany, fyResp]);
 
   // Fetch results — fires on first render (when autoFetch) and on every search click.
   useMemo(() => {
