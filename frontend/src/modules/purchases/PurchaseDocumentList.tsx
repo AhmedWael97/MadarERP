@@ -64,7 +64,7 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
   const [to, setTo] = useState('');
 
   const baseFilters = useMemo(() => {
-    const f: Array<[string, any, unknown]> = [];
+    const f: Array<[string, any, unknown]> = [['docstatus', '<', 2]];
     if (cfg.extraFilter) f.push(cfg.extraFilter);
     if (cfg.excludeFilter) f.push(cfg.excludeFilter as any);
     return f;
@@ -93,7 +93,7 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
   }, [baseFilters, search, statusFilter, from, to, cfg]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<PDRow>(cfg.doctype, {
-    fields: ['name', 'posting_date', 'transaction_date', 'supplier', 'supplier_name', 'grand_total', 'status', 'docstatus'],
+    fields: ['name', cfg.dateField, 'supplier', 'supplier_name', 'grand_total', 'status', 'docstatus'],
     filters,
     limit: 100,
     orderBy: { field: cfg.dateField, order: 'desc' },
