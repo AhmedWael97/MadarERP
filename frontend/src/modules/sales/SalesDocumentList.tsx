@@ -88,7 +88,11 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
   const [to, setTo] = useState('');
 
   const baseFilters = useMemo(() => {
-    const f: Array<[string, any, unknown]> = [];
+    // Explicitly exclude cancelled records (docstatus=2).
+    // useFrappeGetDocList applies this automatically, but useFrappeGetDocCount
+    // (frappe.db.count) does NOT — so we add it here to keep the stat cards
+    // consistent with the table rows.
+    const f: Array<[string, any, unknown]> = [['docstatus', '<', 2]];
     if (cfg.extraFilter) f.push(cfg.extraFilter);
     if (cfg.excludeFilter) f.push(cfg.excludeFilter as any);
     return f;
