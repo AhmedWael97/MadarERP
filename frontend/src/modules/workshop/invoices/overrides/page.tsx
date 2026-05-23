@@ -13,11 +13,12 @@ export default function Page() {
         searchField: 'customer',
         dateField: 'posting_date',
         columns: [
-          { fieldname: 'name', header: 'الرقم' },
-          { fieldname: 'posting_date', header: 'التاريخ' },
-          { fieldname: 'customer', header: 'العميل' },
-          { fieldname: 'grand_total', header: 'الإجمالي', numeric: true, ltr: true },
-          { fieldname: 'status', header: 'الحالة', isBadge: true },
+          { fieldname: 'name',               header: 'الرقم' },
+          { fieldname: 'posting_date',       header: 'التاريخ' },
+          { fieldname: 'customer',           header: 'العميل' },
+          { fieldname: 'grand_total',        header: 'الإجمالي',     numeric: true, ltr: true },
+          { fieldname: 'outstanding_amount', header: 'الرصيد',       numeric: true, ltr: true },
+          { fieldname: 'status',             header: 'الحالة',       isBadge: true },
         ],
         badgeMap: {
           Draft:     { label: 'مسودة',  cls: 'bg-amber-100 text-amber-700' },

@@ -784,35 +784,40 @@ export const lmsCfg: DashboardCfg = {
 // ───────────────────────────────────────────────────────────────────────────
 export const eventsCfg: DashboardCfg = {
   title: 'إدارة الفعاليات',
-  subtitle: 'الفعاليات والحجوزات والتذاكر',
-  permDoctype: 'Madaar Event',
+  subtitle: 'طلبات الفعاليات والعقود والجداول الزمنية',
+  permDoctype: 'Madaar Event Request',
   queries: {
-    events: {
-      doctype: 'Madaar Event',
-      fields: ['name', 'event_name', 'status', 'start_date'],
+    requests: {
+      doctype: 'Madaar Event Request',
+      fields: ['name', 'event_title', 'source_type', 'event_type', 'workflow_state', 'coordinator', 'requested_start'],
       limit: 500,
     },
-    bookings: {
-      doctype: 'Madaar Event Booking',
-      fields: ['name', 'event', 'status', 'total_amount'],
-      limit: 1000,
+    contracts: {
+      doctype: 'Madaar Event Contract',
+      fields: ['name', 'workflow_state'],
+      limit: 200,
+    },
+    finance: {
+      doctype: 'Madaar Event Finance Case',
+      fields: ['name', 'compliance_status', 'revenue_amount', 'cost_amount'],
+      limit: 200,
     },
   },
   kpis: [
-    { label: 'الفعاليات',        tone: 'emerald', icon: <Calendar size={18} />,    derive: (r) => r.events.length },
-    { label: 'قادمة',            tone: 'sky',     icon: <Activity size={18} />,    derive: (r) => countWhere(r.events, (e) => e.status === 'Published' || e.status === 'Open') },
-    { label: 'الحجوزات',         tone: 'violet',  icon: <ClipboardCheck size={18} />, derive: (r) => r.bookings.length },
-    { label: 'إيرادات',          tone: 'teal',    icon: <Wallet size={18} />,      derive: (r) => sumField(r.bookings, 'total_amount'), format: currency },
-    { label: 'مؤكدة',            tone: 'amber',   icon: <Award size={18} />,       derive: (r) => countWhere(r.bookings, (b) => b.status === 'Confirmed') },
+    { label: 'طلبات الفعاليات', tone: 'emerald', icon: <Calendar size={18} />,       derive: (r) => r.requests.length },
+    { label: 'قيد المراجعة',    tone: 'amber',   icon: <Activity size={18} />,       derive: (r) => countWhere(r.requests, (e) => e.workflow_state === 'Pending Review') },
+    { label: 'مقبولة',          tone: 'sky',     icon: <Award size={18} />,           derive: (r) => countWhere(r.requests, (e) => e.workflow_state === 'Approved') },
+    { label: 'العقود',          tone: 'violet',  icon: <ClipboardCheck size={18} />, derive: (r) => r.contracts.length },
+    { label: 'الإيرادات المتوقعة', tone: 'teal', icon: <Wallet size={18} />,         derive: (r) => sumField(r.finance, 'revenue_amount'), format: currency },
   ],
   charts: [
-    { title: 'الفعاليات حسب الحالة',  build: (r) => donutChart(groupCount(r.events, 'status')) },
-    { title: 'الحجوزات حسب الفعالية', build: (r) => barChart(groupCount(r.bookings, 'event'), '#8b5cf6') },
-    { title: 'الحجوزات حسب الحالة',    build: (r) => donutChart(groupCount(r.bookings, 'status'), ['#10b981', '#f59e0b', '#f43f5e']) },
+    { title: 'الطلبات حسب الحالة',  build: (r) => donutChart(groupCount(r.requests, 'workflow_state')) },
+    { title: 'الطلبات حسب النوع',    build: (r) => barChart(groupCount(r.requests, 'event_type'), '#8b5cf6') },
+    { title: 'الطلبات حسب المصدر',   build: (r) => donutChart(groupCount(r.requests, 'source_type'), ['#10b981', '#f59e0b', '#f43f5e']) },
   ],
   links: [
-    { to: '/events/events',   label: 'الفعاليات', icon: <Calendar size={14} />, badge: (r) => r.events.length },
-    { to: '/events/bookings', label: 'الحجوزات', icon: <ClipboardCheck size={14} />, badge: (r) => r.bookings.length },
+    { to: '/events', label: 'طلبات الفعاليات', icon: <Calendar size={14} />,       badge: (r) => r.requests.length },
+    { to: '/events', label: 'العقود',           icon: <ClipboardCheck size={14} />, badge: (r) => r.contracts.length },
   ],
 };
 

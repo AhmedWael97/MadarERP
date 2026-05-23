@@ -61,12 +61,12 @@ export interface SettingsSection {
 }
 
 export const SETTINGS_GROUPS: Array<{ key: SettingsGroupKey; titleKey: string; defaultTitle: string }> = [
-  { key: 'company', titleKey: 'settings.group.company', defaultTitle: 'Company & Branding' },
-  { key: 'finance', titleKey: 'settings.group.finance', defaultTitle: 'Accounting & Finance' },
-  { key: 'sales', titleKey: 'settings.group.sales', defaultTitle: 'Selling, Buying & CRM' },
-  { key: 'inventory', titleKey: 'settings.group.inventory', defaultTitle: 'Inventory & Manufacturing' },
-  { key: 'operations', titleKey: 'settings.group.operations', defaultTitle: 'Operations & Support' },
-  { key: 'system', titleKey: 'settings.group.system', defaultTitle: 'System (Frappe)' },
+  { key: 'company', titleKey: 'settings.group.company', defaultTitle: 'الشركة والهوية البصرية' },
+  { key: 'finance', titleKey: 'settings.group.finance', defaultTitle: 'المحاسبة والمالية' },
+  { key: 'sales', titleKey: 'settings.group.sales', defaultTitle: 'المبيعات والمشتريات وإدارة العملاء' },
+  { key: 'inventory', titleKey: 'settings.group.inventory', defaultTitle: 'المخزون والتصنيع' },
+  { key: 'operations', titleKey: 'settings.group.operations', defaultTitle: 'العمليات والدعم' },
+  { key: 'system', titleKey: 'settings.group.system', defaultTitle: 'النظام (فرابي)' },
 ];
 
 export const SETTINGS_SECTIONS: SettingsSection[] = [
@@ -79,9 +79,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'company',
     icon: Building2,
     titleKey: 'settings.section.company.title',
-    defaultTitle: 'Company Profile',
+    defaultTitle: 'الملف التعريفي للشركة',
     descKey: 'settings.section.company.desc',
-    defaultDesc: 'Legal name, tax ID, default currency, country, logo and letterhead.',
+    defaultDesc: 'الاسم القانوني، الرقم الضريبي، العملة الافتراضية، الدولة، الشعار والترويسة.',
   },
   {
     key: 'print',
@@ -90,9 +90,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'company',
     icon: Printer,
     titleKey: 'settings.section.print.title',
-    defaultTitle: 'Print & PDF',
+    defaultTitle: 'الطباعة والتقارير',
     descKey: 'settings.section.print.desc',
-    defaultDesc: 'Print format, page size, paper orientation, letterhead defaults.',
+    defaultDesc: 'تنسيق الطباعة، حجم الصفحة، اتجاه الورق، الترويسات الافتراضية.',
   },
   {
     key: 'website',
@@ -101,9 +101,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'company',
     icon: Globe,
     titleKey: 'settings.section.website.title',
-    defaultTitle: 'Website',
+    defaultTitle: 'الموقع الإلكتروني',
     descKey: 'settings.section.website.desc',
-    defaultDesc: 'Public site title, brand HTML, footer, social links, robots.txt.',
+    defaultDesc: 'عنوان الموقع، كود HTML للعلامة التجارية، الروابط الاجتماعية، robots.txt.',
   },
 
   // Accounting & Finance
@@ -114,9 +114,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: BookOpen,
     titleKey: 'settings.section.accounts.title',
-    defaultTitle: 'Accounts Settings',
+    defaultTitle: 'إعدادات المحاسبة',
     descKey: 'settings.section.accounts.desc',
-    defaultDesc: 'Credit/debit defaults, frozen periods, deferred accounting, rounding.',
+    defaultDesc: 'إعدادات الدائن والمدين، الفترات المجمدة، المحاسبة المؤجلة، التقريب.',
   },
   {
     key: 'pos',
@@ -125,9 +125,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: CreditCard,
     titleKey: 'settings.section.pos.title',
-    defaultTitle: 'POS Settings',
+    defaultTitle: 'إعدادات نقطة البيع',
     descKey: 'settings.section.pos.desc',
-    defaultDesc: 'POS print format, hide customer in offline mode, payments order.',
+    defaultDesc: 'تنسيق طباعة نقطة البيع، إخفاء العميل في وضع عدم الاتصال، ترتيب المدفوعات.',
   },
   {
     key: 'subscription',
@@ -136,9 +136,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: Repeat,
     titleKey: 'settings.section.subscription.title',
-    defaultTitle: 'Subscriptions',
+    defaultTitle: 'إعدادات الاشتراكات',
     descKey: 'settings.section.subscription.desc',
-    defaultDesc: 'Cancel after grace period, prorate invoices, automatic invoicing.',
+    defaultDesc: 'الإلغاء بعد فترة السماح، التوزيع النسبي للفواتير، الفوترة التلقائية.',
   },
   {
     key: 'currency-exchange',
@@ -147,9 +147,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: Coins,
     titleKey: 'settings.section.currency-exchange.title',
-    defaultTitle: 'Currency Exchange',
+    defaultTitle: 'أسعار الصرف',
     descKey: 'settings.section.currency-exchange.desc',
-    defaultDesc: 'Exchange rate provider (URL, request key, response field).',
+    defaultDesc: 'مزود أسعار الصرف (الرابط، مفتاح الطلب، حقل الاستجابة).',
   },
   {
     key: 'banking',
@@ -158,9 +158,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'finance',
     icon: Banknote,
     titleKey: 'settings.section.banking.title',
-    defaultTitle: 'Banking (Plaid)',
+    defaultTitle: 'البنوك (Plaid)',
     descKey: 'settings.section.banking.desc',
-    defaultDesc: 'Plaid integration for live bank feeds and transaction sync.',
+    defaultDesc: 'تكامل Plaid للتغذية المصرفية المباشرة ومزامنة المعاملات.',
   },
 
   // Selling, Buying & CRM
@@ -171,9 +171,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'sales',
     icon: Receipt,
     titleKey: 'settings.section.selling.title',
-    defaultTitle: 'Selling Settings',
+    defaultTitle: 'إعدادات المبيعات',
     descKey: 'settings.section.selling.desc',
-    defaultDesc: 'Customer naming, sales order requirements, tax inclusion, defaults.',
+    defaultDesc: 'تسمية العملاء، متطلبات أوامر البيع، شمول الضريبة، الإعدادات الافتراضية.',
   },
   {
     key: 'buying',
@@ -182,9 +182,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'sales',
     icon: ShoppingCart,
     titleKey: 'settings.section.buying.title',
-    defaultTitle: 'Buying Settings',
+    defaultTitle: 'إعدادات المشتريات',
     descKey: 'settings.section.buying.desc',
-    defaultDesc: 'Supplier naming, PO requirements, billing thresholds, defaults.',
+    defaultDesc: 'تسمية الموردين، متطلبات أوامر الشراء، حدود الفوترة، الإعدادات الافتراضية.',
   },
   {
     key: 'crm',
@@ -193,9 +193,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'sales',
     icon: Users,
     titleKey: 'settings.section.crm.title',
-    defaultTitle: 'CRM Settings',
+    defaultTitle: 'إعدادات إدارة العملاء',
     descKey: 'settings.section.crm.desc',
-    defaultDesc: 'Carry forward communication, lead-to-customer conversion defaults.',
+    defaultDesc: 'نقل سجل التواصل، إعدادات تحويل العميل المحتمل إلى عميل فعلي.',
   },
   {
     key: 'appointment-booking',
@@ -204,9 +204,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'sales',
     icon: Calendar,
     titleKey: 'settings.section.appointment-booking.title',
-    defaultTitle: 'Appointment Booking',
+    defaultTitle: 'حجز المواعيد',
     descKey: 'settings.section.appointment-booking.desc',
-    defaultDesc: 'Public availability, time slots, holiday list, agents and notifications.',
+    defaultDesc: 'الإتاحة العامة، الفترات الزمنية، قائمة الإجازات، الموظفون والإشعارات.',
   },
 
   // Inventory & Manufacturing
@@ -217,9 +217,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'inventory',
     icon: Boxes,
     titleKey: 'settings.section.stock.title',
-    defaultTitle: 'Stock Settings',
+    defaultTitle: 'إعدادات المخزون',
     descKey: 'settings.section.stock.desc',
-    defaultDesc: 'Default warehouse, valuation method, item naming, batch/serial behavior.',
+    defaultDesc: 'المستودع الافتراضي، طريقة التقييم، تسمية الأصناف، سلوك الدُفعات والأرقام المسلسلة.',
   },
   {
     key: 'item-variant',
@@ -228,9 +228,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'inventory',
     icon: Layers,
     titleKey: 'settings.section.item-variant.title',
-    defaultTitle: 'Item Variants',
+    defaultTitle: 'متغيرات الأصناف',
     descKey: 'settings.section.item-variant.desc',
-    defaultDesc: 'Variant field inheritance, attribute copy behavior.',
+    defaultDesc: 'توريث حقول المتغيرات، سلوك نسخ الخصائص.',
   },
   {
     key: 'stock-reposting',
@@ -239,9 +239,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'inventory',
     icon: Repeat,
     titleKey: 'settings.section.stock-reposting.title',
-    defaultTitle: 'Stock Reposting',
+    defaultTitle: 'إعادة ترحيل المخزون',
     descKey: 'settings.section.stock-reposting.desc',
-    defaultDesc: 'Batch size, item-based vs. transaction-based reposting.',
+    defaultDesc: 'حجم الدُفعة، إعادة الترحيل بحسب الصنف أو المعاملة.',
   },
   {
     key: 'delivery',
@@ -250,9 +250,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'inventory',
     icon: Truck,
     titleKey: 'settings.section.delivery.title',
-    defaultTitle: 'Delivery Settings',
+    defaultTitle: 'إعدادات التسليم',
     descKey: 'settings.section.delivery.desc',
-    defaultDesc: 'Send notifications on dispatch, dispatch address override.',
+    defaultDesc: 'إرسال إشعارات عند الشحن، تجاوز عنوان الإرسال.',
   },
   {
     key: 'manufacturing',
@@ -261,9 +261,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'inventory',
     icon: Factory,
     titleKey: 'settings.section.manufacturing.title',
-    defaultTitle: 'Manufacturing Settings',
+    defaultTitle: 'إعدادات التصنيع',
     descKey: 'settings.section.manufacturing.desc',
-    defaultDesc: 'Capacity planning, default warehouses, work order overproduction.',
+    defaultDesc: 'تخطيط الطاقة الإنتاجية، المستودعات الافتراضية، الإفراط في الإنتاج لأوامر العمل.',
   },
 
   // Operations & Support
@@ -274,9 +274,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'operations',
     icon: Briefcase,
     titleKey: 'settings.section.projects.title',
-    defaultTitle: 'Projects Settings',
+    defaultTitle: 'إعدادات المشاريع',
     descKey: 'settings.section.projects.desc',
-    defaultDesc: 'Timesheet rules, task status flow, project completion defaults.',
+    defaultDesc: 'قواعد ورقة الوقت، مسار حالة المهام، إعدادات اكتمال المشروع.',
   },
   {
     key: 'support',
@@ -285,9 +285,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'operations',
     icon: LifeBuoy,
     titleKey: 'settings.section.support.title',
-    defaultTitle: 'Support Settings',
+    defaultTitle: 'إعدادات الدعم الفني',
     descKey: 'settings.section.support.desc',
-    defaultDesc: 'Service-level agreements, default response/resolution times.',
+    defaultDesc: 'اتفاقيات مستوى الخدمة، أوقات الاستجابة والحل الافتراضية.',
   },
   {
     key: 'video',
@@ -296,9 +296,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'operations',
     icon: Video,
     titleKey: 'settings.section.video.title',
-    defaultTitle: 'Video Settings',
+    defaultTitle: 'إعدادات الفيديو',
     descKey: 'settings.section.video.desc',
-    defaultDesc: 'YouTube API key for video tracking and analytics.',
+    defaultDesc: 'مفتاح YouTube API لتتبع الفيديو والتحليلات.',
   },
   {
     key: 'telephony',
@@ -307,9 +307,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'operations',
     icon: PhoneCall,
     titleKey: 'settings.section.telephony.title',
-    defaultTitle: 'Telephony',
+    defaultTitle: 'الاتصالات الهاتفية',
     descKey: 'settings.section.telephony.desc',
-    defaultDesc: 'Incoming call routing and agent assignment rules.',
+    defaultDesc: 'توجيه المكالمات الواردة وقواعد تعيين الموظفين.',
   },
 
   // System (Frappe)
@@ -320,9 +320,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'system',
     icon: Cog,
     titleKey: 'settings.section.system.title',
-    defaultTitle: 'System Settings',
+    defaultTitle: 'إعدادات النظام',
     descKey: 'settings.section.system.desc',
-    defaultDesc: 'Timezone, locale, password policy, session timeout, file uploads.',
+    defaultDesc: 'المنطقة الزمنية، اللغة، سياسة كلمة المرور، انتهاء الجلسة، رفع الملفات.',
   },
   {
     key: 'email-domain',
@@ -331,9 +331,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'system',
     icon: Mail,
     titleKey: 'settings.section.email-domain.title',
-    defaultTitle: 'Email Domains',
+    defaultTitle: 'نطاقات البريد الإلكتروني',
     descKey: 'settings.section.email-domain.desc',
-    defaultDesc: 'SMTP / IMAP server defaults shared across email accounts.',
+    defaultDesc: 'إعدادات SMTP / IMAP المشتركة بين حسابات البريد الإلكتروني.',
   },
   {
     key: 'notification',
@@ -342,9 +342,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
     group: 'system',
     icon: Bell,
     titleKey: 'settings.section.notification.title',
-    defaultTitle: 'Notification Settings',
+    defaultTitle: 'إعدادات الإشعارات',
     descKey: 'settings.section.notification.desc',
-    defaultDesc: 'Per-user email subscriptions for assignments, mentions, and updates.',
+    defaultDesc: 'اشتراكات البريد الإلكتروني لكل مستخدم للتعيينات والإشارات والتحديثات.',
   },
 ];
 
