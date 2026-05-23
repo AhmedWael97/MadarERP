@@ -1,11 +1,11 @@
-/**
- * POSPage — Retail Point-of-Sale cashier interface.
+﻿/**
+ * POSPage â€” Retail Point-of-Sale cashier interface.
  *
  * Flow:
  *  1. On load: check `madaar_core.api.current_pos_opening` for the user's open shift.
- *  2. No shift → POS Profile picker + opening-cash dialog → `open_pos_shift`.
- *  3. Shift open → Cashier UI (barcode + search + grid + cart + payment).
- *  4. On close → `close_pos_shift` flips the Opening Entry to Closed.
+ *  2. No shift â†’ POS Profile picker + opening-cash dialog â†’ `open_pos_shift`.
+ *  3. Shift open â†’ Cashier UI (barcode + search + grid + cart + payment).
+ *  4. On close â†’ `close_pos_shift` flips the Opening Entry to Closed.
  *
  * Layout:  [Product catalog (60%)] | [Cart + Customer + Payment (40%)]
  *
@@ -43,10 +43,16 @@ import {
   LogIn,
   LogOut,
   Store,
+  Pause,
+  Play,
+  Truck,
+  Utensils,
+  LayoutGrid,
+  Clock,
 } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface POSItem {
   name: string;
   item_code: string;
@@ -96,7 +102,49 @@ interface POSOpening {
   summary?: { invoice_count: number; total_sales: number };
 }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+type OrderType = 'walkin' | 'delivery' | 'dinein';
+
+interface RestaurantTable {
+  name: string;
+  table_number: string;
+  hall: string;
+  capacity?: number;
+  status: string;
+}
+
+interface HeldOrder {
+  id: string;
+  posProfile: string;
+  posMode: 'retail' | 'restaurant';
+  timestamp: number;
+  orderType: OrderType;
+  table?: string;
+  tableNumber?: string;
+  customer: string;
+  customerSearch: string;
+  cart: CartLine[];
+  globalDiscount: number;
+}
+
+// â”€â”€â”€ LocalStorage helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function holdKey(posMode: string, profile: string) {
+  return `madaar_held_${posMode}_${profile}`;
+}
+function loadHeldOrders(posMode: string, profile: string): HeldOrder[] {
+  try {
+    return JSON.parse(localStorage.getItem(holdKey(posMode, profile)) ?? '[]');
+  } catch {
+    return [];
+  }
+}
+function saveHeldOrders(posMode: string, profile: string, orders: HeldOrder[]) {
+  localStorage.setItem(holdKey(posMode, profile), JSON.stringify(orders));
+}
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function cartLineTotal(line: CartLine) {
   return line.qty * line.rate * (1 - line.discount_pct / 100);
 }
@@ -105,7 +153,208 @@ function formatCurrency(val: number) {
   return val.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// ─── Sub-component: Product card ───────────────────────────────────────────
+function formatTime(ts: number) {
+  return new Date(ts).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+}
+
+// â”€â”€â”€ Sub-component: OrderTypePicker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function OrderTypePicker({
+  posMode,
+  value,
+  onChange,
+  isAr,
+}: {
+  posMode: 'retail' | 'restaurant';
+  value: OrderType;
+  onChange: (t: OrderType) => void;
+  isAr: boolean;
+}) {
+  const types = [
+    { type: 'walkin' as OrderType,   ar: 'Ø­Ø¶ÙˆØ±ÙŠ',      en: 'Walk-in',  icon: <User size={13} /> },
+    { type: 'delivery' as OrderType, ar: 'ØªÙˆØµÙŠÙ„',      en: 'Delivery', icon: <Truck size={13} /> },
+    ...(posMode === 'restaurant'
+      ? [{ type: 'dinein' as OrderType, ar: 'Ø¯Ø§Ø®Ù„ Ø§Ù„ØµØ§Ù„Ø©', en: 'Dine-in', icon: <Utensils size={13} /> }]
+      : []),
+  ];
+  return (
+    <div className="flex gap-1.5 flex-wrap">
+      {types.map((t) => (
+        <button
+          key={t.type}
+          type="button"
+          onClick={() => onChange(t.type)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+            value === t.type
+              ? 'bg-[color:var(--color-brand-600)] text-white border-[color:var(--color-brand-600)]'
+              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-[color:var(--color-brand-400)]'
+          }`}
+        >
+          {t.icon}
+          {isAr ? t.ar : t.en}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// â”€â”€â”€ Sub-component: TablePickerModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function TablePickerModal({
+  tables,
+  selectedTable,
+  onSelect,
+  onClose,
+  isAr,
+}: {
+  tables: RestaurantTable[];
+  selectedTable: string;
+  onSelect: (t: RestaurantTable) => void;
+  onClose: () => void;
+  isAr: boolean;
+}) {
+  const halls = useMemo(() => {
+    const map: Record<string, RestaurantTable[]> = {};
+    tables.forEach((t) => { (map[t.hall] ??= []).push(t); });
+    return map;
+  }, [tables]);
+
+  function statusColor(status: string) {
+    switch (status) {
+      case 'Available': return 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300';
+      case 'Occupied':  return 'bg-rose-50 dark:bg-rose-500/10 border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300';
+      case 'Reserved':  return 'bg-amber-50 dark:bg-amber-500/10 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300';
+      default:          return 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-400';
+    }
+  }
+  function statusLabel(s: string) {
+    if (!isAr) return s;
+    return s === 'Available' ? 'Ù…ØªØ§Ø­Ø©' : s === 'Occupied' ? 'Ù…Ø´ØºÙˆÙ„Ø©' : s === 'Reserved' ? 'Ù…Ø­Ø¬ÙˆØ²Ø©' : 'Ø®Ø§Ø±Ø¬ Ø§Ù„Ø®Ø¯Ù…Ø©';
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-4 bg-[color:var(--color-brand-600)] text-white shrink-0">
+          <h2 className="font-bold text-lg flex items-center gap-2">
+            <LayoutGrid size={20} />
+            {isAr ? 'Ø§Ø®ØªØ± Ø·Ø§ÙˆÙ„Ø©' : 'Select a Table'}
+          </h2>
+          <button type="button" onClick={onClose}><X size={20} /></button>
+        </div>
+        <div className="flex gap-4 px-5 py-3 border-b border-slate-100 dark:border-white/5 flex-wrap shrink-0">
+          {[['Available', isAr ? 'Ù…ØªØ§Ø­Ø©' : 'Available', 'bg-emerald-400'], ['Occupied', isAr ? 'Ù…Ø´ØºÙˆÙ„Ø©' : 'Occupied', 'bg-rose-400'], ['Reserved', isAr ? 'Ù…Ø­Ø¬ÙˆØ²Ø©' : 'Reserved', 'bg-amber-400'], ['oos', isAr ? 'Ø®Ø§Ø±Ø¬ Ø§Ù„Ø®Ø¯Ù…Ø©' : 'Out of Service', 'bg-slate-400']].map(([, label, dot]) => (
+            <span key={label} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <span className={`w-2.5 h-2.5 rounded-full ${dot}`} />{label}
+            </span>
+          ))}
+        </div>
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          {Object.entries(halls).map(([hall, ts]) => (
+            <div key={hall}>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">{hall}</p>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {ts.map((t) => {
+                  const isSel = t.name === selectedTable;
+                  const canSel = t.status === 'Available' || isSel;
+                  return (
+                    <button key={t.name} type="button" disabled={!canSel} onClick={() => onSelect(t)}
+                      className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition font-bold text-sm ${
+                        isSel
+                          ? 'border-[color:var(--color-brand-600)] bg-[color:var(--color-brand-50)] dark:bg-[color:var(--color-brand-900)]/30 text-[color:var(--color-brand-700)] dark:text-[color:var(--color-brand-300)]'
+                          : canSel ? `${statusColor(t.status)} hover:border-[color:var(--color-brand-400)] cursor-pointer`
+                          : `${statusColor(t.status)} opacity-50 cursor-not-allowed`
+                      }`}
+                    >
+                      <span className="text-xl font-black">{t.table_number}</span>
+                      {t.capacity != null && <span className="text-[10px] font-normal opacity-70">{t.capacity} {isAr ? 'Ù…Ù‚Ø¹Ø¯' : 'seats'}</span>}
+                      <span className="text-[10px] font-semibold">{statusLabel(t.status)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          {tables.length === 0 && (
+            <p className="text-center text-sm text-slate-400 py-8">
+              {isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ø§ÙˆÙ„Ø§Øª â€” Ø£Ø¶Ù Ø·Ø§ÙˆÙ„Ø§Øª Ù…Ù† Ù‚Ø³Ù… Ø§Ù„Ù…Ø·Ø¹Ù…' : 'No tables found. Add tables from the Restaurant module.'}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// â”€â”€â”€ Sub-component: HeldOrdersModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function HeldOrdersModal({
+  orders,
+  onResume,
+  onDelete,
+  onClose,
+  isAr,
+  currency,
+}: {
+  orders: HeldOrder[];
+  onResume: (o: HeldOrder) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
+  isAr: boolean;
+  currency: string;
+}) {
+  const label = (t: OrderType) => ({ walkin: isAr ? 'Ø­Ø¶ÙˆØ±ÙŠ' : 'Walk-in', delivery: isAr ? 'ØªÙˆØµÙŠÙ„' : 'Delivery', dinein: isAr ? 'Ø¯Ø§Ø®Ù„ Ø§Ù„ØµØ§Ù„Ø©' : 'Dine-in' })[t];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-4 bg-amber-600 text-white shrink-0">
+          <h2 className="font-bold text-lg flex items-center gap-2">
+            <Pause size={18} />
+            {isAr ? `Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù‚Ø© (${orders.length})` : `Held Orders (${orders.length})`}
+          </h2>
+          <button type="button" onClick={onClose}><X size={20} /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {orders.length === 0 && (
+            <p className="text-center text-sm text-slate-400 py-8">{isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©' : 'No held orders'}</p>
+          )}
+          {orders.map((o) => {
+            const raw = o.cart.reduce((s, l) => s + cartLineTotal(l), 0);
+            const total = raw * (1 - o.globalDiscount / 100);
+            return (
+              <div key={o.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-800/50">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-700 dark:text-white truncate">
+                    {o.customerSearch || (isAr ? 'Ø²Ø§Ø¦Ø±' : 'Walk-in')}
+                    {o.tableNumber && <span className="ms-2 text-xs text-[color:var(--color-brand-600)]">{isAr ? `â€¢ Ø·Ø§ÙˆÙ„Ø© ${o.tableNumber}` : `â€¢ Table ${o.tableNumber}`}</span>}
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span className="flex items-center gap-1"><Clock size={10} />{formatTime(o.timestamp)}</span>
+                    <span>{label(o.orderType)}</span>
+                    <span>{o.cart.length} {isAr ? 'ØµÙ†Ù' : 'items'}</span>
+                  </p>
+                </div>
+                <div className="text-end shrink-0">
+                  <p className="text-sm font-black text-[color:var(--color-brand-600)]">{formatCurrency(total)}</p>
+                  <p className="text-[10px] text-slate-400">{currency}</p>
+                </div>
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  <button type="button" onClick={() => onResume(o)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition">
+                    <Play size={11} />{isAr ? 'Ø§Ø³ØªÙƒÙ…Ø§Ù„' : 'Resume'}
+                  </button>
+                  <button type="button" onClick={() => onDelete(o.id)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-rose-200/50 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-100 transition">
+                    <Trash2 size={11} />{isAr ? 'Ø­Ø°Ù' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// â”€â”€â”€ Sub-component: Product card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ProductCard({
   item,
   onAdd,
@@ -139,20 +388,20 @@ function ProductCard({
         </p>
         <p className="text-[10px] text-slate-400">{item.item_code}</p>
         <p className="mt-auto text-sm font-black text-[color:var(--color-brand-600)]">
-          {formatCurrency(item.price)} {isAr ? 'ج.م' : 'EGP'}
+          {formatCurrency(item.price)} {isAr ? 'Ø¬.Ù…' : 'EGP'}
         </p>
       </div>
       <div className="px-3 pb-3">
         <span className="w-full flex items-center justify-center gap-1 py-1.5 rounded-xl bg-[color:var(--color-brand-600)] text-white text-xs font-bold group-hover:bg-[color:var(--color-brand-500)] transition">
           <Plus size={12} />
-          {isAr ? 'إضافة' : 'Add'}
+          {isAr ? 'Ø¥Ø¶Ø§ÙØ©' : 'Add'}
         </span>
       </div>
     </button>
   );
 }
 
-// ─── Sub-component: Cart line ───────────────────────────────────────────────
+// â”€â”€â”€ Sub-component: Cart line â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CartLineRow({
   line,
   onChange,
@@ -174,7 +423,7 @@ function CartLineRow({
         <p className="text-[10px] text-slate-400">{line.item.item_code}</p>
         {/* Rate override */}
         <div className="flex items-center gap-1 mt-1 flex-wrap">
-          <span className="text-[10px] text-slate-400">{isAr ? 'السعر:' : 'Price:'}</span>
+          <span className="text-[10px] text-slate-400">{isAr ? 'Ø§Ù„Ø³Ø¹Ø±:' : 'Price:'}</span>
           <input
             type="number"
             min={0}
@@ -183,7 +432,7 @@ function CartLineRow({
             onChange={(e) => onChange({ ...line, rate: parseFloat(e.target.value) || 0 })}
             className="w-16 px-1 py-0.5 text-xs rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-white"
           />
-          <span className="text-[10px] text-slate-400 ms-1">{isAr ? 'خصم%:' : 'Disc%:'}</span>
+          <span className="text-[10px] text-slate-400 ms-1">{isAr ? 'Ø®ØµÙ…%:' : 'Disc%:'}</span>
           <input
             type="number"
             min={0}
@@ -230,7 +479,7 @@ function CartLineRow({
   );
 }
 
-// ─── Sub-component: Payment Modal ──────────────────────────────────────────
+// â”€â”€â”€ Sub-component: Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PaymentModal({
   isAr,
   total,
@@ -287,7 +536,7 @@ function PaymentModal({
       <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 bg-[color:var(--color-brand-600)] text-white">
-          <h2 className="font-bold text-lg">{isAr ? 'الدفع' : 'Payment'}</h2>
+          <h2 className="font-bold text-lg">{isAr ? 'Ø§Ù„Ø¯ÙØ¹' : 'Payment'}</h2>
           <button type="button" onClick={onClose}>
             <X size={20} />
           </button>
@@ -295,7 +544,7 @@ function PaymentModal({
 
         {/* Total */}
         <div className="px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-white/5 text-center">
-          <p className="text-xs text-slate-500 mb-1">{isAr ? 'الإجمالي المستحق' : 'Total due'}</p>
+          <p className="text-xs text-slate-500 mb-1">{isAr ? 'Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ­Ù‚' : 'Total due'}</p>
           <p className="text-3xl font-black text-slate-800 dark:text-white">
             {formatCurrency(total)} <span className="text-base font-normal text-slate-500">{currency}</span>
           </p>
@@ -305,7 +554,7 @@ function PaymentModal({
         <div className="p-5 space-y-3">
           {modes.length === 0 && (
             <p className="text-xs text-slate-400 text-center py-4">
-              {isAr ? 'لا توجد طرق دفع متاحة' : 'No payment modes available'}
+              {isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ø±Ù‚ Ø¯ÙØ¹ Ù…ØªØ§Ø­Ø©' : 'No payment modes available'}
             </p>
           )}
           {modes.map((m) => (
@@ -335,7 +584,7 @@ function PaymentModal({
               onClick={() => setModeAmount(cashMode.mode, total)}
               className="text-xs text-[color:var(--color-brand-600)] hover:underline"
             >
-              {isAr ? `← تعبئة المبلغ كاملاً (${cashMode.mode})` : `← Fill full amount (${cashMode.mode})`}
+              {isAr ? `â† ØªØ¹Ø¨Ø¦Ø© Ø§Ù„Ù…Ø¨Ù„Øº ÙƒØ§Ù…Ù„Ø§Ù‹ (${cashMode.mode})` : `â† Fill full amount (${cashMode.mode})`}
             </button>
           )}
         </div>
@@ -343,18 +592,18 @@ function PaymentModal({
         {/* Summary row */}
         <div className="px-5 pb-4 space-y-1 text-sm">
           <div className="flex justify-between text-slate-600 dark:text-slate-400">
-            <span>{isAr ? 'المدفوع:' : 'Paid:'}</span>
+            <span>{isAr ? 'Ø§Ù„Ù…Ø¯ÙÙˆØ¹:' : 'Paid:'}</span>
             <span className="font-bold">{formatCurrency(paid)} {currency}</span>
           </div>
           {change > 0 && (
             <div className="flex justify-between text-emerald-600 font-bold">
-              <span>{isAr ? 'المتبقي (فكة):' : 'Change due:'}</span>
+              <span>{isAr ? 'Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ (ÙÙƒØ©):' : 'Change due:'}</span>
               <span>{formatCurrency(change)} {currency}</span>
             </div>
           )}
           {remaining > 0 && (
             <div className="flex justify-between text-amber-600 font-bold">
-              <span>{isAr ? 'ناقص:' : 'Remaining:'}</span>
+              <span>{isAr ? 'Ù†Ø§Ù‚Øµ:' : 'Remaining:'}</span>
               <span>{formatCurrency(remaining)} {currency}</span>
             </div>
           )}
@@ -369,7 +618,7 @@ function PaymentModal({
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
-            {isAr ? 'تأكيد الدفع وطباعة الفاتورة' : 'Confirm payment & print receipt'}
+            {isAr ? 'ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø¯ÙØ¹ ÙˆØ·Ø¨Ø§Ø¹Ø© Ø§Ù„ÙØ§ØªÙˆØ±Ø©' : 'Confirm payment & print receipt'}
           </button>
         </div>
       </div>
@@ -377,7 +626,7 @@ function PaymentModal({
   );
 }
 
-// ─── Sub-component: Profile picker (when no shift is open) ─────────────────
+// â”€â”€â”€ Sub-component: Profile picker (when no shift is open) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ProfilePicker({
   isAr,
   profiles,
@@ -403,9 +652,9 @@ function ProfilePicker({
         <div className="flex items-center gap-3">
           <Store size={22} />
           <div>
-            <h2 className="font-bold text-lg">{isAr ? 'فتح وردية جديدة' : 'Open a new shift'}</h2>
+            <h2 className="font-bold text-lg">{isAr ? 'ÙØªØ­ ÙˆØ±Ø¯ÙŠØ© Ø¬Ø¯ÙŠØ¯Ø©' : 'Open a new shift'}</h2>
             <p className="text-xs opacity-80">
-              {isAr ? 'اختر ملف نقطة البيع وحدد رصيد البداية' : 'Pick a POS profile and set opening cash'}
+              {isAr ? 'Ø§Ø®ØªØ± Ù…Ù„Ù Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹ ÙˆØ­Ø¯Ø¯ Ø±ØµÙŠØ¯ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©' : 'Pick a POS profile and set opening cash'}
             </p>
           </div>
         </div>
@@ -415,14 +664,14 @@ function ProfilePicker({
         {/* Profile list */}
         <div>
           <label className="block text-xs font-bold text-slate-500 mb-2">
-            {isAr ? 'ملف نقطة البيع' : 'POS Profile'}
+            {isAr ? 'Ù…Ù„Ù Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹' : 'POS Profile'}
           </label>
           {profiles.length === 0 ? (
             <div className="py-6 px-4 text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
               <p className="text-sm text-slate-400">
                 {loading
-                  ? (isAr ? 'جارٍ التحميل…' : 'Loading…')
-                  : (isAr ? 'لا توجد ملفات نقطة بيع مفعّلة لهذا المستخدم' : 'No POS Profiles enabled for this user')}
+                  ? (isAr ? 'Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦' : 'Loadingâ€¦')
+                  : (isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù„ÙØ§Øª Ù†Ù‚Ø·Ø© Ø¨ÙŠØ¹ Ù…ÙØ¹Ù‘Ù„Ø© Ù„Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…' : 'No POS Profiles enabled for this user')}
               </p>
               {!loading && (
                 <button
@@ -432,13 +681,13 @@ function ProfilePicker({
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[color:var(--color-brand-600)] text-white text-sm font-bold hover:bg-[color:var(--color-brand-500)] transition disabled:opacity-50"
                 >
                   {bootstrapping ? <RefreshCw size={14} className="animate-spin" /> : <Plus size={14} />}
-                  {isAr ? 'إنشاء ملف افتراضي' : 'Create default profile'}
+                  {isAr ? 'Ø¥Ù†Ø´Ø§Ø¡ Ù…Ù„Ù Ø§ÙØªØ±Ø§Ø¶ÙŠ' : 'Create default profile'}
                 </button>
               )}
               {!loading && (
                 <p className="text-[10px] text-slate-400">
                   {isAr
-                    ? 'سيتم اختيار الشركة والمخزن وعملة افتراضية تلقائياً'
+                    ? 'Ø³ÙŠØªÙ… Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ø±ÙƒØ© ÙˆØ§Ù„Ù…Ø®Ø²Ù† ÙˆØ¹Ù…Ù„Ø© Ø§ÙØªØ±Ø§Ø¶ÙŠØ© ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹'
                     : 'Auto-picks your company, first warehouse, default currency, and Cash payment mode'}
                 </p>
               )}
@@ -458,7 +707,7 @@ function ProfilePicker({
                 >
                   <p className="text-sm font-bold text-slate-700 dark:text-white">{p.name}</p>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    {p.warehouse} · {p.currency}
+                    {p.warehouse} Â· {p.currency}
                   </p>
                 </button>
               ))}
@@ -469,7 +718,7 @@ function ProfilePicker({
         {/* Opening amount */}
         <div>
           <label className="block text-xs font-bold text-slate-500 mb-2">
-            {isAr ? 'رصيد الكاش الافتتاحي' : 'Opening cash balance'}
+            {isAr ? 'Ø±ØµÙŠØ¯ Ø§Ù„ÙƒØ§Ø´ Ø§Ù„Ø§ÙØªØªØ§Ø­ÙŠ' : 'Opening cash balance'}
           </label>
           <input
             type="number"
@@ -489,14 +738,14 @@ function ProfilePicker({
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? <RefreshCw size={16} className="animate-spin" /> : <LogIn size={16} />}
-          {isAr ? 'فتح الوردية' : 'Open shift'}
+          {isAr ? 'ÙØªØ­ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Open shift'}
         </button>
       </div>
     </div>
   );
 }
 
-// ─── Sub-component: Shift banner (top of cashier when shift is open) ───────
+// â”€â”€â”€ Sub-component: Shift banner (top of cashier when shift is open) â”€â”€â”€â”€â”€â”€â”€
 function ShiftBanner({
   isAr,
   opening,
@@ -520,16 +769,16 @@ function ShiftBanner({
           <p className="text-xs font-bold text-slate-700 dark:text-white truncate">
             {opening.pos_profile}
             <span className="ms-2 font-normal text-slate-400">
-              · {profile?.warehouse ?? '—'} · {profile?.currency ?? '—'}
+              Â· {profile?.warehouse ?? 'â€”'} Â· {profile?.currency ?? 'â€”'}
             </span>
           </p>
           <p className="text-[10px] text-slate-400">
-            {isAr ? 'الوردية' : 'Shift'} {opening.name}
+            {isAr ? 'Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Shift'} {opening.name}
             {opening.summary && (
               <>
-                {' · '}
-                {opening.summary.invoice_count} {isAr ? 'فاتورة' : 'invoices'}
-                {' · '}
+                {' Â· '}
+                {opening.summary.invoice_count} {isAr ? 'ÙØ§ØªÙˆØ±Ø©' : 'invoices'}
+                {' Â· '}
                 {formatCurrency(opening.summary.total_sales)} {profile?.currency ?? ''}
               </>
             )}
@@ -543,13 +792,13 @@ function ShiftBanner({
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 border border-rose-200/50 text-rose-700 dark:text-rose-300 text-xs font-bold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition disabled:opacity-50"
       >
         {closing ? <RefreshCw size={12} className="animate-spin" /> : <LogOut size={12} />}
-        {isAr ? 'إغلاق الوردية' : 'Close shift'}
+        {isAr ? 'Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Close shift'}
       </button>
     </div>
   );
 }
 
-// ─── Sub-component: Barcode input (auto-focus, Enter to submit) ────────────
+// â”€â”€â”€ Sub-component: Barcode input (auto-focus, Enter to submit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BarcodeInput({
   isAr,
   onScan,
@@ -572,7 +821,7 @@ function BarcodeInput({
     if (!v) return;
     onScan(v);
     setCode('');
-    // Wedge scanners fire fast — refocus so the next scan lands here.
+    // Wedge scanners fire fast â€” refocus so the next scan lands here.
     setTimeout(() => ref.current?.focus(), 0);
   }
 
@@ -593,19 +842,19 @@ function BarcodeInput({
             submit();
           }
         }}
-        placeholder={isAr ? 'امسح الباركود أو اكتب الكود…' : 'Scan barcode or type code…'}
+        placeholder={isAr ? 'Ø§Ù…Ø³Ø­ Ø§Ù„Ø¨Ø§Ø±ÙƒÙˆØ¯ Ø£Ùˆ Ø§ÙƒØªØ¨ Ø§Ù„ÙƒÙˆØ¯â€¦' : 'Scan barcode or type codeâ€¦'}
         className="w-full ps-9 pe-3 py-2.5 text-sm rounded-xl border border-[color:var(--color-brand-300)] dark:border-[color:var(--color-brand-700)] bg-[color:var(--color-brand-50)]/40 dark:bg-slate-900 focus:ring-2 focus:ring-[color:var(--color-brand-500)] disabled:opacity-50"
       />
     </div>
   );
 }
 
-// ─── Main component ─────────────────────────────────────────────────────────
-export default function POSPage() {
+// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restaurant' }) {
   const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
 
-  // ── State ────────────────────────────────────────────────────────────────
+  // â”€â”€ Core state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [search, setSearch] = useState('');
   const [groupFilter, setGroupFilter] = useState('');
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -613,13 +862,25 @@ export default function POSPage() {
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerDrop, setShowCustomerDrop] = useState(false);
   const [globalDiscount, setGlobalDiscount] = useState(0);
+
+  // â”€â”€ Order type + table (restaurant) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [orderType, setOrderType] = useState<OrderType>('walkin');
+  const [selectedTable, setSelectedTable] = useState('');
+  const [selectedTableNumber, setSelectedTableNumber] = useState('');
+  const [showTablePicker, setShowTablePicker] = useState(false);
+
+  // â”€â”€ Hold / resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [heldOrders, setHeldOrders] = useState<HeldOrder[]>([]);
+  const [showHeld, setShowHeld] = useState(false);
+
+  // â”€â”€ Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [showPayment, setShowPayment] = useState(false);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const customerRef = useRef<HTMLDivElement>(null);
 
-  // ── Shift / profile state (loaded before catalog) ────────────────────────
+  // â”€â”€ Shift / profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: profilesResp, isLoading: loadingProfiles, mutate: refetchProfiles } = useFrappeGetCall<{
     message: POSProfile[];
   }>('madaar_core.api.list_pos_profiles', undefined, 'pos-profiles');
@@ -639,10 +900,15 @@ export default function POSPage() {
   const currency = activeProfile?.currency ?? 'EGP';
   const sellingPriceList = activeProfile?.selling_price_list;
 
-  // ── Data fetching (catalog, prices, groups, customers, payment modes) ────
-  // Skip fetching anything heavy until we have an open shift — keeps the
-  // "open shift" screen snappy and avoids 200-row Item lists for cashiers who
-  // are just glancing at the URL.
+  // Load held orders for this mode + profile whenever a shift opens
+  useEffect(() => {
+    if (opening) {
+      setHeldOrders(loadHeldOrders(mode, opening.pos_profile));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opening?.name, mode]);
+
+  // â”€â”€ Data fetching (catalog, prices, groups, customers, payment modes) â”€â”€â”€â”€
   const { data: itemsResp } = useFrappeGetDocList<{
     name: string;
     item_code: string;
@@ -657,8 +923,6 @@ export default function POSPage() {
     orderBy: { field: 'item_name', order: 'asc' },
   }, opening ? undefined : null);
 
-  // When the POS Profile has a selling_price_list, restrict prices to it.
-  // Otherwise fall back to any selling price (first match wins).
   const priceFilters = useMemo<Array<[string, string, unknown]>>(
     () =>
       sellingPriceList
@@ -689,6 +953,18 @@ export default function POSPage() {
     orderBy: { field: 'customer_name', order: 'asc' },
   }, opening ? undefined : null);
 
+  // Restaurant tables (only fetched in restaurant mode when a shift is open)
+  const { data: tablesResp, mutate: refetchTables } = useFrappeGetDocList<RestaurantTable>(
+    'Madaar Table',
+    {
+      fields: ['name', 'table_number', 'hall', 'capacity', 'status'],
+      limit: 200,
+      orderBy: { field: 'table_number', order: 'asc' },
+    },
+    mode === 'restaurant' && opening ? undefined : null,
+  );
+  const tables: RestaurantTable[] = tablesResp ?? [];
+
   // Modes scoped to the active profile when one is open (else all enabled modes).
   const { data: modesResp } = useFrappeGetCall<{ message: PaymentMode[] }>(
     'madaar_core.api.get_pos_payment_modes',
@@ -705,7 +981,7 @@ export default function POSPage() {
     }
   }, [activeProfile, customer]);
 
-  // ── Derived data ──────────────────────────────────────────────────────────
+  // â”€â”€ Derived data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const priceMap = useMemo(() => {
     const map: Record<string, number> = {};
     (pricesResp ?? []).forEach((p) => {
@@ -746,7 +1022,6 @@ export default function POSPage() {
     ).slice(0, 8);
   }, [customersResp, customerSearch]);
 
-  // Default payment modes if API isn't wired yet (e.g., fresh tenant).
   const paymentModes: PaymentMode[] = modesResp?.message?.length
     ? modesResp.message
     : [
@@ -755,13 +1030,13 @@ export default function POSPage() {
         { mode: 'Credit', type: 'General', default: 0 },
       ];
 
-  // ── Cart computations ─────────────────────────────────────────────────────
+  // â”€â”€ Cart computations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const subtotal = cart.reduce((s, l) => s + cartLineTotal(l), 0);
   const discountAmt = subtotal * (globalDiscount / 100);
   const total = Math.max(0, subtotal - discountAmt);
   const totalQty = cart.reduce((s, l) => s + l.qty, 0);
 
-  // ── Cart actions ──────────────────────────────────────────────────────────
+  // â”€â”€ Cart actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const addItem = useCallback((item: POSItem) => {
     setCart((prev) => {
       const idx = prev.findIndex((l) => l.item.item_code === item.item_code);
@@ -792,9 +1067,108 @@ export default function POSPage() {
     setCustomerSearch('');
     setGlobalDiscount(0);
     setPayments([]);
+    setOrderType('walkin');
+    setSelectedTable('');
+    setSelectedTableNumber('');
   }
 
-  // ── Submit invoice ────────────────────────────────────────────────────────
+  // â”€â”€ Table status helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const { call: setTableStatus } = useFrappePostCall<any>('frappe.client.set_value');
+
+  async function markTable(tableName: string, status: 'Occupied' | 'Available') {
+    try {
+      await setTableStatus({ doctype: 'Madaar Table', name: tableName, fieldname: 'status', value: status });
+      void refetchTables();
+    } catch { /* non-critical */ }
+  }
+
+  async function handleSelectTable(t: RestaurantTable) {
+    if (selectedTable && selectedTable !== t.name) await markTable(selectedTable, 'Available');
+    await markTable(t.name, 'Occupied');
+    setSelectedTable(t.name);
+    setSelectedTableNumber(t.table_number);
+    setShowTablePicker(false);
+  }
+
+  async function handleClearTable() {
+    if (!selectedTable) return;
+    await markTable(selectedTable, 'Available');
+    setSelectedTable('');
+    setSelectedTableNumber('');
+  }
+
+  // â”€â”€ Hold / resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  function holdOrder() {
+    if (cart.length === 0 || !opening) return;
+    const held: HeldOrder = {
+      id: genId(),
+      posProfile: opening.pos_profile,
+      posMode: mode,
+      timestamp: Date.now(),
+      orderType,
+      table: selectedTable || undefined,
+      tableNumber: selectedTableNumber || undefined,
+      customer,
+      customerSearch,
+      cart,
+      globalDiscount,
+    };
+    const updated = [...heldOrders, held];
+    setHeldOrders(updated);
+    saveHeldOrders(mode, opening.pos_profile, updated);
+    // Clear cart but keep table Occupied (it belongs to the held order)
+    setCart([]);
+    setCustomer('');
+    setCustomerSearch('');
+    setGlobalDiscount(0);
+    setPayments([]);
+    setOrderType('walkin');
+    setSelectedTable('');
+    setSelectedTableNumber('');
+    setSuccessMsg(isAr ? 'â¸ ØªÙ… ØªØ¹Ù„ÙŠÙ‚ Ø§Ù„Ø·Ù„Ø¨' : 'â¸ Order held');
+    setTimeout(() => setSuccessMsg(null), 3000);
+  }
+
+  function resumeOrder(order: HeldOrder) {
+    let updatedHeld = heldOrders.filter((h) => h.id !== order.id);
+    // Stash the current cart as a new hold if it has items
+    if (cart.length > 0 && opening) {
+      const currentHold: HeldOrder = {
+        id: genId(),
+        posProfile: opening.pos_profile,
+        posMode: mode,
+        timestamp: Date.now(),
+        orderType,
+        table: selectedTable || undefined,
+        tableNumber: selectedTableNumber || undefined,
+        customer,
+        customerSearch,
+        cart,
+        globalDiscount,
+      };
+      updatedHeld = [...updatedHeld, currentHold];
+    }
+    setHeldOrders(updatedHeld);
+    if (opening) saveHeldOrders(mode, opening.pos_profile, updatedHeld);
+    setCart(order.cart);
+    setCustomer(order.customer);
+    setCustomerSearch(order.customerSearch);
+    setGlobalDiscount(order.globalDiscount);
+    setOrderType(order.orderType);
+    setSelectedTable(order.table ?? '');
+    setSelectedTableNumber(order.tableNumber ?? '');
+    setShowHeld(false);
+  }
+
+  async function deleteHeldOrder(id: string) {
+    const order = heldOrders.find((h) => h.id === id);
+    if (order?.table && mode === 'restaurant') await markTable(order.table, 'Available');
+    const updated = heldOrders.filter((h) => h.id !== id);
+    setHeldOrders(updated);
+    if (opening) saveHeldOrders(mode, opening.pos_profile, updated);
+  }
+
+  // â”€â”€ Submit invoice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { createDoc, loading: saving } = useFrappeCreateDoc();
 
   async function confirmPayment() {
@@ -802,7 +1176,13 @@ export default function POSPage() {
     try {
       const now = new Date().toISOString().slice(0, 10);
       const warehouse = activeProfile?.warehouse;
-      const invoicePayload: Record<string, unknown> = {
+      const orderTypeLabels: Record<OrderType, string> = { walkin: 'Walk-in', delivery: 'Delivery', dinein: 'Dine-in' };
+      const remarks = [
+        `Order Type: ${orderTypeLabels[orderType]}`,
+        selectedTableNumber ? `Table: ${selectedTableNumber}` : '',
+      ].filter(Boolean).join(' | ');
+
+      await createDoc('POS Invoice', {
         doctype: 'POS Invoice',
         posting_date: now,
         customer: customer || activeProfile?.customer || 'Walk-in Customer',
@@ -814,6 +1194,7 @@ export default function POSPage() {
         currency: activeProfile?.currency,
         selling_price_list: sellingPriceList,
         cost_center: activeProfile?.cost_center,
+        remarks,
         items: cart.map((l) => ({
           item_code: l.item.item_code,
           item_name: l.item.item_name,
@@ -828,12 +1209,14 @@ export default function POSPage() {
           .filter((p) => p.amount > 0)
           .map((p) => ({ mode_of_payment: p.mode, amount: p.amount })),
         additional_discount_percentage: globalDiscount,
-      };
-      await createDoc('POS Invoice', invoicePayload);
-      setSuccessMsg(isAr ? '✓ تم إنشاء الفاتورة بنجاح!' : '✓ Invoice created successfully!');
+      });
+
+      // Free the table after a successful payment
+      if (selectedTable && mode === 'restaurant') await markTable(selectedTable, 'Available');
+
+      setSuccessMsg(isAr ? 'âœ“ ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ÙØ§ØªÙˆØ±Ø© Ø¨Ù†Ø¬Ø§Ø­!' : 'âœ“ Invoice created successfully!');
       setShowPayment(false);
       clearCart();
-      // Refresh shift summary (invoice count / total) in the banner.
       void refetchOpening();
       setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err: any) {
@@ -842,7 +1225,7 @@ export default function POSPage() {
     }
   }
 
-  // ── Bootstrap default profile (one-click for empty tenants) ──────────────
+  // â”€â”€ Bootstrap default profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { call: bootstrapProfile, loading: bootstrappingProfile } = useFrappePostCall<{
     message: { name: string; created: boolean };
   }>('madaar_core.api.create_default_pos_profile');
@@ -853,8 +1236,8 @@ export default function POSPage() {
       const res = await bootstrapProfile({});
       setSuccessMsg(
         isAr
-          ? `✓ تم إنشاء الملف ${res?.message?.name}`
-          : `✓ Created profile ${res?.message?.name}`,
+          ? `âœ“ ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ù„Ù ${res?.message?.name}`
+          : `âœ“ Created profile ${res?.message?.name}`,
       );
       setTimeout(() => setSuccessMsg(null), 4000);
       await refetchProfiles();
@@ -863,7 +1246,7 @@ export default function POSPage() {
     }
   }
 
-  // ── Shift open / close ────────────────────────────────────────────────────
+  // â”€â”€ Shift open / close â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { call: openShift, loading: openingShift } = useFrappePostCall<{ message: { name: string } }>(
     'madaar_core.api.open_pos_shift',
   );
@@ -883,7 +1266,7 @@ export default function POSPage() {
 
   async function handleCloseShift() {
     if (!opening) return;
-    if (!window.confirm(isAr ? 'هل تريد إغلاق الوردية؟' : 'Close the current shift?')) return;
+    if (!window.confirm(isAr ? 'Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©ØŸ' : 'Close the current shift?')) return;
     setErrorMsg(null);
     try {
       await closeShift({ pos_opening_entry: opening.name });
@@ -894,15 +1277,13 @@ export default function POSPage() {
     }
   }
 
-  // ── Barcode lookup ────────────────────────────────────────────────────────
+  // â”€â”€ Barcode lookup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { call: lookupBarcode } = useFrappePostCall<{ message: POSItem | null }>(
     'madaar_core.api.lookup_item_by_barcode',
   );
 
   async function handleBarcode(code: string) {
     setErrorMsg(null);
-    // Local-first: if it matches an item already in the visible catalogue, skip
-    // the round trip. Wedge scanners can fire several scans per second.
     const local = items.find(
       (it) => it.item_code.toLowerCase() === code.toLowerCase(),
     );
@@ -919,7 +1300,7 @@ export default function POSPage() {
       if (found) {
         addItem(found);
       } else {
-        setErrorMsg(isAr ? `لا يوجد منتج بالكود ${code}` : `No item matches barcode ${code}`);
+        setErrorMsg(isAr ? `Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ù…Ù†ØªØ¬ Ø¨Ø§Ù„ÙƒÙˆØ¯ ${code}` : `No item matches barcode ${code}`);
         setTimeout(() => setErrorMsg(null), 3000);
       }
     } catch (err: any) {
@@ -927,12 +1308,17 @@ export default function POSPage() {
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // â”€â”€ Page labels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const pageTitle = mode === 'restaurant'
+    ? (isAr ? 'Ù†Ù‚Ø·Ø© Ø¨ÙŠØ¹ Ø§Ù„Ù…Ø·Ø¹Ù…' : 'Restaurant POS')
+    : (isAr ? 'Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹ (POS)' : 'Point of Sale');
+  const pageSub = mode === 'restaurant'
+    ? (isAr ? 'ÙƒØ§Ø´ÙŠØ± Ø§Ù„Ù…Ø·Ø¹Ù… â€” Ø·Ø§ÙˆÙ„Ø§Øª ÙˆØµØ§Ù„Ø§Øª' : 'Restaurant cashier â€” halls & tables')
+    : (isAr ? 'ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„ÙƒØ§Ø´ÙŠØ± â€” Ø§Ù„Ø¨ÙŠØ¹ Ø§Ù„Ø³Ø±ÙŠØ¹' : 'Cashier interface â€” quick sale');
+
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
-    <PageShell
-      title={isAr ? 'نقطة البيع (POS)' : 'Point of Sale'}
-      subtitle={isAr ? 'واجهة الكاشير — البيع السريع' : 'Cashier interface — quick sale'}
-    >
+    <PageShell title={pageTitle} subtitle={pageSub}>
       {successMsg && (
         <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 text-sm text-emerald-700 dark:text-emerald-300 font-medium">
           {successMsg}
@@ -944,7 +1330,7 @@ export default function POSPage() {
         </div>
       )}
 
-      {/* No shift → show profile picker only. Hides the catalog/cart entirely. */}
+      {/* No shift â†’ show profile picker only */}
       {!opening && (
         <ProfilePicker
           isAr={isAr}
@@ -968,7 +1354,7 @@ export default function POSPage() {
 
       <div className="flex gap-4 h-[calc(100vh-13rem)] min-h-[500px]">
 
-        {/* ══ LEFT PANEL — Product catalog ══════════════════════════════════ */}
+        {/* â•â• LEFT PANEL â€” Product catalog â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="flex-1 flex flex-col gap-3 min-w-0">
           {/* Barcode + search + group filter */}
           <div className="flex gap-2 flex-wrap">
@@ -979,7 +1365,7 @@ export default function POSPage() {
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isAr ? 'بحث بالاسم أو الكود…' : 'Search by name or code…'}
+                placeholder={isAr ? 'Ø¨Ø­Ø« Ø¨Ø§Ù„Ø§Ø³Ù… Ø£Ùˆ Ø§Ù„ÙƒÙˆØ¯â€¦' : 'Search by name or codeâ€¦'}
                 className="w-full ps-9 pe-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[color:var(--color-brand-500)]"
               />
             </div>
@@ -988,7 +1374,7 @@ export default function POSPage() {
               onChange={(e) => setGroupFilter(e.target.value)}
               className="px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-w-[180px]"
             >
-              <option value="">{isAr ? 'كل الفئات' : 'All categories'}</option>
+              <option value="">{isAr ? 'ÙƒÙ„ Ø§Ù„ÙØ¦Ø§Øª' : 'All categories'}</option>
               {groups.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}
@@ -1000,7 +1386,7 @@ export default function POSPage() {
             {filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                 <ShoppingCart size={40} className="opacity-30" />
-                <p className="text-sm">{isAr ? 'لا توجد منتجات' : 'No products found'}</p>
+                <p className="text-sm">{isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù†ØªØ¬Ø§Øª' : 'No products found'}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pb-4">
@@ -1012,8 +1398,52 @@ export default function POSPage() {
           </div>
         </div>
 
-        {/* ══ RIGHT PANEL — Cart ════════════════════════════════════════════ */}
+        {/* â•â• RIGHT PANEL â€” Cart â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="w-[340px] shrink-0 flex flex-col gap-3">
+
+          {/* Order type + table selector */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-white/5 p-3 space-y-2">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+              {isAr ? 'Ù†ÙˆØ¹ Ø§Ù„Ø·Ù„Ø¨' : 'Order type'}
+            </p>
+            <OrderTypePicker
+              posMode={mode}
+              value={orderType}
+              onChange={(t) => {
+                setOrderType(t);
+                if (t !== 'dinein' && selectedTable) void handleClearTable();
+              }}
+              isAr={isAr}
+            />
+            {/* Table picker â€” restaurant + dine-in only */}
+            {mode === 'restaurant' && orderType === 'dinein' && (
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowTablePicker(true)}
+                  className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-semibold transition ${
+                    selectedTable
+                      ? 'border-[color:var(--color-brand-500)] bg-[color:var(--color-brand-50)] dark:bg-[color:var(--color-brand-900)]/30 text-[color:var(--color-brand-700)] dark:text-[color:var(--color-brand-300)]'
+                      : 'border-dashed border-amber-400 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20'
+                  }`}
+                >
+                  <LayoutGrid size={15} />
+                  {selectedTable
+                    ? (isAr ? `Ø·Ø§ÙˆÙ„Ø© ${selectedTableNumber}` : `Table ${selectedTableNumber}`)
+                    : (isAr ? 'Ø§Ø®ØªØ± Ø·Ø§ÙˆÙ„Ø©â€¦' : 'Select tableâ€¦')}
+                </button>
+                {selectedTable && (
+                  <button
+                    type="button"
+                    onClick={handleClearTable}
+                    className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-500/20 transition"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Customer picker */}
           <div ref={customerRef} className="relative">
@@ -1028,7 +1458,7 @@ export default function POSPage() {
                   setShowCustomerDrop(true);
                 }}
                 onFocus={() => setShowCustomerDrop(true)}
-                placeholder={isAr ? 'اختر عميل أو نزيل…' : 'Select customer or walk-in…'}
+                placeholder={isAr ? 'Ø§Ø®ØªØ± Ø¹Ù…ÙŠÙ„ Ø£Ùˆ Ù†Ø²ÙŠÙ„â€¦' : 'Select customer or walk-inâ€¦'}
                 className="flex-1 text-sm bg-transparent outline-none text-slate-700 dark:text-white placeholder:text-slate-400"
               />
               <ChevronDown size={14} className="text-slate-400" />
@@ -1057,7 +1487,7 @@ export default function POSPage() {
           <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-white/5 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5">
               <p className="text-sm font-bold text-slate-700 dark:text-white">
-                {isAr ? 'السلة' : 'Cart'}
+                {isAr ? 'Ø§Ù„Ø³Ù„Ø©' : 'Cart'}
                 {totalQty > 0 && (
                   <span className="ms-2 text-[10px] px-1.5 py-0.5 rounded-full bg-[color:var(--color-brand-100)] dark:bg-[color:var(--color-brand-900)] text-[color:var(--color-brand-700)] dark:text-[color:var(--color-brand-300)] font-bold">
                     {totalQty}
@@ -1069,7 +1499,7 @@ export default function POSPage() {
                   type="button"
                   onClick={clearCart}
                   className="text-rose-400 hover:text-rose-600 transition"
-                  title={isAr ? 'تفريغ السلة' : 'Clear cart'}
+                  title={isAr ? 'ØªÙØ±ÙŠØº Ø§Ù„Ø³Ù„Ø©' : 'Clear cart'}
                 >
                   <Trash2 size={15} />
                 </button>
@@ -1079,7 +1509,7 @@ export default function POSPage() {
               {cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-slate-300 dark:text-slate-600 gap-2 py-8">
                   <ShoppingCart size={36} />
-                  <p className="text-xs">{isAr ? 'السلة فارغة' : 'Cart is empty'}</p>
+                  <p className="text-xs">{isAr ? 'Ø§Ù„Ø³Ù„Ø© ÙØ§Ø±ØºØ©' : 'Cart is empty'}</p>
                 </div>
               ) : (
                 cart.map((line, idx) => (
@@ -1099,14 +1529,14 @@ export default function POSPage() {
             {cart.length > 0 && (
               <div className="px-4 py-3 border-t border-slate-100 dark:border-white/5 space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>{isAr ? 'المجموع قبل الخصم' : 'Subtotal'}</span>
+                  <span>{isAr ? 'Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ù‚Ø¨Ù„ Ø§Ù„Ø®ØµÙ…' : 'Subtotal'}</span>
                   <span className="font-bold">{formatCurrency(subtotal)} {currency}</span>
                 </div>
                 {/* Global discount */}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs text-slate-500 flex items-center gap-1">
                     <Percent size={11} />
-                    {isAr ? 'خصم عام%' : 'Overall disc%'}
+                    {isAr ? 'Ø®ØµÙ… Ø¹Ø§Ù…%' : 'Overall disc%'}
                   </span>
                   <input
                     type="number"
@@ -1120,12 +1550,12 @@ export default function POSPage() {
                 </div>
                 {globalDiscount > 0 && (
                   <div className="flex items-center justify-between text-xs text-rose-500">
-                    <span>{isAr ? 'الخصم' : 'Discount'}</span>
+                    <span>{isAr ? 'Ø§Ù„Ø®ØµÙ…' : 'Discount'}</span>
                     <span>-{formatCurrency(discountAmt)} {currency}</span>
                   </div>
                 )}
                 <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-white/5">
-                  <span className="text-sm font-black text-slate-700 dark:text-white">{isAr ? 'الإجمالي' : 'Total'}</span>
+                  <span className="text-sm font-black text-slate-700 dark:text-white">{isAr ? 'Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ' : 'Total'}</span>
                   <span className="text-lg font-black text-[color:var(--color-brand-600)]">
                     {formatCurrency(total)} {currency}
                   </span>
@@ -1135,18 +1565,49 @@ export default function POSPage() {
           </div>
 
           {/* Action buttons */}
-          <button
-            type="button"
-            disabled={cart.length === 0}
-            onClick={() => {
-              setPayments([]);
-              setShowPayment(true);
-            }}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-600 text-white font-black text-sm hover:bg-emerald-500 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20"
-          >
-            <Banknote size={18} />
-            {isAr ? 'المتابعة للدفع' : 'Proceed to payment'}
-          </button>
+          <div className="flex gap-2">
+            {/* Hold */}
+            <button
+              type="button"
+              disabled={cart.length === 0}
+              onClick={holdOrder}
+              title={isAr ? 'ØªØ¹Ù„ÙŠÙ‚ Ø§Ù„Ø·Ù„Ø¨' : 'Hold order'}
+              className="flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl bg-amber-500 text-white font-bold text-xs hover:bg-amber-400 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Pause size={15} />
+              {isAr ? 'ØªØ¹Ù„ÙŠÙ‚' : 'Hold'}
+            </button>
+
+            {/* View held orders */}
+            <button
+              type="button"
+              onClick={() => setShowHeld(true)}
+              className="relative flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+              title={isAr ? 'Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù‚Ø©' : 'Held orders'}
+            >
+              <Play size={15} />
+              {isAr ? 'Ø§Ù„Ù…Ø¹Ù„Ù‚Ø©' : 'Held'}
+              {heldOrders.length > 0 && (
+                <span className="absolute -top-1.5 -end-1.5 min-w-[18px] h-[18px] text-[10px] font-black bg-amber-500 text-white rounded-full flex items-center justify-center px-1">
+                  {heldOrders.length}
+                </span>
+              )}
+            </button>
+
+            {/* Pay */}
+            <button
+              type="button"
+              disabled={cart.length === 0}
+              onClick={() => {
+                setPayments([]);
+                setShowPayment(true);
+              }}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-600 text-white font-black text-sm hover:bg-emerald-500 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20"
+            >
+              <Banknote size={18} />
+              {isAr ? 'Ø§Ù„Ø¯ÙØ¹' : 'Pay'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1164,8 +1625,32 @@ export default function POSPage() {
           saving={saving}
         />
       )}
+
+      {/* Table picker modal (restaurant + dine-in) */}
+      {showTablePicker && mode === 'restaurant' && (
+        <TablePickerModal
+          tables={tables}
+          selectedTable={selectedTable}
+          onSelect={handleSelectTable}
+          onClose={() => setShowTablePicker(false)}
+          isAr={isAr}
+        />
+      )}
+
+      {/* Held orders modal */}
+      {showHeld && (
+        <HeldOrdersModal
+          orders={heldOrders}
+          onResume={resumeOrder}
+          onDelete={deleteHeldOrder}
+          onClose={() => setShowHeld(false)}
+          isAr={isAr}
+          currency={currency}
+        />
+      )}
       </>
       )}
     </PageShell>
   );
 }
+

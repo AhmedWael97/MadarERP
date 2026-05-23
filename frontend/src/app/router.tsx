@@ -195,16 +195,16 @@ export const router = createBrowserRouter([
         path: 'retail/pos',
         element: (
           <Suspense fallback={Loading}>
-            <POSPage />
+            <POSPage mode="retail" />
           </Suspense>
         ),
       },
-      // --- Restaurant POS — same cashier UI, scoped to restaurant navigation ---
+      // --- Restaurant POS — dine-in + walk-in + delivery + table picker ---
       {
         path: 'restaurant/cashier',
         element: (
           <Suspense fallback={Loading}>
-            <POSPage />
+            <POSPage mode="restaurant" />
           </Suspense>
         ),
       },
