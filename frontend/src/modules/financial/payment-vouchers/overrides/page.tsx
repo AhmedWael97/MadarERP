@@ -5,6 +5,7 @@ import { useFrappeGetDocList } from 'frappe-react-sdk';
 import { ArrowUpFromLine, Calendar, CreditCard, Eye, FileDown, FileText, Filter, Plus, RefreshCcw, Search, TrendingDown, Users, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
+import SearchableSelect from '@/components/erp/SearchableSelect';
 
 interface PERow {
   name: string;
@@ -112,6 +113,17 @@ function Body() {
     : partyTypeFilter === 'Customer' ? (customers ?? []).map((c) => ({ v: c.name, l: c.customer_name ?? c.name }))
     : partyTypeFilter === 'Employee' ? (employees ?? []).map((e) => ({ v: e.name, l: e.employee_name ?? e.name }))
     : [];
+  const mopOptions = (mopList ?? []).map((m) => ({ value: m.name, label: m.name }));
+  const statusOptions = [
+    { value: '0', label: 'مسودة' },
+    { value: '1', label: 'مرحّل' },
+    { value: '2', label: 'ملغى' },
+  ];
+  const partyTypeOptions = [
+    { value: 'Supplier', label: 'موردين' },
+    { value: 'Customer', label: 'عملاء' },
+    { value: 'Employee', label: 'موظفين' },
+  ];
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -194,46 +206,53 @@ function Body() {
             </div>
             <div>
               <Label icon={<CreditCard size={13} />}>طريقة الدفع</Label>
-              <select value={mop} onChange={(e) => setMop(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition">
-                <option value="">كل الطرق</option>
-                {(mopList ?? []).map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
-              </select>
+              <SearchableSelect
+                value={mop}
+                onChange={setMop}
+                options={mopOptions}
+                listId="pay-list-mop"
+                placeholder="كل الطرق"
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition"
+              />
             </div>
             <div>
               <Label>الحالة</Label>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition">
-                <option value="">الكل</option>
-                <option value="0">مسودة</option>
-                <option value="1">مرحّل</option>
-                <option value="2">ملغى</option>
-              </select>
+              <SearchableSelect
+                value={statusFilter}
+                onChange={setStatusFilter}
+                options={statusOptions}
+                listId="pay-list-status"
+                placeholder="الكل"
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition"
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
               <Label icon={<Users size={13} />}>نوع الجهة</Label>
-              <select value={partyTypeFilter}
-                onChange={(e) => { setPartyTypeFilter(e.target.value); setPartyFilter(''); }}
-                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition">
-                <option value="">كل الجهات</option>
-                <option value="Supplier">موردين</option>
-                <option value="Customer">عملاء</option>
-                <option value="Employee">موظفين</option>
-              </select>
+              <SearchableSelect
+                value={partyTypeFilter}
+                onChange={(v) => { setPartyTypeFilter(v); setPartyFilter(''); }}
+                options={partyTypeOptions}
+                listId="pay-list-party-type"
+                placeholder="كل الجهات"
+                className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition"
+              />
             </div>
             {partyTypeFilter && (
               <div className="md:col-span-3">
                 <Label icon={<Users size={13} />}>
                   {partyTypeFilter === 'Supplier' ? 'المورد' : partyTypeFilter === 'Customer' ? 'العميل' : 'الموظف'}
                 </Label>
-                <select value={partyFilter} onChange={(e) => setPartyFilter(e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition">
-                  <option value="">— الكل —</option>
-                  {partyOpts.map((p) => <option key={p.v} value={p.v}>{p.l}</option>)}
-                </select>
+                <SearchableSelect
+                  value={partyFilter}
+                  onChange={setPartyFilter}
+                  options={partyOpts.map((p) => ({ value: p.v, label: p.l }))}
+                  listId="pay-list-party"
+                  placeholder="— الكل —"
+                  className="w-full px-3 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-400 transition"
+                />
               </div>
             )}
           </div>

@@ -81,7 +81,7 @@ export function TreeView({ doctype, columns: passedColumns, pageSize = 500 }: Pr
   const parentField = useMemo(() => findParentField(metaFields, doctype), [metaFields, doctype]);
   const labelField = useMemo(() => findLabelField(metaFields, doctype), [metaFields, doctype]);
 
-  // Resolve scanned column headers (الكود / النوع / الطبيعة / الرصيد …) to real field names.
+  // Resolve scanned column headers (الكود / النوع / التصنيف / الرصيد …) to real field names.
   const columns = useMemo<ColumnDef[]>(() => {
     let cols: ColumnDef[];
     if (passedColumns && passedColumns.length > 0) {

@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { ArrowRight, Check, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
+import SearchableSelect from '@/components/erp/SearchableSelect';
 
 type RootType = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense';
 const ROOT_TYPES: Array<{ v: RootType; label: string }> = [
@@ -171,16 +172,25 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
             />
           </Field>
           <Field label="الحساب الأب">
-            <select value={values.parent_account ?? ''} onChange={(e) => set('parent_account', e.target.value)} className={INPUT}>
-              <option value="">— حساب رئيسي (بدون أب) —</option>
-              {parentOptions.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
-            </select>
+            <SearchableSelect
+              value={values.parent_account ?? ''}
+              onChange={(v) => set('parent_account', v)}
+              options={parentOptions}
+              listId="account-parent"
+              placeholder="— حساب رئيسي (بدون أب) —"
+              className={INPUT}
+            />
           </Field>
           <Field label="الشركة" required>
-            <select required value={values.company ?? ''} onChange={(e) => set('company', e.target.value)} className={INPUT}>
-              <option value="">اختر الشركة</option>
-              {(companies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
-            </select>
+            <SearchableSelect
+              required
+              value={values.company ?? ''}
+              onChange={(v) => set('company', v)}
+              options={(companies ?? []).map((c) => ({ value: c.name, label: c.name }))}
+              listId="account-company"
+              placeholder="اختر الشركة"
+              className={INPUT}
+            />
           </Field>
           <Field label="الاسم بالعربية" required>
             <input type="text" required placeholder="مثال: النقدية" value={values.account_name ?? ''} onChange={(e) => set('account_name', e.target.value)} className={INPUT} />
@@ -189,22 +199,39 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
             <input type="text" dir="ltr" placeholder="e.g. Cash" value={values.madaar_name_en ?? ''} onChange={(e) => set('madaar_name_en', e.target.value)} className={INPUT} />
           </Field>
           <Field label="نوع الحساب" required>
-            <select required value={values.root_type ?? ''} onChange={(e) => set('root_type', e.target.value as RootType)} className={INPUT}>
-              <option value="">اختر النوع</option>
-              {ROOT_TYPES.map((r) => (<option key={r.v} value={r.v}>{r.label}</option>))}
-            </select>
+            <SearchableSelect
+              required
+              value={values.root_type ?? ''}
+              onChange={(v) => set('root_type', v as RootType)}
+              options={ROOT_TYPES.map((r) => ({ value: r.v, label: r.label }))}
+              listId="account-root-type"
+              placeholder="اختر النوع"
+              className={INPUT}
+            />
           </Field>
-          <Field label="طبيعة الحساب" required>
-            <select required value={values.madaar_nature ?? 'debit'} onChange={(e) => set('madaar_nature', e.target.value as 'debit' | 'credit')} className={INPUT}>
-              <option value="debit">مدين (Debit)</option>
-              <option value="credit">دائن (Credit)</option>
-            </select>
+          <Field label="تصنيف الحساب" required>
+            <SearchableSelect
+              required
+              value={values.madaar_nature ?? 'debit'}
+              onChange={(v) => set('madaar_nature', v as 'debit' | 'credit')}
+              options={[
+                { value: 'debit', label: 'مدين (Debit)' },
+                { value: 'credit', label: 'دائن (Credit)' },
+              ]}
+              listId="account-nature"
+              placeholder="اختر التصنيف"
+              className={INPUT}
+            />
           </Field>
           <Field label="العملة">
-            <select value={values.account_currency ?? ''} onChange={(e) => set('account_currency', e.target.value)} className={INPUT}>
-              <option value="">العملة الافتراضية</option>
-              {(currencies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
-            </select>
+            <SearchableSelect
+              value={values.account_currency ?? ''}
+              onChange={(v) => set('account_currency', v)}
+              options={(currencies ?? []).map((c) => ({ value: c.name, label: c.name }))}
+              listId="account-currency"
+              placeholder="العملة الافتراضية"
+              className={INPUT}
+            />
           </Field>
           <Field label="الرصيد الافتتاحي">
             <input type="number" step="0.01" dir="ltr" placeholder="0.00" value={values.madaar_opening_balance ?? ''} onChange={(e) => set('madaar_opening_balance', e.target.value === '' ? undefined : Number(e.target.value))} className={INPUT + ' font-mono'} />

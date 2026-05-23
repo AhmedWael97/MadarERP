@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { ArrowRight, Home } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
+import SearchableSelect from '@/components/erp/SearchableSelect';
 
 // ─── Field types ──────────────────────────────────────────────────────────────
 interface PEDoc {
@@ -31,6 +32,7 @@ interface PEDoc {
   bank_account?: string;
   paid_to?: string;
   reference_no?: string;
+  cost_center?: string;
   remarks?: string;
   payment_type?: string;
 }
@@ -167,6 +169,11 @@ function Body({
     'Bank Account',
     { fields: ['name', 'account'], limit: 100 },
   );
+  const { data: costCenters } = useFrappeGetDocList<{ name: string }>('Cost Center', {
+    fields: ['name'],
+    filters: [['disabled', '=', 0]],
+    limit: 200,
+  });
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
@@ -209,6 +216,13 @@ function Body({
   });
 
   const isOtherType = !doc.party_type;
+  const mopOptions = (mopList ?? []).map((m) => ({ value: m.name, label: m.name }));
+  const cashAccountOptions = cashAccounts.map((a) => ({
+    value: a.name,
+    label: a.account_number ? `${a.account_number} - ${a.account_name ?? a.name}` : (a.account_name ?? a.name),
+  }));
+  const bankAccountOptions = (bankAccounts ?? []).map((b) => ({ value: b.name, label: b.name }));
+  const costCenterOptions = (costCenters ?? []).map((c) => ({ value: c.name, label: c.name }));
 
   // Auto-fill the party-side account (`paid_to` for Pay) from the company
   // default when the user picks a party type. Doesn't override if already set.
@@ -252,6 +266,7 @@ function Body({
       paid_from: doc.paid_from || undefined,
       bank_account: doc.bank_account || undefined,
       paid_to: doc.paid_to || undefined,
+      cost_center: doc.cost_center || undefined,
       reference_no: doc.reference_no || undefined,
       remarks: doc.remarks || undefined,
     };
@@ -350,18 +365,14 @@ function Body({
               </select>
             </Field>
             <Field label={doc.party_type === 'Customer' ? 'العميل' : doc.party_type === 'Employee' ? 'الموظف' : 'المورد'}>
-              <select
+              <SearchableSelect
                 value={doc.party ?? ''}
-                onChange={(e) => set('party', e.target.value)}
+                onChange={(v) => set('party', v)}
+                options={partyOptions}
+                listId="pay-party"
+                placeholder="— اختر —"
                 className={INPUT}
-              >
-                <option value="">— اختر —</option>
-                {partyOptions.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
+              />
             </Field>
 
             {/* Row 2 */}
@@ -387,31 +398,23 @@ function Body({
               />
             </Field>
             <Field label="طريقة الدفع" required>
-              <select
+              <SearchableSelect
                 required
                 value={doc.mode_of_payment ?? ''}
-                onChange={(e) => set('mode_of_payment', e.target.value)}
+                onChange={(v) => set('mode_of_payment', v)}
+                options={
+                  mopOptions.length > 0
+                    ? mopOptions
+                    : [
+                        { value: 'Cash', label: 'نقداً' },
+                        { value: 'Cheque', label: 'شيك' },
+                        { value: 'Bank Transfer', label: 'تحويل بنكي' },
+                      ]
+                }
+                listId="pay-mop"
+                placeholder="— اختر —"
                 className={INPUT}
-              >
-                <option value="">— اختر —</option>
-                {(mopList ?? []).length > 0
-                  ? (mopList ?? []).map((m) => (
-                      <option key={m.name} value={m.name}>
-                        {m.name}
-                      </option>
-                    ))
-                  : [
-                      <option key="cash" value="Cash">
-                        نقداً
-                      </option>,
-                      <option key="check" value="Cheque">
-                        شيك
-                      </option>,
-                      <option key="transfer" value="Bank Transfer">
-                        تحويل بنكي
-                      </option>,
-                    ]}
-              </select>
+              />
             </Field>
           </div>
         </div>
@@ -426,52 +429,52 @@ function Body({
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Field label="الخزينة / الحساب البنكي (من)" required>
-              <select
+              <SearchableSelect
                 required
                 value={doc.paid_from ?? ''}
-                onChange={(e) => set('paid_from', e.target.value)}
+                onChange={(v) => set('paid_from', v)}
+                options={cashAccountOptions}
+                listId="pay-from"
+                placeholder="— اختر الخزينة أو الحساب البنكي —"
                 className={INPUT}
-              >
-                <option value="">— اختر الخزينة أو الحساب البنكي —</option>
-                {cashAccounts.map((a) => (
-                  <option key={a.name} value={a.name}>
-                    {a.account_number ? `${a.account_number} - ${a.account_name ?? a.name}` : (a.account_name ?? a.name)}
-                  </option>
-                ))}
-              </select>
+              />
             </Field>
             <Field label={`حساب ${doc.party_type === 'Customer' ? 'العميل' : 'المورد'} (إلى)`} required>
               {isOtherType ? (
-                <select
+                <SearchableSelect
                   required
                   value={doc.paid_to ?? ''}
-                  onChange={(e) => set('paid_to', e.target.value)}
+                  onChange={(v) => set('paid_to', v)}
+                  options={fullTreeAccounts.map((a) => ({ value: a.name, label: a.display }))}
+                  listId="pay-to-other"
+                  placeholder="— اختر من شجرة الحسابات —"
                   className={INPUT}
-                >
-                  <option value="">— اختر من شجرة الحسابات —</option>
-                  {fullTreeAccounts.map((a) => (
-                    <option key={a.name} value={a.name}>
-                      {a.display}
-                    </option>
-                  ))}
-                </select>
+                />
               ) : (
-                <input type="text" value={doc.paid_to ?? ''} readOnly className={INPUT + ' bg-slate-50 dark:bg-white/10'} />
+                <div className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/10 text-sm text-slate-700 dark:text-slate-200">
+                  {doc.paid_to ?? '— يتم تحديد الحساب تلقائياً حسب النوع —'}
+                </div>
               )}
             </Field>
             <Field label="الحساب البنكي (اختياري)">
-              <select
+              <SearchableSelect
                 value={doc.bank_account ?? ''}
-                onChange={(e) => set('bank_account', e.target.value)}
+                onChange={(v) => set('bank_account', v)}
+                options={bankAccountOptions}
+                listId="pay-bank"
+                placeholder="— لا يوجد —"
                 className={INPUT}
-              >
-                <option value="">— لا يوجد —</option>
-                {(bankAccounts ?? []).map((b) => (
-                  <option key={b.name} value={b.name}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+              />
+            </Field>
+            <Field label="مركز التكلفة">
+              <SearchableSelect
+                value={doc.cost_center ?? ''}
+                onChange={(v) => set('cost_center', v)}
+                options={costCenterOptions}
+                listId="pay-cc"
+                placeholder="— بدون —"
+                className={INPUT}
+              />
             </Field>
             <Field label="رقم مرجعي">
               <input

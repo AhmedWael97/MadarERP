@@ -344,6 +344,13 @@ export const router = createBrowserRouter(
           return { Component: mod.default };
         },
       },
+      {
+        path: 'financial/receipt-vouchers/bulk-create',
+        lazy: async () => {
+          const mod = await import('../modules/financial/receipt-vouchers--bulk-create/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       // --- Accounting: Fiscal Year detail (periods, close/open) ---
       {
         path: 'accounting/fiscal-years/:id',

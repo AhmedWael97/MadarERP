@@ -135,6 +135,7 @@ const SECTIONS: Section[] = [
             headerAr: 'سندات القبض والصرف',
             leaves: [
               { to: '/financial/receipt-vouchers', labelAr: 'سندات القبض' },
+              { to: '/financial/receipt-vouchers/bulk-create', labelAr: 'سندات قبض مجمعة' },
               { to: '/financial/payment-vouchers', labelAr: 'سندات الصرف' },
             ],
           },

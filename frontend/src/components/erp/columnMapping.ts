@@ -55,7 +55,7 @@ const SYNONYMS: Array<{ field: string; aliases: string[] }> = [
   { field: 'account_name', aliases: ['account name', 'اسم الحساب'] },
   { field: 'account_number', aliases: ['account number', 'رقم الحساب', 'account code'] },
   { field: 'root_type', aliases: ['type', 'النوع', 'root type'] },
-  { field: 'account_type', aliases: ['nature', 'الطبيعة', 'account type', 'تصنيف'] },
+  { field: 'account_type', aliases: ['nature', 'الطبيعة', 'account type', 'classification', 'التصنيف', 'تصنيف'] },
   { field: 'is_group', aliases: ['group', 'مجموعة', 'is group'] },
 
   // ---- Inventory ----
@@ -188,8 +188,9 @@ const EN_TO_AR_HEADER: Record<string, string> = {
   'account code': 'كود الحساب',
   type: 'النوع',
   'root type': 'النوع الأساسي',
-  nature: 'الطبيعة',
-  'account type': 'نوع الحساب',
+  nature: 'التصنيف',
+  classification: 'التصنيف',
+  'account type': 'التصنيف',
   group: 'مجموعة',
   'is group': 'مجموعة',
   'item code': 'كود الصنف',

@@ -20,7 +20,7 @@ export default function Page() {
           { fieldname: 'account_name',   header: 'اسم الحساب' },
           { fieldname: 'account_number', header: 'الكود' },
           { fieldname: 'account_type',   header: 'النوع' },
-          { fieldname: 'root_type',      header: 'الطبيعة', isBadge: true },
+          { fieldname: 'root_type',      header: 'التصنيف', isBadge: true },
           { fieldname: 'is_group',       header: 'مجموعة', isBadge: true },
           { fieldname: 'disabled',       header: 'الحالة', isBadge: true },
         ],
