@@ -90,24 +90,11 @@ function CustomerListBody() {
   const [type, setType] = useState<'' | 'Individual' | 'Company'>('');
   const [status, setStatus] = useState<'' | 'active' | 'inactive'>('');
 
-  // Stats: total, active (not disabled), sum of opening balance.
+  // Stats: total customer count + active count (cheap, scoped to the whole
+  // table). Total balance is computed from the real outstanding map below,
+  // not the opening-balance field — see `totalBalance` further down.
   const { data: totalCount } = useFrappeGetDocCount('Customer');
   const { data: activeCount } = useFrappeGetDocCount('Customer', [['disabled', '=', 0]]);
-  const { data: totalBalanceResp } = useFrappeGetCall<{ message?: number }>(
-    'frappe.client.get_list',
-    {
-      doctype: 'Customer',
-      fields: '["sum(madaar_opening_balance) as total"]',
-      limit_page_length: 1,
-    },
-    'customer-stats:totalBalance',
-  );
-  // `get_list` with aggregate fields returns `[{ total: <num> }]`. Frappe wraps it in `message`.
-  const totalBalance = useMemo(() => {
-    const m = (totalBalanceResp as any)?.message;
-    if (Array.isArray(m) && m.length) return Number(m[0].total ?? 0) || 0;
-    return 0;
-  }, [totalBalanceResp]);
 
   // Filters → Frappe doc list filters. The SDK's Filter generic is too strict
   // for our heterogeneous tuple types — cast at the boundary so the call site
@@ -148,6 +135,33 @@ function CustomerListBody() {
     limit: 100,
     orderBy: { field: 'modified', order: 'desc' },
   });
+
+  // Real outstanding per customer, read straight off `tabGL Entry` — same
+  // table Customer Aging and Trial Balance read. This is the authoritative
+  // "what does this customer owe us right now" number; without it the
+  // table would show the opening-balance field, which is meaningless once
+  // any invoice has been raised.
+  const partyNames = useMemo(
+    () => (customers ?? []).map((c) => c.name),
+    [customers],
+  );
+  const balanceKey = partyNames.join('|') || 'empty';
+  const { data: balancesResp } = useFrappeGetCall<{ message: Record<string, number> }>(
+    'madaar_core.api_balances.get_party_outstanding',
+    partyNames.length
+      ? { parties: partyNames, party_type: 'Customer' }
+      : undefined,
+    `customer-balances:${balanceKey}`,
+  );
+  const balances: Record<string, number> = balancesResp?.message ?? {};
+  // Stat-card sum: total outstanding across the currently fetched customers.
+  // Limited to the first 100 rows (same limit as the table) so the number
+  // matches what's visible. A "true" global sum across all customers would
+  // need a separate server-side aggregate call.
+  const totalBalance = useMemo(
+    () => Object.values(balances).reduce((acc, n) => acc + (Number(n) || 0), 0),
+    [balances],
+  );
 
   const { data: categories } = useFrappeGetDocList<{ name: string }>('Madaar Customer Category', {
     fields: ['name'],
@@ -210,7 +224,12 @@ function CustomerListBody() {
         }}
       />
 
-      <CustomerTable rows={customers ?? []} loading={isLoading} hiddenColumns={hiddenColumns} />
+      <CustomerTable
+        rows={customers ?? []}
+        loading={isLoading}
+        hiddenColumns={hiddenColumns}
+        balances={balances}
+      />
     </div>
   );
 }
@@ -344,10 +363,12 @@ function CustomerTable({
   rows,
   loading,
   hiddenColumns,
+  balances,
 }: {
   rows: CustomerRow[];
   loading: boolean;
   hiddenColumns: Set<string>;
+  balances: Record<string, number>;
 }) {
   // The customer row is bespoke (it stacks ar/en in one cell, has a colored
   // pill for type, etc.) — so we map "hide this fieldname" to "skip this <td>".
@@ -410,7 +431,7 @@ function CustomerTable({
               </tr>
             )}
             {rows.map((c) => (
-              <CustomerRowView key={c.name} c={c} hide={hide} />
+              <CustomerRowView key={c.name} c={c} hide={hide} balance={balances[c.name] ?? 0} />
             ))}
           </tbody>
         </table>
@@ -423,7 +444,15 @@ function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-4 py-3 text-start whitespace-nowrap">{children}</th>;
 }
 
-function CustomerRowView({ c, hide }: { c: CustomerRow; hide: (id: string) => boolean }) {
+function CustomerRowView({
+  c,
+  hide,
+  balance,
+}: {
+  c: CustomerRow;
+  hide: (id: string) => boolean;
+  balance: number;
+}) {
   const navigate = useNavigate();
   const { deleteDoc } = useFrappeDeleteDoc();
   const [open, setOpen] = useState(false);
@@ -488,9 +517,25 @@ function CustomerRowView({ c, hide }: { c: CustomerRow; hide: (id: string) => bo
           {fmtNum(c.madaar_opening_balance ?? 0)}
         </td>
       )}
-      <td className="px-4 py-3 text-sm font-mono font-semibold text-slate-500" dir="ltr">
-        {/* No real balance available without a GL query — show opening as a stand-in. */}
-        {fmtNum(c.madaar_opening_balance ?? 0)}
+      <td
+        className={
+          'px-4 py-3 text-sm font-mono font-semibold ' +
+          (balance > 0
+            ? 'text-rose-600 dark:text-rose-400'      // owes us
+            : balance < 0
+              ? 'text-emerald-600 dark:text-emerald-400'  // we owe them (credit balance)
+              : 'text-slate-500')
+        }
+        dir="ltr"
+        title={
+          balance > 0
+            ? 'العميل مدين لنا بهذا المبلغ'
+            : balance < 0
+              ? 'لدى العميل رصيد دائن'
+              : 'لا يوجد رصيد'
+        }
+      >
+        {fmtNum(balance)}
       </td>
       {!hide('disabled') && (
         <td className="px-4 py-3">
