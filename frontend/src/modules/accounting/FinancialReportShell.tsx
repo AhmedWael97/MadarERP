@@ -125,11 +125,14 @@ export function FinancialReportShell({
       out.company = fallbackCompany;
     }
     // Fiscal year picker: only if the caller hasn't supplied one. Pick the FY
-    // that contains the report's reference date — `to_date` for date-range
-    // reports, `report_date` for Aging, today for everything else.
+    // that contains the report's reference date — different reports use
+    // different filter names: Trial Balance uses `to_date`, Balance Sheet /
+    // P&L / Cash Flow use `period_end_date`, Aging uses `report_date`. Fall
+    // back to today.
     if (!out.fiscal_year && fyResp && fyResp.length) {
       const refDate =
         (out.to_date as string) ||
+        (out.period_end_date as string) ||
         (out.report_date as string) ||
         new Date().toISOString().slice(0, 10);
       const fy = fyResp.find(
@@ -228,7 +231,18 @@ export function FinancialReportShell({
             <thead className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5">
               <tr className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 {columns.map((c) => (
-                  <th key={c.fieldname} className="px-5 py-3 text-start whitespace-nowrap" style={c.width ? { width: c.width } : undefined}>
+                  <th
+                    key={c.fieldname}
+                    // Numeric columns: right-aligned in BOTH directions
+                    // (accounting convention — keeps digits column-aligned for
+                    // visual totaling). text-right is the physical property;
+                    // text-end would flip to left in RTL which we DON'T want.
+                    // Text columns: text-start follows direction (right in
+                    // RTL / left in LTR) so Arabic and English headers both
+                    // sit on their natural reading edge.
+                    className={'px-5 py-3 whitespace-nowrap ' + (c.numeric ? 'text-right' : 'text-start')}
+                    style={c.width ? { width: c.width } : undefined}
+                  >
                     {c.label}
                   </th>
                 ))}
@@ -240,7 +254,15 @@ export function FinancialReportShell({
               {!loading && rows.map((row, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02]">
                   {columns.map((c) => (
-                    <td key={c.fieldname} className={'px-5 py-3 text-sm ' + (c.numeric ? 'font-mono text-end' : '')}>
+                    <td
+                      key={c.fieldname}
+                      // Same alignment rule as the header. dir="ltr" on
+                      // numeric cells keeps "15,123.45" reading left-to-right
+                      // even though the surrounding page is RTL — otherwise
+                      // the comma and decimal jump around.
+                      className={'px-5 py-3 text-sm ' + (c.numeric ? 'font-mono text-right' : 'text-start')}
+                      dir={c.numeric ? 'ltr' : undefined}
+                    >
                       {c.render ? c.render(row) : c.numeric ? fmtNum(Number(row[c.fieldname] ?? 0)) : (row[c.fieldname] as ReactNode) ?? '—'}
                     </td>
                   ))}

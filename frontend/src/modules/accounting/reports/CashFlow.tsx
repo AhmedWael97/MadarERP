@@ -17,7 +17,9 @@ export default function CashFlowPage() {
       title="قائمة التدفقات النقدية"
       subtitle="الأنشطة التشغيلية والاستثمارية والتمويلية"
       reportName="Cash Flow"
-      filters={{ from_date: fromDate, to_date: toDate, periodicity: 'Yearly', fiscal_year: undefined }}
+      // Cash Flow uses period_start_date/period_end_date (NOT from_date/to_date,
+      // same gotcha as Balance Sheet and Profit and Loss).
+      filters={{ period_start_date: fromDate, period_end_date: toDate, periodicity: 'Yearly' }}
       permDoctype="GL Entry"
       columns={COLUMNS}
       filterUI={<DateRangeFilters fromDate={fromDate} toDate={toDate} onFromDate={setFromDate} onToDate={setToDate} />}

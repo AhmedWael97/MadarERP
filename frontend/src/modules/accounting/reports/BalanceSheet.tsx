@@ -17,7 +17,10 @@ export default function BalanceSheetPage() {
       title="الميزانية العمومية"
       subtitle="أصول وخصوم وحقوق ملكية"
       reportName="Balance Sheet"
-      filters={{ from_date: fromDate, to_date: toDate, periodicity: 'Yearly', fiscal_year: undefined }}
+      // BS uses period_start_date/period_end_date (NOT from_date/to_date,
+      // even though the error message lies). fiscal_year is auto-injected
+      // by the shell.
+      filters={{ period_start_date: fromDate, period_end_date: toDate, periodicity: 'Yearly' }}
       permDoctype="GL Entry"
       columns={COLUMNS}
       filterUI={
