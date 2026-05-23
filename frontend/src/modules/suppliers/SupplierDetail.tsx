@@ -2,7 +2,7 @@
  *  Adds the bank-info card the reference shows on the supplier financial side panel. */
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useFrappeGetDoc } from 'frappe-react-sdk';
+import { useFrappeGetCall, useFrappeGetDoc } from 'frappe-react-sdk';
 import { ArrowRight, Pencil } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
@@ -38,6 +38,16 @@ export default function SupplierDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: s, isLoading } = useFrappeGetDoc<SupplierDoc>('Supplier', id);
+
+  // Authoritative outstanding from `tabGL Entry` (Supplier Aging reads the
+  // same source). `party_type='Supplier'` flips the sign so positive =
+  // "we owe this supplier", matching the headline number's intuition.
+  const { data: balanceResp } = useFrappeGetCall<{ message: Record<string, number> }>(
+    'madaar_core.api_balances.get_party_outstanding',
+    id ? { parties: [id], party_type: 'Supplier' } : undefined,
+    id ? `supplier-balance:${id}` : null,
+  );
+  const currentBalance = id ? (balanceResp?.message?.[id] ?? 0) : 0;
 
   if (isLoading) return <Loading />;
   if (!s) return <Empty />;
@@ -100,8 +110,25 @@ export default function SupplierDetailPage() {
               <div className="space-y-4">
                 <div className="text-center py-4">
                   <p className="text-xs text-slate-500 mb-1">الرصيد الحالي</p>
-                  <p className={'text-3xl font-bold ' + ((s.madaar_opening_balance ?? 0) > 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400')} dir="ltr">
-                    {fmtNum(s.madaar_opening_balance ?? 0)}
+                  <p
+                    className={
+                      'text-3xl font-bold ' +
+                      (currentBalance > 0
+                        ? 'text-amber-600 dark:text-amber-400'      // we owe them
+                        : currentBalance < 0
+                          ? 'text-emerald-600 dark:text-emerald-400'  // advance / prepayment
+                          : 'text-slate-500')
+                    }
+                    dir="ltr"
+                    title={
+                      currentBalance > 0
+                        ? 'مستحق للمورد (دائن لدينا)'
+                        : currentBalance < 0
+                          ? 'دفعة مقدمة للمورد'
+                          : 'لا يوجد رصيد'
+                    }
+                  >
+                    {fmtNum(currentBalance)}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">ج.م</p>
                 </div>

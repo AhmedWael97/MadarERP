@@ -70,24 +70,22 @@ export default function SupplierStatementPage() {
     orderBy: { field: 'posting_date', order: 'asc' },
   });
 
-  // For suppliers, the customer-side debit/credit semantics flip: credit
-  // increases what the company OWES the supplier. So balance = opening +
-  // Σ(credit - debit). Positive balance = we owe.
+  // For suppliers, debit/credit semantics flip vs Customer: credit increases
+  // what the company OWES (it's a liability). Pure GL-driven, no opening_balance
+  // seed — see the matching CustomerStatement comment for the rationale.
   const rows = useMemo(() => {
-    if (!s) return [];
-    let bal = Number(s.madaar_opening_balance ?? 0);
+    let bal = 0;
     return (gl ?? []).map((g) => {
       bal = bal + Number(g.credit ?? 0) - Number(g.debit ?? 0);
       return { ...g, runningBalance: bal };
     });
-  }, [s, gl]);
+  }, [gl]);
 
   const totals = useMemo(() => {
-    const debit = (gl ?? []).reduce((s2, g) => s2 + Number(g.debit ?? 0), 0);
-    const credit = (gl ?? []).reduce((s2, g) => s2 + Number(g.credit ?? 0), 0);
-    const opening = Number(s?.madaar_opening_balance ?? 0);
-    return { debit, credit, currentBalance: opening + credit - debit };
-  }, [gl, s]);
+    const debit = (gl ?? []).reduce((acc, g) => acc + Number(g.debit ?? 0), 0);
+    const credit = (gl ?? []).reduce((acc, g) => acc + Number(g.credit ?? 0), 0);
+    return { debit, credit, currentBalance: credit - debit };
+  }, [gl]);
 
   if (isLoading || !s) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
@@ -204,15 +202,8 @@ export default function SupplierStatementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                <tr className="bg-[color:var(--color-brand-50,#ecfdf5)]/50 dark:bg-[color:var(--color-brand-500)]/5">
-                  <td className="px-5 py-3 text-sm text-slate-600">—</td>
-                  <td className="px-5 py-3"><span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[color:var(--color-brand-100,#d1fae5)] text-[color:var(--color-brand-700)]">رصيد افتتاحي</span></td>
-                  <td className="px-5 py-3 text-sm text-slate-500">—</td>
-                  <td className="px-5 py-3 text-sm font-medium text-slate-800 dark:text-white">رصيد أول المدة</td>
-                  <td className="px-5 py-3 text-sm font-mono font-semibold">{(s.madaar_opening_balance ?? 0) < 0 ? fmtNum(Math.abs(s.madaar_opening_balance ?? 0)) : '—'}</td>
-                  <td className="px-5 py-3 text-sm font-mono font-semibold">{(s.madaar_opening_balance ?? 0) > 0 ? fmtNum(s.madaar_opening_balance ?? 0) : '—'}</td>
-                  <td className={'px-5 py-3 text-sm font-mono font-bold ' + ((s.madaar_opening_balance ?? 0) > 0 ? 'text-red-600' : 'text-emerald-600')}>{fmtNum(s.madaar_opening_balance ?? 0)}</td>
-                </tr>
+                {/* No synthesised "Opening Balance" row — the ledger is pure
+                    GL Entries. See matching comment in CustomerStatement. */}
                 {rows.length === 0 ? (
                   <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-slate-400">لا توجد معاملات مالية لهذا المورد حتى الآن</td></tr>
                 ) : (

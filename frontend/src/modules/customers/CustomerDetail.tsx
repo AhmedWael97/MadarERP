@@ -10,7 +10,7 @@
  */
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useFrappeGetDoc } from 'frappe-react-sdk';
+import { useFrappeGetCall, useFrappeGetDoc } from 'frappe-react-sdk';
 import { ArrowRight, Pencil } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
@@ -47,6 +47,17 @@ export default function CustomerDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: c, isLoading } = useFrappeGetDoc<CustomerDoc>('Customer', id);
+
+  // Real outstanding read off `tabGL Entry` — the same source as Customer
+  // Aging, Trial Balance, and CustomerList's Balance column. Replaces the
+  // previous "show opening_balance as a stand-in" hack which gave 0 for
+  // every customer who had no manually-entered opening figure.
+  const { data: balanceResp } = useFrappeGetCall<{ message: Record<string, number> }>(
+    'madaar_core.api_balances.get_party_outstanding',
+    id ? { parties: [id], party_type: 'Customer' } : undefined,
+    id ? `customer-balance:${id}` : null,
+  );
+  const currentBalance = id ? (balanceResp?.message?.[id] ?? 0) : 0;
 
   if (isLoading) {
     return (
@@ -165,18 +176,25 @@ export default function CustomerDetailPage() {
               <div className="space-y-4">
                 <div className="text-center py-4">
                   <p className="text-xs text-slate-500 mb-1">الرصيد الحالي</p>
-                  {/* No native balance field on ERPNext Customer — opening_balance shown as a stand-in.
-                      Future: call frappe.utils.get_balance_on(party=...) to compute live balance. */}
                   <p
                     className={
                       'text-3xl font-bold ' +
-                      ((c.madaar_opening_balance ?? 0) > 0
+                      (currentBalance > 0
                         ? 'text-red-600 dark:text-red-400'
-                        : 'text-emerald-600 dark:text-emerald-400')
+                        : currentBalance < 0
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-slate-500')
                     }
                     dir="ltr"
+                    title={
+                      currentBalance > 0
+                        ? 'العميل مدين لنا بهذا المبلغ'
+                        : currentBalance < 0
+                          ? 'لدى العميل رصيد دائن'
+                          : 'لا يوجد رصيد'
+                    }
                   >
-                    {fmtNum(c.madaar_opening_balance ?? 0)}
+                    {fmtNum(currentBalance)}
                   </p>
                   <p className="text-xs text-slate-400 mt-1">ج.م</p>
                 </div>

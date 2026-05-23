@@ -111,28 +111,29 @@ export default function CustomerStatementPage() {
     orderBy: { field: 'posting_date', order: 'asc' },
   });
 
-  // Running balance: ERPNext convention has debit increase receivable (customer owes more)
-  // and credit decrease it. So `balance = opening + Σ(debit - credit)`.
+  // Running balance: pure GL-driven (debit increases receivable, credit
+  // decreases it). We deliberately do NOT seed from `madaar_opening_balance`
+  // — that field is metadata. If the user wants an opening balance in the
+  // ledger, they post an Opening Journal Entry, which then appears as a
+  // normal GL row here. The previous behaviour seeded from the field AND
+  // included the Opening JE in the rows, double-counting.
   const rows = useMemo(() => {
-    if (!c) return [];
-    let bal = Number(c.madaar_opening_balance ?? 0);
-    const list = (gl ?? []).map((g) => {
+    let bal = 0;
+    return (gl ?? []).map((g) => {
       bal = bal + Number(g.debit ?? 0) - Number(g.credit ?? 0);
       return { ...g, runningBalance: bal };
     });
-    return list;
-  }, [c, gl]);
+  }, [gl]);
 
   const totals = useMemo(() => {
     const debit = (gl ?? []).reduce((s, g) => s + Number(g.debit ?? 0), 0);
     const credit = (gl ?? []).reduce((s, g) => s + Number(g.credit ?? 0), 0);
-    const opening = Number(c?.madaar_opening_balance ?? 0);
     return {
-      debit: debit + Math.max(opening, 0),
-      credit: credit + Math.max(-opening, 0),
-      currentBalance: opening + debit - credit,
+      debit,
+      credit,
+      currentBalance: debit - credit,
     };
-  }, [gl, c]);
+  }, [gl]);
 
   if (isLoading || !c) {
     return (
@@ -330,32 +331,10 @@ export default function CustomerStatementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5">
-                {/* Opening Balance Row */}
-                <tr className="bg-[color:var(--color-brand-50,#ecfdf5)]/50 dark:bg-[color:var(--color-brand-500)]/5">
-                  <td className="px-5 py-3 text-sm text-slate-600">—</td>
-                  <td className="px-5 py-3">
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[color:var(--color-brand-100,#d1fae5)] dark:bg-[color:var(--color-brand-500)]/10 text-[color:var(--color-brand-700)]">
-                      رصيد افتتاحي
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-sm text-slate-500">—</td>
-                  <td className="px-5 py-3 text-sm font-medium text-slate-800 dark:text-white">رصيد أول المدة</td>
-                  <td className="px-5 py-3 text-sm font-mono font-semibold text-slate-800 dark:text-white">
-                    {(c.madaar_opening_balance ?? 0) > 0 ? fmtNum(c.madaar_opening_balance ?? 0) : '—'}
-                  </td>
-                  <td className="px-5 py-3 text-sm font-mono font-semibold text-slate-800 dark:text-white">
-                    {(c.madaar_opening_balance ?? 0) < 0 ? fmtNum(Math.abs(c.madaar_opening_balance ?? 0)) : '—'}
-                  </td>
-                  <td
-                    className={
-                      'px-5 py-3 text-sm font-mono font-bold ' +
-                      ((c.madaar_opening_balance ?? 0) > 0 ? 'text-red-600' : 'text-emerald-600')
-                    }
-                  >
-                    {fmtNum(c.madaar_opening_balance ?? 0)}
-                  </td>
-                </tr>
-
+                {/* No synthesised "Opening Balance" row anymore — the ledger
+                    is pure GL Entries, ordered by posting date. If the user
+                    has an opening figure to record they post an Opening
+                    Journal Entry and it appears here as a normal row. */}
                 {rows.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-12 text-center text-sm text-slate-400">
