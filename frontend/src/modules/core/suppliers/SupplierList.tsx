@@ -76,22 +76,13 @@ function SupplierListBody() {
   const [type, setType] = useState<'' | 'Individual' | 'Company'>('');
   const [status, setStatus] = useState<'' | 'active' | 'inactive'>('');
 
+  // Stats: total count + active count. Total balance is computed from the
+  // real outstanding map below — see `totalBalance`. We deliberately do NOT
+  // sum `madaar_opening_balance` here; that field is just the seed value
+  // entered during supplier onboarding and goes stale the moment any
+  // Purchase Invoice / Payment Entry posts.
   const { data: totalCount } = useFrappeGetDocCount('Supplier');
   const { data: activeCount } = useFrappeGetDocCount('Supplier', [['disabled', '=', 0]]);
-  const { data: totalBalanceResp } = useFrappeGetCall<{ message?: number }>(
-    'frappe.client.get_list',
-    {
-      doctype: 'Supplier',
-      fields: '["sum(madaar_opening_balance) as total"]',
-      limit_page_length: 1,
-    },
-    'supplier-stats:totalBalance',
-  );
-  const totalBalance = useMemo(() => {
-    const m = (totalBalanceResp as any)?.message;
-    if (Array.isArray(m) && m.length) return Number(m[0].total ?? 0) || 0;
-    return 0;
-  }, [totalBalanceResp]);
 
   const filters = useMemo(() => {
     const f: Array<[string, any, unknown]> = [];
@@ -109,6 +100,28 @@ function SupplierListBody() {
     limit: 100,
     orderBy: { field: 'modified', order: 'desc' },
   });
+
+  // Real outstanding per supplier — same `tabGL Entry` source Customer/
+  // Supplier Aging reads. `party_type='Supplier'` flips the sign so positive
+  // = "we owe this supplier" (matches the column's intuitive meaning).
+  const partyNames = useMemo(
+    () => (suppliers ?? []).map((s) => s.name),
+    [suppliers],
+  );
+  const balanceKey = partyNames.join('|') || 'empty';
+  const { data: balancesResp } = useFrappeGetCall<{ message: Record<string, number> }>(
+    'madaar_core.api_balances.get_party_outstanding',
+    partyNames.length
+      ? { parties: partyNames, party_type: 'Supplier' }
+      : undefined,
+    `supplier-balances:${balanceKey}`,
+  );
+  const balances: Record<string, number> = balancesResp?.message ?? {};
+  // Stat-card sum: total amount owed across the visible (first 100) suppliers.
+  const totalBalance = useMemo(
+    () => Object.values(balances).reduce((acc, n) => acc + (Number(n) || 0), 0),
+    [balances],
+  );
 
   const { data: categories } = useFrappeGetDocList<{ name: string }>('Madaar Supplier Category', {
     fields: ['name'],
@@ -151,7 +164,7 @@ function SupplierListBody() {
           setHiddenColumns(new Set(allIds.filter((id) => !next.has(id))));
         }}
       />
-      <SupplierTable rows={suppliers ?? []} loading={isLoading} hide={hide} />
+      <SupplierTable rows={suppliers ?? []} loading={isLoading} hide={hide} balances={balances} />
     </div>
   );
 }
@@ -220,7 +233,17 @@ function FilterBar(props: {
   );
 }
 
-function SupplierTable({ rows, loading, hide }: { rows: SupplierRow[]; loading: boolean; hide: (id: string) => boolean }) {
+function SupplierTable({
+  rows,
+  loading,
+  hide,
+  balances,
+}: {
+  rows: SupplierRow[];
+  loading: boolean;
+  hide: (id: string) => boolean;
+  balances: Record<string, number>;
+}) {
   return (
     <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
@@ -245,7 +268,7 @@ function SupplierTable({ rows, loading, hide }: { rows: SupplierRow[]; loading: 
             {!loading && rows.length === 0 && (
               <tr><td colSpan={9} className="px-5 py-12 text-center text-sm text-slate-400">لا يوجد موردين — ابدأ بإضافة مورد جديد</td></tr>
             )}
-            {rows.map((s) => <SupplierRowView key={s.name} s={s} hide={hide} />)}
+            {rows.map((s) => <SupplierRowView key={s.name} s={s} hide={hide} balance={balances[s.name] ?? 0} />)}
           </tbody>
         </table>
       </div>
@@ -257,7 +280,15 @@ function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-4 py-3 text-start whitespace-nowrap">{children}</th>;
 }
 
-function SupplierRowView({ s, hide }: { s: SupplierRow; hide: (id: string) => boolean }) {
+function SupplierRowView({
+  s,
+  hide,
+  balance,
+}: {
+  s: SupplierRow;
+  hide: (id: string) => boolean;
+  balance: number;
+}) {
   const navigate = useNavigate();
   const { deleteDoc } = useFrappeDeleteDoc();
   const [open, setOpen] = useState(false);
@@ -300,7 +331,26 @@ function SupplierRowView({ s, hide }: { s: SupplierRow; hide: (id: string) => bo
       {!hide('madaar_opening_balance') && (
         <td className="px-4 py-3 text-sm font-mono text-slate-600 dark:text-slate-400" dir="ltr">{fmtNum(s.madaar_opening_balance ?? 0)}</td>
       )}
-      <td className="px-4 py-3 text-sm font-mono font-semibold text-slate-500" dir="ltr">{fmtNum(s.madaar_opening_balance ?? 0)}</td>
+      <td
+        className={
+          'px-4 py-3 text-sm font-mono font-semibold ' +
+          (balance > 0
+            ? 'text-amber-600 dark:text-amber-400'        // we owe them (payable)
+            : balance < 0
+              ? 'text-emerald-600 dark:text-emerald-400'  // advance / prepayment
+              : 'text-slate-500')
+        }
+        dir="ltr"
+        title={
+          balance > 0
+            ? 'مستحق للمورد (دائن لدينا)'
+            : balance < 0
+              ? 'دفعة مقدمة للمورد'
+              : 'لا يوجد رصيد'
+        }
+      >
+        {fmtNum(balance)}
+      </td>
       {!hide('disabled') && (
         <td className="px-4 py-3">
           <span className={'text-xs font-semibold px-2 py-0.5 rounded-full ' + (isActive ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400')}>
