@@ -147,7 +147,8 @@ const moduleHubRoutes = MODULES.map((m) => ({
   element: <ModuleHub module={m.module ?? m.key} titleKey={m.titleKey} defaultTitle={m.defaultTitle} />,
 }));
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
   {
     path: '/login',
     element: (
@@ -640,4 +641,18 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+  ],
+  {
+    // Opt into the React Router v7 behaviours now so we (a) silence the v7
+    // deprecation warnings (~50 per session) and (b) get free behaviour
+    // when we bump react-router-dom. `v7_startTransition` lives on
+    // <RouterProvider/>'s `future` prop (see App.tsx), not here.
+    future: {
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  },
+);

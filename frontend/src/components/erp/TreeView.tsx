@@ -83,19 +83,36 @@ export function TreeView({ doctype, columns: passedColumns, pageSize = 500 }: Pr
 
   // Resolve scanned column headers (الكود / النوع / الطبيعة / الرصيد …) to real field names.
   const columns = useMemo<ColumnDef[]>(() => {
+    let cols: ColumnDef[];
     if (passedColumns && passedColumns.length > 0) {
       const allSynthetic = passedColumns.every((c) => c.id.startsWith('col_'));
-      if (!allSynthetic) return passedColumns;
-      const resolved = resolveColumns(
-        passedColumns.map((c) => ({ header: c.header ?? c.id })),
-        metaFields,
-      );
-      return resolved.map<ColumnDef>((r, i) => ({
-        id: r.field ?? `__placeholder_${i}`,
-        header: r.header,
-      }));
+      if (!allSynthetic) {
+        cols = passedColumns;
+      } else {
+        const resolved = resolveColumns(
+          passedColumns.map((c) => ({ header: c.header ?? c.id })),
+          metaFields,
+        );
+        cols = resolved.map<ColumnDef>((r, i) => ({
+          id: r.field ?? `__placeholder_${i}`,
+          header: r.header,
+        }));
+      }
+    } else if (labelField === 'name') {
+      // DocTypes like Warehouse have no `<doctype>_name` field, so the label
+      // field falls back to `name`. Emit a single column instead of two
+      // identical-id columns — otherwise React sees duplicate keys in <tr>.
+      cols = [{ id: 'name', header: 'Name' }];
+    } else {
+      cols = [{ id: 'name', header: 'ID' }, { id: labelField, header: 'Name' }];
     }
-    return [{ id: 'name', header: 'ID' }, { id: labelField, header: 'Name' }];
+    // Belt-and-braces: dedupe by id (passedColumns can repeat too in edge cases).
+    const seen = new Set<string>();
+    return cols.filter((c) => {
+      if (seen.has(c.id)) return false;
+      seen.add(c.id);
+      return true;
+    });
   }, [passedColumns, metaFields, labelField]);
 
   // Fields we ask Frappe to return: every resolvable column + the parent link + is_group + lft.

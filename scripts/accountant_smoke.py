@@ -410,8 +410,12 @@ def step_sales_purchases_stock(page: Page, base: str, report: Report, screens: P
         ("Purchases",  "/purchases/invoices",       "Purchase Invoices list"),
         ("Purchases",  "/purchases/orders",         "Purchase Orders list"),
         ("Purchases",  "/purchases/returns",        "Purchase Returns list"),
-        ("Inventory",  "/inventory/stock-entries",  "Stock Entries list"),
-        ("Inventory",  "/inventory/stock-transfers","Stock Transfers list"),
+        # The generated manifest names these inventory pages "movements" and
+        # "transfers" — the user-facing concepts ("Stock Entries" /
+        # "Stock Transfers") were called something else by the Laravel scan.
+        ("Inventory",  "/inventory/adjustments",    "Stock Adjustments list"),
+        ("Inventory",  "/inventory/movements",      "Stock Movements list"),
+        ("Inventory",  "/inventory/transfers",      "Stock Transfers list"),
     ]
     for area, path, label in pages:
         print(f"▸ Trade & stock — {label}")
@@ -449,9 +453,18 @@ def step_reports(page: Page, base: str, report: Report, screens: Path) -> None:
         ("Reports",   "/sales/reports/by-product",              "Sales by Product",   ["Product", "المنتج"]),
         ("Reports",   "/sales/reports/daily",                   "Daily Sales",        ["Daily", "اليومية"]),
         ("Reports",   "/sales/reports/returns",                 "Sales Returns Report",["Returns", "المرتجعات"]),
-        # Stock
-        ("Reports",   "/inventory/reports/stock-balance",       "Stock Balance",      ["Stock", "المخزون"]),
-        ("Reports",   "/inventory/reports/stock-ledger",        "Stock Ledger",       ["Ledger", "الأستاذ"]),
+        # Purchases
+        ("Reports",   "/purchases/reports/summary",             "Purchase Summary",   ["Summary", "ملخص"]),
+        ("Reports",   "/purchases/reports/by-supplier",         "Purchases by Supplier", ["Supplier", "المورد"]),
+        ("Reports",   "/purchases/reports/by-product",          "Purchases by Product", ["Product", "المنتج"]),
+        ("Reports",   "/purchases/reports/aging",               "Supplier Aging",     ["Aging", "أعمار"]),
+        ("Reports",   "/purchases/reports/returns",             "Purchase Returns Report", ["Returns", "المرتجعات"]),
+        # Stock — actual generated routes (the manifest doesn't have
+        # "stock-balance" / "stock-ledger"; the closest equivalents are below).
+        ("Reports",   "/inventory/reports/stock-status",        "Stock Status",       ["Stock", "المخزون", "Status"]),
+        ("Reports",   "/inventory/reports/stock-movements",     "Stock Movements",    ["Stock", "Movement", "حركة", "المخزون"]),
+        ("Reports",   "/inventory/reports/valuation",           "Stock Valuation",    ["Valuation", "التقييم"]),
+        ("Reports",   "/inventory/reports/low-stock",           "Low Stock",          ["Low", "نقص", "Stock"]),
     ]
     for area, path, label, needles in reports:
         print(f"▸ Reports — {label}")

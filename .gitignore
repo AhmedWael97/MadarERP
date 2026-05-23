@@ -36,6 +36,8 @@ Thumbs.db
 # Docker volumes (host-mounted, if any)
 docker/data/
 
-
+# Accountant smoke test per-run artifacts (report + screenshots)
+scripts/accountant_smoke_report.md
+scripts/accountant_smoke_screenshots/
 
 /scan_output
