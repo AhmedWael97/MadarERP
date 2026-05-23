@@ -1,11 +1,37 @@
 /** الميزانية العمومية — wraps ERPNext "Balance Sheet". */
 import { useState } from 'react';
-import { FinancialReportShell, type ReportColumn } from '../FinancialReportShell';
+import { FinancialReportShell, fmtNum, type ReportColumn } from '../FinancialReportShell';
 import { localDate, localYearStart } from '@/lib/formatters/dates';
 
+// ERPNext Balance Sheet returns period-named numeric columns (e.g. `dec_2026`
+// for periodicity=Yearly ending in 2026) and a `total` field summing across
+// all periods. There's no `closing_balance` field — we read `total`. The row
+// also has `account_name` (clean) and `account` (with " - <abbr>" suffix);
+// `indent` is a 0-based tree depth we use for hierarchical indentation.
 const COLUMNS: ReportColumn[] = [
-  { label: 'الحساب', fieldname: 'account' },
-  { label: 'الرصيد', fieldname: 'closing_balance', numeric: true },
+  {
+    label: 'الحساب',
+    fieldname: 'account',
+    render: (row) => {
+      const name = (row.account_name as string) || (row.account as string) || '—';
+      const indent = Number(row.indent ?? 0);
+      const isGroup = Number(row.is_group ?? 0) === 1;
+      return (
+        <span
+          style={{ paddingInlineStart: `${indent * 16}px` }}
+          className={isGroup ? 'font-bold' : ''}
+        >
+          {name}
+        </span>
+      );
+    },
+  },
+  {
+    label: 'الرصيد',
+    fieldname: 'total',
+    numeric: true,
+    render: (row) => fmtNum(Number(row.total ?? 0)),
+  },
 ];
 
 export default function BalanceSheetPage() {

@@ -4,7 +4,7 @@
  * (`accounting/bank-accounts/form.blade.php`) with Arabic labels and the
  * same two-card structure as the receipt / payment voucher forms.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useFrappeCreateDoc, useFrappeGetDoc, useFrappeGetDocList, useFrappeUpdateDoc } from 'frappe-react-sdk';
 import { toast } from 'sonner';
@@ -40,6 +40,48 @@ function Field({ label, required, children }: { label: string; required?: boolea
       </label>
       {children}
     </div>
+  );
+}
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+function SearchableSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  required,
+  className,
+  listId,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: SelectOption[];
+  placeholder: string;
+  required?: boolean;
+  className?: string;
+  listId: string;
+}) {
+  return (
+    <>
+      <input
+        type="text"
+        list={listId}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        required={required}
+        className={className}
+      />
+      <datalist id={listId}>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value} label={opt.label} />
+        ))}
+      </datalist>
+    </>
   );
 }
 
@@ -81,12 +123,32 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   const { data: banks } = useFrappeGetDocList<{ name: string; bank_name?: string }>('Bank', { fields: ['name', 'bank_name'], limit: 200 });
   const { data: currencies } = useFrappeGetDocList<{ name: string }>('Currency', { fields: ['name'], filters: [['enabled', '=', 1]], limit: 100 });
+  const glFilters = useMemo(() => {
+    const base: Array<[string, string, string | number]> = [
+      ['is_group', '=', 0],
+      ['disabled', '=', 0],
+      ['root_type', '=', 'Asset'],
+    ];
+    if (doc.company) base.push(['company', '=', doc.company]);
+    return base;
+  }, [doc.company]);
   const { data: glAccounts } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string; account_type?: string }>('Account', {
     fields: ['name', 'account_name', 'account_number', 'account_type'],
-    filters: [['is_group', '=', 0], ['disabled', '=', 0], ['account_type', '=', 'Bank']],
+    filters: glFilters as any,
     limit: 500,
     orderBy: { field: 'account_number', order: 'asc' },
   });
+
+  const companyOptions = useMemo<SelectOption[]>(() => (companies ?? []).map((c) => ({ value: c.name, label: c.name })), [companies]);
+  const bankOptions = useMemo<SelectOption[]>(() => (banks ?? []).map((b) => ({ value: b.name, label: b.bank_name ?? b.name })), [banks]);
+  const currencyOptions = useMemo<SelectOption[]>(() => (currencies ?? []).map((c) => ({ value: c.name, label: c.name })), [currencies]);
+  const glOptions = useMemo<SelectOption[]>(
+    () => (glAccounts ?? []).map((a) => ({
+      value: a.name,
+      label: a.account_number ? `${a.account_number} - ${a.account_name ?? a.name}` : (a.account_name ?? a.name),
+    })),
+    [glAccounts],
+  );
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
@@ -138,16 +200,26 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
               />
             </Field>
             <Field label="الشركة" required>
-              <select required value={doc.company ?? ''} onChange={(e) => set('company', e.target.value)} className={INPUT}>
-                <option value="">— اختر الشركة —</option>
-                {(companies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
-              </select>
+              <SearchableSelect
+                required
+                value={doc.company ?? ''}
+                onChange={(v) => set('company', v)}
+                placeholder="— اختر الشركة —"
+                options={companyOptions}
+                className={INPUT}
+                listId="bank-company-options"
+              />
             </Field>
             <Field label="البنك" required>
-              <select required value={doc.bank ?? ''} onChange={(e) => set('bank', e.target.value)} className={INPUT}>
-                <option value="">— اختر البنك —</option>
-                {(banks ?? []).map((b) => (<option key={b.name} value={b.name}>{b.bank_name ?? b.name}</option>))}
-              </select>
+              <SearchableSelect
+                required
+                value={doc.bank ?? ''}
+                onChange={(v) => set('bank', v)}
+                placeholder="— اختر البنك —"
+                options={bankOptions}
+                className={INPUT}
+                listId="bank-bank-options"
+              />
             </Field>
             <Field label="رقم الحساب">
               <input
@@ -166,14 +238,20 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
               <input type="text" dir="ltr" value={doc.branch_code ?? ''} onChange={(e) => set('branch_code', e.target.value)} className={INPUT} />
             </Field>
             <Field label="نوع الحساب">
-              <select value={doc.account_type ?? ''} onChange={(e) => set('account_type', e.target.value)} className={INPUT}>
-                <option value="">— اختر —</option>
-                <option value="Checking">جاري</option>
-                <option value="Savings">توفير</option>
-                <option value="Loan">قرض</option>
-                <option value="Investment">استثمار</option>
-                <option value="Other">أخرى</option>
-              </select>
+              <SearchableSelect
+                value={doc.account_type ?? ''}
+                onChange={(v) => set('account_type', v)}
+                placeholder="— اختر —"
+                options={[
+                  { value: 'Checking', label: 'جاري' },
+                  { value: 'Savings', label: 'توفير' },
+                  { value: 'Loan', label: 'قرض' },
+                  { value: 'Investment', label: 'استثمار' },
+                  { value: 'Other', label: 'أخرى' },
+                ]}
+                className={INPUT}
+                listId="bank-account-type-options"
+              />
             </Field>
           </div>
         </div>
@@ -187,20 +265,25 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Field label="الحساب المحاسبي (GL)" required>
-              <select required value={doc.account ?? ''} onChange={(e) => set('account', e.target.value)} className={INPUT}>
-                <option value="">— اختر الحساب —</option>
-                {(glAccounts ?? []).map((a) => (
-                  <option key={a.name} value={a.name}>
-                    {a.account_number ? `${a.account_number} - ${a.account_name ?? a.name}` : (a.account_name ?? a.name)}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect
+                required
+                value={doc.account ?? ''}
+                onChange={(v) => set('account', v)}
+                placeholder="— اختر الحساب —"
+                options={glOptions}
+                className={INPUT}
+                listId="bank-gl-options"
+              />
             </Field>
             <Field label="العملة">
-              <select value={doc.account_currency ?? ''} onChange={(e) => set('account_currency', e.target.value)} className={INPUT}>
-                <option value="">— العملة الافتراضية —</option>
-                {(currencies ?? []).map((c) => (<option key={c.name} value={c.name}>{c.name}</option>))}
-              </select>
+              <SearchableSelect
+                value={doc.account_currency ?? ''}
+                onChange={(v) => set('account_currency', v)}
+                placeholder="— العملة الافتراضية —"
+                options={currencyOptions}
+                className={INPUT}
+                listId="bank-currency-options"
+              />
             </Field>
           </div>
 

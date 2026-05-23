@@ -1,11 +1,35 @@
 /** قائمة الدخل — wraps ERPNext "Profit and Loss Statement". */
 import { useState } from 'react';
-import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '../FinancialReportShell';
+import { FinancialReportShell, DateRangeFilters, fmtNum, type ReportColumn } from '../FinancialReportShell';
 import { localDate, localYearStart } from '@/lib/formatters/dates';
 
+// Same column shape as Balance Sheet — see BalanceSheet.tsx for the rationale
+// (period-named numeric columns + `total`, clean account_name, indent for
+// the tree hierarchy).
 const COLUMNS: ReportColumn[] = [
-  { label: 'الحساب', fieldname: 'account' },
-  { label: 'القيمة', fieldname: 'closing_balance', numeric: true },
+  {
+    label: 'الحساب',
+    fieldname: 'account',
+    render: (row) => {
+      const name = (row.account_name as string) || (row.account as string) || '—';
+      const indent = Number(row.indent ?? 0);
+      const isGroup = Number(row.is_group ?? 0) === 1;
+      return (
+        <span
+          style={{ paddingInlineStart: `${indent * 16}px` }}
+          className={isGroup ? 'font-bold' : ''}
+        >
+          {name}
+        </span>
+      );
+    },
+  },
+  {
+    label: 'القيمة',
+    fieldname: 'total',
+    numeric: true,
+    render: (row) => fmtNum(Number(row.total ?? 0)),
+  },
 ];
 
 export default function IncomeStatementPage() {
