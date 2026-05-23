@@ -353,7 +353,13 @@ export function SuperAdminCompanyForm() {
         // `createDoc('Madaar Tenant Subscription', ...)` was throwing
         // LinkValidationError because tenant_company → Company hadn't
         // been created yet.
-        await createCompanyWithSubscription(payload);
+        //
+        // The endpoint signature is `create_company_with_subscription(payload)`
+        // — a single positional arg — so we wrap the form data as a stringified
+        // JSON on a `payload` form field. The backend handles both dict and
+        // string. Sending each form field individually (the SDK's default
+        // for a flat object) would give TypeError: missing required arg.
+        await createCompanyWithSubscription({ payload: JSON.stringify(payload) });
       }
       navigate('/super-admin/companies');
     } catch (err: any) {
