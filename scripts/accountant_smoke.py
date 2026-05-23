@@ -300,6 +300,17 @@ def step_master_data(page: Page, base: str, report: Report, screens: Path) -> No
 
 # ── Step: Create test data (skipped under --skip-creates) ───────────────────
 
+def _first_enabled_text_input(page: Page):
+    """The first text/search input on the page that is actually editable.
+
+    Skips the auto-named "Code" fields that Madaar forms render as `disabled`
+    with value="تلقائي" ("Automatic"). Also skips the topbar/sidebar search
+    input (type="search"). The result is almost always the form's primary
+    name field (Customer Name / Item Name / etc.).
+    """
+    return page.locator("input[type='text']:not([disabled])").first
+
+
 def step_create_customer(page: Page, base: str, slug: str, report: Report, screens: Path) -> str | None:
     print("▸ Create test Customer")
     name = f"SMOKE-CUST-{slug}"
@@ -307,7 +318,9 @@ def step_create_customer(page: Page, base: str, slug: str, report: Report, scree
         report.warn("Customers", "Create form unreachable", "/customers/create timed out")
         return None
     try:
-        page.locator("input[type='text']").first.fill(name)
+        # Short fill timeout so a missing/broken form fails fast instead of
+        # eating the default 30s — the rest of the script still has work to do.
+        _first_enabled_text_input(page).fill(name, timeout=8_000)
         if not _click_save(page):
             report.warn("Customers", "Save button not found on customer form")
             return None
@@ -330,13 +343,17 @@ def step_create_item(page: Page, base: str, slug: str, report: Report, screens: 
         report.warn("Inventory", "Item create form unreachable", "/inventory/products/create timed out")
         return None
     try:
-        page.locator("input[type='text']").first.fill(name)
-        # Item Name is typically the second text input on ERPNext's Item form;
-        # we try filling it but don't fail if it's not there.
-        all_inputs = page.locator("input[type='text']").all()
-        if len(all_inputs) >= 2:
+        # Item form typically has two visible enabled text inputs: item_code
+        # and item_name. Fill whatever's there; the form usually derives one
+        # from the other when only one is set.
+        enabled_inputs = page.locator("input[type='text']:not([disabled])").all()
+        if not enabled_inputs:
+            report.warn("Inventory", "No editable text fields on Item form")
+            return None
+        enabled_inputs[0].fill(name, timeout=8_000)
+        if len(enabled_inputs) >= 2:
             try:
-                all_inputs[1].fill(name)
+                enabled_inputs[1].fill(name, timeout=2_000)
             except Exception:
                 pass
         if not _click_save(page):
