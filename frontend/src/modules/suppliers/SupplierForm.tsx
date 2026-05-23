@@ -240,7 +240,7 @@ function SupplierFormBody({ mode, name, onDone }: { mode: Mode; name?: string; o
                   onChange={(c) => set('disabled', c ? 0 : 1)}
                 />
                 <CheckboxField
-                  label="إضافة المورد كعميل"
+                  label="إضافة المورد كعميل (نفس الحساب)"
                   checked={!!values.madaar_add_as_customer}
                   onChange={(c) => set('madaar_add_as_customer', c ? 1 : 0)}
                   color="emerald"

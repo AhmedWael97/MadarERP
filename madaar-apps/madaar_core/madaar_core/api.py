@@ -642,6 +642,326 @@ def create_company_with_subscription(payload: dict[str, Any] | str) -> dict[str,
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Sales Commissions
+# Persistent policy + server-side commission calculations consumed by the
+# Sales Commission frontend pages.
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _default_company() -> str:
+    company = frappe.defaults.get_user_default("Company") or frappe.db.get_value(
+        "Company", filters={}, fieldname="name", order_by="creation asc"
+    )
+    if not company:
+        frappe.throw("No Company exists yet.")
+    return company
+
+
+def _normalize_sales_person(value: str | None) -> str:
+    cleaned = (value or "").strip()
+    if cleaned.lower() in {"default", "all", "none"}:
+        return ""
+    return cleaned
+
+
+def _parse_tiers(tiers: list[dict[str, Any]] | str | None) -> list[dict[str, float]]:
+    if tiers is None:
+        return []
+    parsed = tiers
+    if isinstance(tiers, str):
+        import json
+
+        parsed = json.loads(tiers)
+    if not isinstance(parsed, list):
+        frappe.throw("tiers must be a list")
+
+    out: list[dict[str, float]] = []
+    for row in parsed:
+        if not isinstance(row, dict):
+            continue
+        out.append(
+            {
+                "from_amount": float(row.get("from_amount", row.get("from", 0)) or 0),
+                "to_amount": float(row.get("to_amount", row.get("to", 0)) or 0),
+                "commission_percentage": float(row.get("commission_percentage", row.get("percentage", 0)) or 0),
+            }
+        )
+    return out
+
+
+def _load_policy(company: str, sales_person: str) -> dict[str, Any] | None:
+    if sales_person:
+        exact = frappe.db.sql(
+            """
+            SELECT name, company, sales_person, is_active, notes
+            FROM `tabMadaar Commission Policy`
+            WHERE company = %s
+              AND COALESCE(sales_person, '') = %s
+              AND is_active = 1
+            ORDER BY modified DESC
+            LIMIT 1
+            """,
+            (company, sales_person),
+            as_dict=True,
+        )
+        if exact:
+            return dict(exact[0])
+
+    fallback = frappe.db.sql(
+        """
+        SELECT name, company, sales_person, is_active, notes
+        FROM `tabMadaar Commission Policy`
+        WHERE company = %s
+          AND COALESCE(sales_person, '') = ''
+          AND is_active = 1
+        ORDER BY modified DESC
+        LIMIT 1
+        """,
+        (company,),
+        as_dict=True,
+    )
+    if fallback:
+        return dict(fallback[0])
+    return None
+
+
+@frappe.whitelist()
+def get_commission_policy(
+    sales_person: str | None = None,
+    company: str | None = None,
+) -> dict[str, Any]:
+    company_name = company or _default_company()
+    rep = _normalize_sales_person(sales_person)
+
+    policy = _load_policy(company_name, rep)
+    if not policy:
+        return {
+            "company": company_name,
+            "sales_person": rep,
+            "policy_name": None,
+            "is_active": 1,
+            "notes": "",
+            "tiers": [],
+            "fallback_used": False,
+        }
+
+    tier_rows = frappe.get_all(
+        "Madaar Commission Policy Tier",
+        filters={"parent": policy["name"], "parenttype": "Madaar Commission Policy"},
+        fields=["from_amount", "to_amount", "commission_percentage"],
+        order_by="idx asc",
+    )
+    return {
+        "company": policy["company"],
+        "sales_person": policy.get("sales_person") or "",
+        "policy_name": policy["name"],
+        "is_active": int(policy.get("is_active") or 0),
+        "notes": policy.get("notes") or "",
+        "tiers": [
+            {
+                "from_amount": float(r.get("from_amount") or 0),
+                "to_amount": float(r.get("to_amount") or 0),
+                "commission_percentage": float(r.get("commission_percentage") or 0),
+            }
+            for r in tier_rows
+        ],
+        "fallback_used": bool(rep and not policy.get("sales_person")),
+    }
+
+
+@frappe.whitelist()
+def save_commission_policy(
+    sales_person: str | None = None,
+    tiers: list[dict[str, Any]] | str | None = None,
+    company: str | None = None,
+    is_active: int = 1,
+    notes: str | None = None,
+) -> dict[str, Any]:
+    company_name = company or _default_company()
+    rep = _normalize_sales_person(sales_person)
+    tier_rows = _parse_tiers(tiers)
+    if not tier_rows:
+        frappe.throw("At least one tier is required")
+
+    existing = frappe.db.sql(
+        """
+        SELECT name
+        FROM `tabMadaar Commission Policy`
+        WHERE company = %s
+          AND COALESCE(sales_person, '') = %s
+        ORDER BY modified DESC
+        LIMIT 1
+        """,
+        (company_name, rep),
+        as_dict=True,
+    )
+
+    if existing:
+        doc = frappe.get_doc("Madaar Commission Policy", existing[0]["name"])
+    else:
+        doc = frappe.get_doc({
+            "doctype": "Madaar Commission Policy",
+            "company": company_name,
+            "sales_person": rep or None,
+        })
+
+    doc.company = company_name
+    doc.sales_person = rep or None
+    doc.is_active = int(is_active or 0)
+    doc.notes = notes or ""
+    doc.set("tiers", [])
+    for row in tier_rows:
+        doc.append("tiers", row)
+
+    if doc.is_new():
+        doc.insert(ignore_permissions=False)
+    else:
+        doc.save(ignore_permissions=False)
+
+    return get_commission_policy(sales_person=rep, company=company_name)
+
+
+@frappe.whitelist()
+def get_sales_commissions(
+    from_date: str,
+    to_date: str,
+    sales_person: str | None = None,
+    company: str | None = None,
+) -> dict[str, Any]:
+    company_name = company or _default_company()
+    rep_filter = _normalize_sales_person(sales_person)
+
+    filters: dict[str, Any] = {
+        "docstatus": 1,
+        "posting_date": ["between", [from_date, to_date]],
+        "company": company_name,
+    }
+    if rep_filter:
+        filters["madaar_sales_person"] = rep_filter
+
+    invoices = frappe.get_all(
+        "Sales Invoice",
+        filters=filters,
+        fields=[
+            "name",
+            "posting_date",
+            "company",
+            "customer",
+            "customer_name",
+            "madaar_sales_person",
+            "rounded_total",
+            "grand_total",
+        ],
+        order_by="posting_date desc, modified desc",
+        limit_page_length=2000,
+    )
+
+    policy_rows = frappe.get_all(
+        "Madaar Commission Policy",
+        filters={"company": company_name, "is_active": 1},
+        fields=["name", "sales_person"],
+        limit_page_length=500,
+    )
+    policy_names = [p["name"] for p in policy_rows]
+    tier_rows = frappe.get_all(
+        "Madaar Commission Policy Tier",
+        filters={"parent": ["in", policy_names], "parenttype": "Madaar Commission Policy"}
+        if policy_names
+        else {"parent": "__none__"},
+        fields=["parent", "from_amount", "to_amount", "commission_percentage"],
+        order_by="idx asc",
+        limit_page_length=5000,
+    )
+
+    tiers_by_policy: dict[str, list[dict[str, float]]] = {}
+    for t in tier_rows:
+        tiers_by_policy.setdefault(t["parent"], []).append(
+            {
+                "from_amount": float(t.get("from_amount") or 0),
+                "to_amount": float(t.get("to_amount") or 0),
+                "commission_percentage": float(t.get("commission_percentage") or 0),
+            }
+        )
+
+    policy_for_rep: dict[str, tuple[str, list[dict[str, float]]]] = {}
+    default_policy: tuple[str, list[dict[str, float]]] | None = None
+    for p in policy_rows:
+        rep = (p.get("sales_person") or "").strip()
+        policy_tuple = (p["name"], tiers_by_policy.get(p["name"], []))
+        if rep:
+            policy_for_rep[rep] = policy_tuple
+        elif default_policy is None:
+            default_policy = policy_tuple
+
+    def _pick_tier(amount: float, tiers_data: list[dict[str, float]]) -> dict[str, float] | None:
+        for tier in tiers_data:
+            if amount >= tier["from_amount"] and amount <= tier["to_amount"]:
+                return tier
+        return None
+
+    rows: list[dict[str, Any]] = []
+    summary_map: dict[str, dict[str, float]] = {}
+    total_sales = 0.0
+    total_commission = 0.0
+
+    for inv in invoices:
+        rep = (inv.get("madaar_sales_person") or "").strip()
+        chosen = policy_for_rep.get(rep) or default_policy
+        policy_name = chosen[0] if chosen else None
+        tiers_data = chosen[1] if chosen else []
+
+        amount = float(inv.get("rounded_total") or inv.get("grand_total") or 0)
+        tier = _pick_tier(amount, tiers_data)
+        pct = float(tier.get("commission_percentage") or 0) if tier else 0.0
+        commission = (amount * pct) / 100.0
+
+        rows.append(
+            {
+                "name": inv["name"],
+                "posting_date": str(inv["posting_date"]),
+                "company": inv.get("company"),
+                "customer": inv.get("customer"),
+                "customer_name": inv.get("customer_name"),
+                "sales_rep": rep,
+                "amount": amount,
+                "percentage": pct,
+                "commission": commission,
+                "policy_name": policy_name,
+            }
+        )
+
+        summary_key = rep or ""
+        if summary_key not in summary_map:
+            summary_map[summary_key] = {"sales": 0.0, "commission": 0.0, "count": 0.0}
+        summary_map[summary_key]["sales"] += amount
+        summary_map[summary_key]["commission"] += commission
+        summary_map[summary_key]["count"] += 1.0
+
+        total_sales += amount
+        total_commission += commission
+
+    summary = [
+        {
+            "sales_rep": key,
+            "sales": val["sales"],
+            "commission": val["commission"],
+            "count": int(val["count"]),
+        }
+        for key, val in summary_map.items()
+    ]
+    summary.sort(key=lambda r: r["commission"], reverse=True)
+
+    return {
+        "rows": rows,
+        "summary": summary,
+        "total_sales": total_sales,
+        "total_commission": total_commission,
+        "from_date": from_date,
+        "to_date": to_date,
+        "company": company_name,
+    }
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Retail POS
 # Endpoints powering the React cashier UI at /retail/pos. Combine ERPNext's
 # POS Profile / POS Opening Entry / POS Invoice with our barcode + price-list

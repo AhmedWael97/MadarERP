@@ -295,7 +295,7 @@ function CustomerFormBody({ mode, name, onDone }: { mode: Mode; name?: string; o
                   color="brand"
                 />
                 <CheckboxField
-                  label="اضافة العميل كمورد"
+                  label="إضافة العميل كمورد (نفس الحساب)"
                   checked={!!values.madaar_add_as_supplier}
                   onChange={(c) => set('madaar_add_as_supplier', c ? 1 : 0)}
                   color="emerald"

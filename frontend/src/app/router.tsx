@@ -259,6 +259,27 @@ export const router = createBrowserRouter(
           </Suspense>
         ),
       },
+      {
+        path: 'customers/reports/aging',
+        lazy: async () => {
+          const mod = await import('../modules/customers/reports--aging/overrides/page');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'customers/reports/statement',
+        lazy: async () => {
+          const mod = await import('../modules/customers/reports/CustomersStatementTab');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'customers/reports/totals',
+        lazy: async () => {
+          const mod = await import('../modules/reports/CustomerTotalsReport');
+          return { Component: mod.default };
+        },
+      },
       // --- Suppliers: detail + account statement (mirrors customer routes) ---
       {
         path: 'suppliers/:id',
@@ -275,6 +296,41 @@ export const router = createBrowserRouter(
             <SupplierStatement />
           </Suspense>
         ),
+      },
+      {
+        path: 'suppliers/reports/statement',
+        lazy: async () => {
+          const mod = await import('../modules/suppliers/reports/SuppliersStatementTab');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'accounting/reports/mixed-parties-statement',
+        lazy: async () => {
+          const mod = await import('../modules/accounting/reports/MixedPartiesStatement');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'sales/reports/by-sales-rep',
+        lazy: async () => {
+          const mod = await import('../modules/sales/reports/SalesRepReport');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'sales/commission-policies',
+        lazy: async () => {
+          const mod = await import('../modules/sales/reports/CommissionPolicyForm');
+          return { Component: mod.default };
+        },
+      },
+      {
+        path: 'sales/reports/commissions',
+        lazy: async () => {
+          const mod = await import('../modules/sales/reports/SalesCommissionsReport');
+          return { Component: mod.default };
+        },
       },
       // --- Accounting: Journal Entry detail (show page) ---
       {
