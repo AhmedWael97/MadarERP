@@ -23,11 +23,12 @@
  *   />
  */
 import { ReactNode, useMemo, useState } from 'react';
-import { useFrappePostCall } from 'frappe-react-sdk';
+import { useFrappeGetCall, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk';
 import { Download, FileSpreadsheet, Printer, Search } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { DataTableToolbar, type ToolbarColumn } from '@/components/erp/DataTableToolbar';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
+import { useTenantStore } from '@/lib/store/tenantStore';
 
 export interface ReportColumn {
   /** Raw header text — keep Arabic if reference uses Arabic. */
@@ -86,17 +87,44 @@ export function FinancialReportShell({
     message?: { columns?: Array<{ fieldname: string; label: string; fieldtype?: string }>; result?: Array<unknown> };
   }>('frappe.desk.query_report.run');
 
+  // ── Auto-resolve `company` filter ──────────────────────────────────────────
+  // Every ERPNext accounting report requires a `company` filter — without it
+  // the report either errors or silently returns zero rows. We resolve it in
+  // this priority:
+  //   1. Caller passed `company` explicitly in the filters object.
+  //   2. Super-admin "opened" a tenant → activeTenantName (which IS the
+  //      Company doc name since tenant_company is a Link to Company).
+  //   3. First Company in the system (covers the common single-tenant case).
+  const activeTenantName = useTenantStore((s) => s.activeTenantName);
+  const { data: companiesResp } = useFrappeGetDocList<{ name: string }>('Company', {
+    fields: ['name'],
+    limit: 1,
+    orderBy: { field: 'creation', order: 'asc' },
+  }, activeTenantName || (filters as any)?.company ? null : 'reports:first-company');
+  const fallbackCompany = activeTenantName || companiesResp?.[0]?.name;
+
+  const resolvedFilters = useMemo(() => {
+    const out: Record<string, unknown> = { ...filters };
+    if (!out.company && fallbackCompany) {
+      out.company = fallbackCompany;
+    }
+    return out;
+  }, [filters, fallbackCompany]);
+
   // Fetch results — fires on first render (when autoFetch) and on every search click.
   useMemo(() => {
     if (overrideResults) return; // caller is supplying results — don't hit Frappe
     if (!autoFetch && refreshKey === 0) return;
+    // Don't fire until we have a company resolved, otherwise the very first
+    // render hits the report with no company and gets back zero rows.
+    if (!resolvedFilters.company) return;
     void call({
       report_name: reportName,
-      filters,
+      filters: resolvedFilters,
       ignore_prepared_report: 0,
     } as any).catch(() => { /* surfaced via UI */ });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshKey]);
+  }, [refreshKey, resolvedFilters.company]);
 
   const rawRows: Array<unknown> = overrideResults ?? result?.message?.result ?? [];
   const reportCols = result?.message?.columns ?? [];

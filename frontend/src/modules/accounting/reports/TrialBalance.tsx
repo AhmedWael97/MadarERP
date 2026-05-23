@@ -1,6 +1,7 @@
 /** ميزان المراجعة — wraps ERPNext "Trial Balance". */
 import { useState } from 'react';
 import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '../FinancialReportShell';
+import { localDate, localYearStart } from '@/lib/formatters/dates';
 
 const COLUMNS: ReportColumn[] = [
   { label: 'الكود', fieldname: 'account_number' },
@@ -11,10 +12,8 @@ const COLUMNS: ReportColumn[] = [
 ];
 
 export default function TrialBalancePage() {
-  const today = new Date().toISOString().slice(0, 10);
-  const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
-  const [fromDate, setFromDate] = useState(yearStart);
-  const [toDate, setToDate] = useState(today);
+  const [fromDate, setFromDate] = useState(localYearStart());
+  const [toDate, setToDate] = useState(localDate());
 
   return (
     <FinancialReportShell

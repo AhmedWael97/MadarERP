@@ -2,6 +2,7 @@
  *  Switching to Supplier flips the report to "Accounts Payable" (الدائنة). */
 import { useState } from 'react';
 import { FinancialReportShell, type ReportColumn } from '../FinancialReportShell';
+import { localDate } from '@/lib/formatters/dates';
 
 const COLUMNS: ReportColumn[] = [
   { label: 'العميل/المورد', fieldname: 'party' },
@@ -15,8 +16,7 @@ const COLUMNS: ReportColumn[] = [
 ];
 
 export default function AgingPage() {
-  const today = new Date().toISOString().slice(0, 10);
-  const [reportDate, setReportDate] = useState(today);
+  const [reportDate, setReportDate] = useState(localDate());
   const [partyType, setPartyType] = useState<'Customer' | 'Supplier'>('Customer');
 
   return (

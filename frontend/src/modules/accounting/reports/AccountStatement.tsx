@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useFrappeGetDocList } from 'frappe-react-sdk';
 import { FinancialReportShell, DateRangeFilters, type ReportColumn } from '../FinancialReportShell';
+import { localDate, localDaysAgo } from '@/lib/formatters/dates';
 
 const COLUMNS: ReportColumn[] = [
   { label: 'التاريخ', fieldname: 'posting_date' },
@@ -15,10 +16,8 @@ const COLUMNS: ReportColumn[] = [
 ];
 
 export default function AccountStatementPage() {
-  const today = new Date().toISOString().slice(0, 10);
-  const monthAgo = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
-  const [fromDate, setFromDate] = useState(monthAgo);
-  const [toDate, setToDate] = useState(today);
+  const [fromDate, setFromDate] = useState(localDaysAgo(30));
+  const [toDate, setToDate] = useState(localDate());
   const [account, setAccount] = useState('');
 
   const { data: accounts } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string }>('Account', {
