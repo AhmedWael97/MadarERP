@@ -88,9 +88,9 @@ def list_periods(fiscal_year: str) -> list[dict]:
         )
         r["closed"] = bool(closed and closed[0][0])
 
-        # Cash/Bank flow for this period. Restricted to non-cancelled GL entries
-        # against Cash or Bank account_type so the numbers map to 'money in'
-        # (debit) vs 'money out' (credit) — not to gross posting volume.
+        # Prefer Cash/Bank flow for this period. Some deployments don't maintain
+        # account_type consistently, so this can legitimately return zeros even
+        # when the fiscal period has accounting activity.
         flow = frappe.db.sql(
             """
             select
@@ -106,12 +106,31 @@ def list_periods(fiscal_year: str) -> list[dict]:
             (r["start_date"], r["end_date"], r["company"], r["company"]),
             as_dict=True,
         )
-        if flow:
-            r["total_in"] = float(flow[0]["debit_in"] or 0)
-            r["total_out"] = float(flow[0]["credit_out"] or 0)
-        else:
-            r["total_in"] = 0.0
-            r["total_out"] = 0.0
+        cash_in = float((flow[0]["debit_in"] if flow else 0) or 0)
+        cash_out = float((flow[0]["credit_out"] if flow else 0) or 0)
+
+        if cash_in > 0 or cash_out > 0:
+            r["total_in"] = cash_in
+            r["total_out"] = cash_out
+            continue
+
+        # Fallback: if Cash/Bank classified flow is zero, use all non-cancelled
+        # GL activity so the fiscal year page still reflects real movement.
+        fallback = frappe.db.sql(
+            """
+            select
+                coalesce(sum(gl.debit),  0) as debit_in,
+                coalesce(sum(gl.credit), 0) as credit_out
+            from `tabGL Entry` gl
+            where gl.is_cancelled = 0
+              and gl.posting_date between %s and %s
+              and (gl.company = %s or %s is null)
+            """,
+            (r["start_date"], r["end_date"], r["company"], r["company"]),
+            as_dict=True,
+        )
+        r["total_in"] = float((fallback[0]["debit_in"] if fallback else 0) or 0)
+        r["total_out"] = float((fallback[0]["credit_out"] if fallback else 0) or 0)
     return rows
 
 
