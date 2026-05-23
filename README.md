@@ -4,7 +4,8 @@ Replicates the scanned "مدار ERP" (Delta Enterprise) Laravel dashboard, with
 **Frappe + ERPNext + custom Frappe apps** as the backend and **React + Vite**
 as the SPA. Every customer is a separate Frappe **site** on its own subdomain.
 
-See [plan.md](./plan.md) for the full design.
+- **New contributor or AI agent?** Read [ONBOARDING.md](./ONBOARDING.md) first — fast path, ~10 minutes.
+- **Full design rationale**: [plan.md](./plan.md).
 
 ## Quick start
 
