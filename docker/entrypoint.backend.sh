@@ -203,7 +203,7 @@ banner "STEP 8: Writing dev Procfile"
 # bind-mounted volumes (inode/mtime noise), causing brief ECONNREFUSED windows
 # every few seconds. Disable it — restart the container to pick up Python changes.
 cat > Procfile <<'PROCFILE'
-web: bench serve --port 8000 --no-reload
+web: bench serve --port 8000 --noreload
 socketio: node apps/frappe/socketio.js
 schedule: bench schedule
 worker_short: bench worker --queue short,default
