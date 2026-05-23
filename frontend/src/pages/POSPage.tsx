@@ -1,11 +1,11 @@
-﻿/**
- * POSPage â€” Retail Point-of-Sale cashier interface.
+/**
+ * POSPage — Retail Point-of-Sale cashier interface.
  *
  * Flow:
  *  1. On load: check `madaar_core.api.current_pos_opening` for the user's open shift.
- *  2. No shift â†’ POS Profile picker + opening-cash dialog â†’ `open_pos_shift`.
- *  3. Shift open â†’ Cashier UI (barcode + search + grid + cart + payment).
- *  4. On close â†’ `close_pos_shift` flips the Opening Entry to Closed.
+ *  2. No shift → POS Profile picker + opening-cash dialog → `open_pos_shift`.
+ *  3. Shift open → Cashier UI (barcode + search + grid + cart + payment).
+ *  4. On close → `close_pos_shift` flips the Opening Entry to Closed.
  *
  * Layout:  [Product catalog (60%)] | [Cart + Customer + Payment (40%)]
  *
@@ -52,7 +52,7 @@ import {
 } from 'lucide-react';
 import { PageShell } from '../components/erp/PageShell';
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ─────────────────────────────────────────────────────────────────
 interface POSItem {
   name: string;
   item_code: string;
@@ -126,7 +126,7 @@ interface HeldOrder {
   globalDiscount: number;
 }
 
-// â”€â”€â”€ LocalStorage helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── LocalStorage helpers ──────────────────────────────────────────────────
 function holdKey(posMode: string, profile: string) {
   return `madaar_held_${posMode}_${profile}`;
 }
@@ -144,7 +144,7 @@ function genId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ───────────────────────────────────────────────────────────────
 function cartLineTotal(line: CartLine) {
   return line.qty * line.rate * (1 - line.discount_pct / 100);
 }
@@ -157,7 +157,7 @@ function formatTime(ts: number) {
   return new Date(ts).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 }
 
-// â”€â”€â”€ Sub-component: OrderTypePicker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: OrderTypePicker ────────────────────────────────────────
 function OrderTypePicker({
   posMode,
   value,
@@ -170,10 +170,10 @@ function OrderTypePicker({
   isAr: boolean;
 }) {
   const types = [
-    { type: 'walkin' as OrderType,   ar: 'Ø­Ø¶ÙˆØ±ÙŠ',      en: 'Walk-in',  icon: <User size={13} /> },
-    { type: 'delivery' as OrderType, ar: 'ØªÙˆØµÙŠÙ„',      en: 'Delivery', icon: <Truck size={13} /> },
+    { type: 'walkin' as OrderType,   ar: 'حضوري',      en: 'Walk-in',  icon: <User size={13} /> },
+    { type: 'delivery' as OrderType, ar: 'توصيل',      en: 'Delivery', icon: <Truck size={13} /> },
     ...(posMode === 'restaurant'
-      ? [{ type: 'dinein' as OrderType, ar: 'Ø¯Ø§Ø®Ù„ Ø§Ù„ØµØ§Ù„Ø©', en: 'Dine-in', icon: <Utensils size={13} /> }]
+      ? [{ type: 'dinein' as OrderType, ar: 'داخل الصالة', en: 'Dine-in', icon: <Utensils size={13} /> }]
       : []),
   ];
   return (
@@ -197,7 +197,7 @@ function OrderTypePicker({
   );
 }
 
-// â”€â”€â”€ Sub-component: TablePickerModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: TablePickerModal ───────────────────────────────────────
 function TablePickerModal({
   tables,
   selectedTable,
@@ -227,7 +227,7 @@ function TablePickerModal({
   }
   function statusLabel(s: string) {
     if (!isAr) return s;
-    return s === 'Available' ? 'Ù…ØªØ§Ø­Ø©' : s === 'Occupied' ? 'Ù…Ø´ØºÙˆÙ„Ø©' : s === 'Reserved' ? 'Ù…Ø­Ø¬ÙˆØ²Ø©' : 'Ø®Ø§Ø±Ø¬ Ø§Ù„Ø®Ø¯Ù…Ø©';
+    return s === 'Available' ? 'متاحة' : s === 'Occupied' ? 'مشغولة' : s === 'Reserved' ? 'محجوزة' : 'خارج الخدمة';
   }
 
   return (
@@ -236,12 +236,12 @@ function TablePickerModal({
         <div className="flex items-center justify-between px-5 py-4 bg-[color:var(--color-brand-600)] text-white shrink-0">
           <h2 className="font-bold text-lg flex items-center gap-2">
             <LayoutGrid size={20} />
-            {isAr ? 'Ø§Ø®ØªØ± Ø·Ø§ÙˆÙ„Ø©' : 'Select a Table'}
+            {isAr ? 'اختر طاولة' : 'Select a Table'}
           </h2>
           <button type="button" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="flex gap-4 px-5 py-3 border-b border-slate-100 dark:border-white/5 flex-wrap shrink-0">
-          {[['Available', isAr ? 'Ù…ØªØ§Ø­Ø©' : 'Available', 'bg-emerald-400'], ['Occupied', isAr ? 'Ù…Ø´ØºÙˆÙ„Ø©' : 'Occupied', 'bg-rose-400'], ['Reserved', isAr ? 'Ù…Ø­Ø¬ÙˆØ²Ø©' : 'Reserved', 'bg-amber-400'], ['oos', isAr ? 'Ø®Ø§Ø±Ø¬ Ø§Ù„Ø®Ø¯Ù…Ø©' : 'Out of Service', 'bg-slate-400']].map(([, label, dot]) => (
+          {[['Available', isAr ? 'متاحة' : 'Available', 'bg-emerald-400'], ['Occupied', isAr ? 'مشغولة' : 'Occupied', 'bg-rose-400'], ['Reserved', isAr ? 'محجوزة' : 'Reserved', 'bg-amber-400'], ['oos', isAr ? 'خارج الخدمة' : 'Out of Service', 'bg-slate-400']].map(([, label, dot]) => (
             <span key={label} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className={`w-2.5 h-2.5 rounded-full ${dot}`} />{label}
             </span>
@@ -265,7 +265,7 @@ function TablePickerModal({
                       }`}
                     >
                       <span className="text-xl font-black">{t.table_number}</span>
-                      {t.capacity != null && <span className="text-[10px] font-normal opacity-70">{t.capacity} {isAr ? 'Ù…Ù‚Ø¹Ø¯' : 'seats'}</span>}
+                      {t.capacity != null && <span className="text-[10px] font-normal opacity-70">{t.capacity} {isAr ? 'مقعد' : 'seats'}</span>}
                       <span className="text-[10px] font-semibold">{statusLabel(t.status)}</span>
                     </button>
                   );
@@ -275,7 +275,7 @@ function TablePickerModal({
           ))}
           {tables.length === 0 && (
             <p className="text-center text-sm text-slate-400 py-8">
-              {isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ø§ÙˆÙ„Ø§Øª â€” Ø£Ø¶Ù Ø·Ø§ÙˆÙ„Ø§Øª Ù…Ù† Ù‚Ø³Ù… Ø§Ù„Ù…Ø·Ø¹Ù…' : 'No tables found. Add tables from the Restaurant module.'}
+              {isAr ? 'لا توجد طاولات — Ø£Ø¶Ù طاولات من قسم المطعم' : 'No tables found. Add tables from the Restaurant module.'}
             </p>
           )}
         </div>
@@ -284,7 +284,7 @@ function TablePickerModal({
   );
 }
 
-// â”€â”€â”€ Sub-component: HeldOrdersModal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: HeldOrdersModal ────────────────────────────────────────
 function HeldOrdersModal({
   orders,
   onResume,
@@ -300,20 +300,20 @@ function HeldOrdersModal({
   isAr: boolean;
   currency: string;
 }) {
-  const label = (t: OrderType) => ({ walkin: isAr ? 'Ø­Ø¶ÙˆØ±ÙŠ' : 'Walk-in', delivery: isAr ? 'ØªÙˆØµÙŠÙ„' : 'Delivery', dinein: isAr ? 'Ø¯Ø§Ø®Ù„ Ø§Ù„ØµØ§Ù„Ø©' : 'Dine-in' })[t];
+  const label = (t: OrderType) => ({ walkin: isAr ? 'حضوري' : 'Walk-in', delivery: isAr ? 'توصيل' : 'Delivery', dinein: isAr ? 'داخل الصالة' : 'Dine-in' })[t];
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 bg-amber-600 text-white shrink-0">
           <h2 className="font-bold text-lg flex items-center gap-2">
             <Pause size={18} />
-            {isAr ? `Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù‚Ø© (${orders.length})` : `Held Orders (${orders.length})`}
+            {isAr ? `الطلبات المعلقة (${orders.length})` : `Held Orders (${orders.length})`}
           </h2>
           <button type="button" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {orders.length === 0 && (
-            <p className="text-center text-sm text-slate-400 py-8">{isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©' : 'No held orders'}</p>
+            <p className="text-center text-sm text-slate-400 py-8">{isAr ? 'لا توجد طلبات معلقة' : 'No held orders'}</p>
           )}
           {orders.map((o) => {
             const raw = o.cart.reduce((s, l) => s + cartLineTotal(l), 0);
@@ -322,8 +322,8 @@ function HeldOrdersModal({
               <div key={o.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-800/50">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-slate-700 dark:text-white truncate">
-                    {o.customerSearch || (isAr ? 'Ø²Ø§Ø¦Ø±' : 'Walk-in')}
-                    {o.tableNumber && <span className="ms-2 text-xs text-[color:var(--color-brand-600)]">{isAr ? `â€¢ Ø·Ø§ÙˆÙ„Ø© ${o.tableNumber}` : `â€¢ Table ${o.tableNumber}`}</span>}
+                    {o.customerSearch || (isAr ? 'زائر' : 'Walk-in')}
+                    {o.tableNumber && <span className="ms-2 text-xs text-[color:var(--color-brand-600)]">{isAr ? `• طاولة ${o.tableNumber}` : `• Table ${o.tableNumber}`}</span>}
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
                     <span className="flex items-center gap-1"><Clock size={10} />{formatTime(o.timestamp)}</span>
@@ -338,7 +338,7 @@ function HeldOrdersModal({
                 <div className="flex flex-col gap-1.5 shrink-0">
                   <button type="button" onClick={() => onResume(o)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition">
-                    <Play size={11} />{isAr ? 'Ø§Ø³ØªÙƒÙ…Ø§Ù„' : 'Resume'}
+                    <Play size={11} />{isAr ? 'استكمال' : 'Resume'}
                   </button>
                   <button type="button" onClick={() => onDelete(o.id)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-rose-200/50 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-100 transition">
@@ -354,7 +354,7 @@ function HeldOrdersModal({
   );
 }
 
-// â”€â”€â”€ Sub-component: Product card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Product card ───────────────────────────────────────────
 function ProductCard({
   item,
   onAdd,
@@ -388,7 +388,7 @@ function ProductCard({
         </p>
         <p className="text-[10px] text-slate-400">{item.item_code}</p>
         <p className="mt-auto text-sm font-black text-[color:var(--color-brand-600)]">
-          {formatCurrency(item.price)} {isAr ? 'Ø¬.Ù…' : 'EGP'}
+          {formatCurrency(item.price)} {isAr ? 'ج.م' : 'EGP'}
         </p>
       </div>
       <div className="px-3 pb-3">
@@ -401,7 +401,7 @@ function ProductCard({
   );
 }
 
-// â”€â”€â”€ Sub-component: Cart line â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Cart line ───────────────────────────────────────────────
 function CartLineRow({
   line,
   onChange,
@@ -423,7 +423,7 @@ function CartLineRow({
         <p className="text-[10px] text-slate-400">{line.item.item_code}</p>
         {/* Rate override */}
         <div className="flex items-center gap-1 mt-1 flex-wrap">
-          <span className="text-[10px] text-slate-400">{isAr ? 'Ø§Ù„Ø³Ø¹Ø±:' : 'Price:'}</span>
+          <span className="text-[10px] text-slate-400">{isAr ? 'السعر:' : 'Price:'}</span>
           <input
             type="number"
             min={0}
@@ -432,7 +432,7 @@ function CartLineRow({
             onChange={(e) => onChange({ ...line, rate: parseFloat(e.target.value) || 0 })}
             className="w-16 px-1 py-0.5 text-xs rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-white"
           />
-          <span className="text-[10px] text-slate-400 ms-1">{isAr ? 'Ø®ØµÙ…%:' : 'Disc%:'}</span>
+          <span className="text-[10px] text-slate-400 ms-1">{isAr ? 'خصم%:' : 'Disc%:'}</span>
           <input
             type="number"
             min={0}
@@ -479,7 +479,7 @@ function CartLineRow({
   );
 }
 
-// â”€â”€â”€ Sub-component: Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Payment Modal ──────────────────────────────────────────
 function PaymentModal({
   isAr,
   total,
@@ -544,7 +544,7 @@ function PaymentModal({
 
         {/* Total */}
         <div className="px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-white/5 text-center">
-          <p className="text-xs text-slate-500 mb-1">{isAr ? 'Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ­Ù‚' : 'Total due'}</p>
+          <p className="text-xs text-slate-500 mb-1">{isAr ? 'الإجمالي المستحق' : 'Total due'}</p>
           <p className="text-3xl font-black text-slate-800 dark:text-white">
             {formatCurrency(total)} <span className="text-base font-normal text-slate-500">{currency}</span>
           </p>
@@ -554,7 +554,7 @@ function PaymentModal({
         <div className="p-5 space-y-3">
           {modes.length === 0 && (
             <p className="text-xs text-slate-400 text-center py-4">
-              {isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ø±Ù‚ Ø¯ÙØ¹ Ù…ØªØ§Ø­Ø©' : 'No payment modes available'}
+              {isAr ? 'لا توجد طرق Ø¯ÙØ¹ متاحة' : 'No payment modes available'}
             </p>
           )}
           {modes.map((m) => (
@@ -584,7 +584,7 @@ function PaymentModal({
               onClick={() => setModeAmount(cashMode.mode, total)}
               className="text-xs text-[color:var(--color-brand-600)] hover:underline"
             >
-              {isAr ? `â† ØªØ¹Ø¨Ø¦Ø© Ø§Ù„Ù…Ø¨Ù„Øº ÙƒØ§Ù…Ù„Ø§Ù‹ (${cashMode.mode})` : `â† Fill full amount (${cashMode.mode})`}
+              {isAr ? `â† تعبئة المبلغ كاملاً (${cashMode.mode})` : `â† Fill full amount (${cashMode.mode})`}
             </button>
           )}
         </div>
@@ -597,13 +597,13 @@ function PaymentModal({
           </div>
           {change > 0 && (
             <div className="flex justify-between text-emerald-600 font-bold">
-              <span>{isAr ? 'Ø§Ù„Ù…ØªØ¨Ù‚ÙŠ (ÙÙƒØ©):' : 'Change due:'}</span>
+              <span>{isAr ? 'المتبقي (ÙÙƒØ©):' : 'Change due:'}</span>
               <span>{formatCurrency(change)} {currency}</span>
             </div>
           )}
           {remaining > 0 && (
             <div className="flex justify-between text-amber-600 font-bold">
-              <span>{isAr ? 'Ù†Ø§Ù‚Øµ:' : 'Remaining:'}</span>
+              <span>{isAr ? 'ناقص:' : 'Remaining:'}</span>
               <span>{formatCurrency(remaining)} {currency}</span>
             </div>
           )}
@@ -618,7 +618,7 @@ function PaymentModal({
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? <RefreshCw size={16} className="animate-spin" /> : <Check size={16} />}
-            {isAr ? 'ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø¯ÙØ¹ ÙˆØ·Ø¨Ø§Ø¹Ø© Ø§Ù„ÙØ§ØªÙˆØ±Ø©' : 'Confirm payment & print receipt'}
+            {isAr ? 'تأكيد Ø§Ù„Ø¯ÙØ¹ وطباعة Ø§Ù„ÙØ§ØªÙˆØ±Ø©' : 'Confirm payment & print receipt'}
           </button>
         </div>
       </div>
@@ -626,7 +626,7 @@ function PaymentModal({
   );
 }
 
-// â”€â”€â”€ Sub-component: Profile picker (when no shift is open) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Profile picker (when no shift is open) ─────────────────
 function ProfilePicker({
   isAr,
   profiles,
@@ -652,9 +652,9 @@ function ProfilePicker({
         <div className="flex items-center gap-3">
           <Store size={22} />
           <div>
-            <h2 className="font-bold text-lg">{isAr ? 'ÙØªØ­ ÙˆØ±Ø¯ÙŠØ© Ø¬Ø¯ÙŠØ¯Ø©' : 'Open a new shift'}</h2>
+            <h2 className="font-bold text-lg">{isAr ? 'ÙØªØ­ وردية جديدة' : 'Open a new shift'}</h2>
             <p className="text-xs opacity-80">
-              {isAr ? 'Ø§Ø®ØªØ± Ù…Ù„Ù Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹ ÙˆØ­Ø¯Ø¯ Ø±ØµÙŠØ¯ Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©' : 'Pick a POS profile and set opening cash'}
+              {isAr ? 'اختر Ù…Ù„Ù نقطة البيع وحدد رصيد البداية' : 'Pick a POS profile and set opening cash'}
             </p>
           </div>
         </div>
@@ -664,14 +664,14 @@ function ProfilePicker({
         {/* Profile list */}
         <div>
           <label className="block text-xs font-bold text-slate-500 mb-2">
-            {isAr ? 'Ù…Ù„Ù Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹' : 'POS Profile'}
+            {isAr ? 'Ù…Ù„Ù نقطة البيع' : 'POS Profile'}
           </label>
           {profiles.length === 0 ? (
             <div className="py-6 px-4 text-center border border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
               <p className="text-sm text-slate-400">
                 {loading
-                  ? (isAr ? 'Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„â€¦' : 'Loadingâ€¦')
-                  : (isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù„ÙØ§Øª Ù†Ù‚Ø·Ø© Ø¨ÙŠØ¹ Ù…ÙØ¹Ù‘Ù„Ø© Ù„Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…' : 'No POS Profiles enabled for this user')}
+                  ? (isAr ? 'Ø¬Ø§Ø±Ù التحميل…' : 'Loading…')
+                  : (isAr ? 'لا توجد Ù…Ù„ÙØ§Øª نقطة بيع Ù…ÙØ¹Ù‘Ù„Ø© لهذا المستخدم' : 'No POS Profiles enabled for this user')}
               </p>
               {!loading && (
                 <button
@@ -681,13 +681,13 @@ function ProfilePicker({
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[color:var(--color-brand-600)] text-white text-sm font-bold hover:bg-[color:var(--color-brand-500)] transition disabled:opacity-50"
                 >
                   {bootstrapping ? <RefreshCw size={14} className="animate-spin" /> : <Plus size={14} />}
-                  {isAr ? 'Ø¥Ù†Ø´Ø§Ø¡ Ù…Ù„Ù Ø§ÙØªØ±Ø§Ø¶ÙŠ' : 'Create default profile'}
+                  {isAr ? 'إنشاء Ù…Ù„Ù Ø§ÙØªØ±Ø§Ø¶ÙŠ' : 'Create default profile'}
                 </button>
               )}
               {!loading && (
                 <p className="text-[10px] text-slate-400">
                   {isAr
-                    ? 'Ø³ÙŠØªÙ… Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ø±ÙƒØ© ÙˆØ§Ù„Ù…Ø®Ø²Ù† ÙˆØ¹Ù…Ù„Ø© Ø§ÙØªØ±Ø§Ø¶ÙŠØ© ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹'
+                    ? 'سيتم اختيار الشركة والمخزن وعملة Ø§ÙØªØ±Ø§Ø¶ÙŠØ© تلقائياً'
                     : 'Auto-picks your company, first warehouse, default currency, and Cash payment mode'}
                 </p>
               )}
@@ -707,7 +707,7 @@ function ProfilePicker({
                 >
                   <p className="text-sm font-bold text-slate-700 dark:text-white">{p.name}</p>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    {p.warehouse} Â· {p.currency}
+                    {p.warehouse} · {p.currency}
                   </p>
                 </button>
               ))}
@@ -718,7 +718,7 @@ function ProfilePicker({
         {/* Opening amount */}
         <div>
           <label className="block text-xs font-bold text-slate-500 mb-2">
-            {isAr ? 'Ø±ØµÙŠØ¯ Ø§Ù„ÙƒØ§Ø´ Ø§Ù„Ø§ÙØªØªØ§Ø­ÙŠ' : 'Opening cash balance'}
+            {isAr ? 'رصيد الكاش Ø§Ù„Ø§ÙØªØªØ§Ø­ÙŠ' : 'Opening cash balance'}
           </label>
           <input
             type="number"
@@ -738,14 +738,14 @@ function ProfilePicker({
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? <RefreshCw size={16} className="animate-spin" /> : <LogIn size={16} />}
-          {isAr ? 'ÙØªØ­ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Open shift'}
+          {isAr ? 'ÙØªØ­ الوردية' : 'Open shift'}
         </button>
       </div>
     </div>
   );
 }
 
-// â”€â”€â”€ Sub-component: Shift banner (top of cashier when shift is open) â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Shift banner (top of cashier when shift is open) ───────
 function ShiftBanner({
   isAr,
   opening,
@@ -769,16 +769,16 @@ function ShiftBanner({
           <p className="text-xs font-bold text-slate-700 dark:text-white truncate">
             {opening.pos_profile}
             <span className="ms-2 font-normal text-slate-400">
-              Â· {profile?.warehouse ?? 'â€”'} Â· {profile?.currency ?? 'â€”'}
+              · {profile?.warehouse ?? '—'} · {profile?.currency ?? '—'}
             </span>
           </p>
           <p className="text-[10px] text-slate-400">
-            {isAr ? 'Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Shift'} {opening.name}
+            {isAr ? 'الوردية' : 'Shift'} {opening.name}
             {opening.summary && (
               <>
-                {' Â· '}
+                {' · '}
                 {opening.summary.invoice_count} {isAr ? 'ÙØ§ØªÙˆØ±Ø©' : 'invoices'}
-                {' Â· '}
+                {' · '}
                 {formatCurrency(opening.summary.total_sales)} {profile?.currency ?? ''}
               </>
             )}
@@ -792,13 +792,13 @@ function ShiftBanner({
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 border border-rose-200/50 text-rose-700 dark:text-rose-300 text-xs font-bold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition disabled:opacity-50"
       >
         {closing ? <RefreshCw size={12} className="animate-spin" /> : <LogOut size={12} />}
-        {isAr ? 'Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©' : 'Close shift'}
+        {isAr ? 'إغلاق الوردية' : 'Close shift'}
       </button>
     </div>
   );
 }
 
-// â”€â”€â”€ Sub-component: Barcode input (auto-focus, Enter to submit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-component: Barcode input (auto-focus, Enter to submit) ────────────
 function BarcodeInput({
   isAr,
   onScan,
@@ -821,7 +821,7 @@ function BarcodeInput({
     if (!v) return;
     onScan(v);
     setCode('');
-    // Wedge scanners fire fast â€” refocus so the next scan lands here.
+    // Wedge scanners fire fast — refocus so the next scan lands here.
     setTimeout(() => ref.current?.focus(), 0);
   }
 
@@ -842,19 +842,19 @@ function BarcodeInput({
             submit();
           }
         }}
-        placeholder={isAr ? 'Ø§Ù…Ø³Ø­ Ø§Ù„Ø¨Ø§Ø±ÙƒÙˆØ¯ Ø£Ùˆ Ø§ÙƒØªØ¨ Ø§Ù„ÙƒÙˆØ¯â€¦' : 'Scan barcode or type codeâ€¦'}
+        placeholder={isAr ? 'امسح الباركود أو اكتب الكود…' : 'Scan barcode or type code…'}
         className="w-full ps-9 pe-3 py-2.5 text-sm rounded-xl border border-[color:var(--color-brand-300)] dark:border-[color:var(--color-brand-700)] bg-[color:var(--color-brand-50)]/40 dark:bg-slate-900 focus:ring-2 focus:ring-[color:var(--color-brand-500)] disabled:opacity-50"
       />
     </div>
   );
 }
 
-// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main component ─────────────────────────────────────────────────────────
 export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restaurant' }) {
   const { i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
 
-  // â”€â”€ Core state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Core state ────────────────────────────────────────────────────────────
   const [search, setSearch] = useState('');
   const [groupFilter, setGroupFilter] = useState('');
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -863,24 +863,24 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
   const [showCustomerDrop, setShowCustomerDrop] = useState(false);
   const [globalDiscount, setGlobalDiscount] = useState(0);
 
-  // â”€â”€ Order type + table (restaurant) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Order type + table (restaurant) ──────────────────────────────────────
   const [orderType, setOrderType] = useState<OrderType>('walkin');
   const [selectedTable, setSelectedTable] = useState('');
   const [selectedTableNumber, setSelectedTableNumber] = useState('');
   const [showTablePicker, setShowTablePicker] = useState(false);
 
-  // â”€â”€ Hold / resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Hold / resume ─────────────────────────────────────────────────────────
   const [heldOrders, setHeldOrders] = useState<HeldOrder[]>([]);
   const [showHeld, setShowHeld] = useState(false);
 
-  // â”€â”€ Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Payment ────────────────────────────────────────────────────────────────
   const [showPayment, setShowPayment] = useState(false);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const customerRef = useRef<HTMLDivElement>(null);
 
-  // â”€â”€ Shift / profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Shift / profile ───────────────────────────────────────────────────────
   const { data: profilesResp, isLoading: loadingProfiles, mutate: refetchProfiles } = useFrappeGetCall<{
     message: POSProfile[];
   }>('madaar_core.api.list_pos_profiles', undefined, 'pos-profiles');
@@ -908,7 +908,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opening?.name, mode]);
 
-  // â”€â”€ Data fetching (catalog, prices, groups, customers, payment modes) â”€â”€â”€â”€
+  // ── Data fetching (catalog, prices, groups, customers, payment modes) ────
   const { data: itemsResp } = useFrappeGetDocList<{
     name: string;
     item_code: string;
@@ -981,7 +981,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     }
   }, [activeProfile, customer]);
 
-  // â”€â”€ Derived data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Derived data ──────────────────────────────────────────────────────────
   const priceMap = useMemo(() => {
     const map: Record<string, number> = {};
     (pricesResp ?? []).forEach((p) => {
@@ -1030,13 +1030,13 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
         { mode: 'Credit', type: 'General', default: 0 },
       ];
 
-  // â”€â”€ Cart computations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Cart computations ─────────────────────────────────────────────────────
   const subtotal = cart.reduce((s, l) => s + cartLineTotal(l), 0);
   const discountAmt = subtotal * (globalDiscount / 100);
   const total = Math.max(0, subtotal - discountAmt);
   const totalQty = cart.reduce((s, l) => s + l.qty, 0);
 
-  // â”€â”€ Cart actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Cart actions ──────────────────────────────────────────────────────────
   const addItem = useCallback((item: POSItem) => {
     setCart((prev) => {
       const idx = prev.findIndex((l) => l.item.item_code === item.item_code);
@@ -1072,7 +1072,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     setSelectedTableNumber('');
   }
 
-  // â”€â”€ Table status helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Table status helper ───────────────────────────────────────────────────
   const { call: setTableStatus } = useFrappePostCall<any>('frappe.client.set_value');
 
   async function markTable(tableName: string, status: 'Occupied' | 'Available') {
@@ -1097,7 +1097,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     setSelectedTableNumber('');
   }
 
-  // â”€â”€ Hold / resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Hold / resume ─────────────────────────────────────────────────────────
   function holdOrder() {
     if (cart.length === 0 || !opening) return;
     const held: HeldOrder = {
@@ -1125,7 +1125,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     setOrderType('walkin');
     setSelectedTable('');
     setSelectedTableNumber('');
-    setSuccessMsg(isAr ? 'â¸ ØªÙ… ØªØ¹Ù„ÙŠÙ‚ Ø§Ù„Ø·Ù„Ø¨' : 'â¸ Order held');
+    setSuccessMsg(isAr ? 'â¸ تم تعليق الطلب' : 'â¸ Order held');
     setTimeout(() => setSuccessMsg(null), 3000);
   }
 
@@ -1168,7 +1168,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     if (opening) saveHeldOrders(mode, opening.pos_profile, updated);
   }
 
-  // â”€â”€ Submit invoice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Submit invoice ────────────────────────────────────────────────────────
   const { createDoc, loading: saving } = useFrappeCreateDoc();
 
   async function confirmPayment() {
@@ -1214,7 +1214,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
       // Free the table after a successful payment
       if (selectedTable && mode === 'restaurant') await markTable(selectedTable, 'Available');
 
-      setSuccessMsg(isAr ? 'âœ“ ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ÙØ§ØªÙˆØ±Ø© Ø¨Ù†Ø¬Ø§Ø­!' : 'âœ“ Invoice created successfully!');
+      setSuccessMsg(isAr ? '✓ تم إنشاء Ø§Ù„ÙØ§ØªÙˆØ±Ø© بنجاح!' : '✓ Invoice created successfully!');
       setShowPayment(false);
       clearCart();
       void refetchOpening();
@@ -1225,7 +1225,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     }
   }
 
-  // â”€â”€ Bootstrap default profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Bootstrap default profile ─────────────────────────────────────────────
   const { call: bootstrapProfile, loading: bootstrappingProfile } = useFrappePostCall<{
     message: { name: string; created: boolean };
   }>('madaar_core.api.create_default_pos_profile');
@@ -1236,8 +1236,8 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
       const res = await bootstrapProfile({});
       setSuccessMsg(
         isAr
-          ? `âœ“ ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ù„Ù ${res?.message?.name}`
-          : `âœ“ Created profile ${res?.message?.name}`,
+          ? `✓ تم إنشاء Ø§Ù„Ù…Ù„Ù ${res?.message?.name}`
+          : `✓ Created profile ${res?.message?.name}`,
       );
       setTimeout(() => setSuccessMsg(null), 4000);
       await refetchProfiles();
@@ -1246,7 +1246,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     }
   }
 
-  // â”€â”€ Shift open / close â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Shift open / close ────────────────────────────────────────────────────
   const { call: openShift, loading: openingShift } = useFrappePostCall<{ message: { name: string } }>(
     'madaar_core.api.open_pos_shift',
   );
@@ -1266,7 +1266,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
 
   async function handleCloseShift() {
     if (!opening) return;
-    if (!window.confirm(isAr ? 'Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ÙˆØ±Ø¯ÙŠØ©ØŸ' : 'Close the current shift?')) return;
+    if (!window.confirm(isAr ? 'هل تريد إغلاق الوردية؟' : 'Close the current shift?')) return;
     setErrorMsg(null);
     try {
       await closeShift({ pos_opening_entry: opening.name });
@@ -1277,7 +1277,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     }
   }
 
-  // â”€â”€ Barcode lookup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Barcode lookup ────────────────────────────────────────────────────────
   const { call: lookupBarcode } = useFrappePostCall<{ message: POSItem | null }>(
     'madaar_core.api.lookup_item_by_barcode',
   );
@@ -1300,7 +1300,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
       if (found) {
         addItem(found);
       } else {
-        setErrorMsg(isAr ? `Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ù…Ù†ØªØ¬ Ø¨Ø§Ù„ÙƒÙˆØ¯ ${code}` : `No item matches barcode ${code}`);
+        setErrorMsg(isAr ? `لا يوجد منتج بالكود ${code}` : `No item matches barcode ${code}`);
         setTimeout(() => setErrorMsg(null), 3000);
       }
     } catch (err: any) {
@@ -1308,15 +1308,15 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
     }
   }
 
-  // â”€â”€ Page labels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Page labels ───────────────────────────────────────────────────────────
   const pageTitle = mode === 'restaurant'
-    ? (isAr ? 'Ù†Ù‚Ø·Ø© Ø¨ÙŠØ¹ Ø§Ù„Ù…Ø·Ø¹Ù…' : 'Restaurant POS')
-    : (isAr ? 'Ù†Ù‚Ø·Ø© Ø§Ù„Ø¨ÙŠØ¹ (POS)' : 'Point of Sale');
+    ? (isAr ? 'نقطة بيع المطعم' : 'Restaurant POS')
+    : (isAr ? 'نقطة البيع (POS)' : 'Point of Sale');
   const pageSub = mode === 'restaurant'
-    ? (isAr ? 'ÙƒØ§Ø´ÙŠØ± Ø§Ù„Ù…Ø·Ø¹Ù… â€” Ø·Ø§ÙˆÙ„Ø§Øª ÙˆØµØ§Ù„Ø§Øª' : 'Restaurant cashier â€” halls & tables')
-    : (isAr ? 'ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„ÙƒØ§Ø´ÙŠØ± â€” Ø§Ù„Ø¨ÙŠØ¹ Ø§Ù„Ø³Ø±ÙŠØ¹' : 'Cashier interface â€” quick sale');
+    ? (isAr ? 'كاشير المطعم — طاولات وصالات' : 'Restaurant cashier — halls & tables')
+    : (isAr ? 'واجهة الكاشير — البيع السريع' : 'Cashier interface — quick sale');
 
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <PageShell title={pageTitle} subtitle={pageSub}>
       {successMsg && (
@@ -1330,7 +1330,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
         </div>
       )}
 
-      {/* No shift â†’ show profile picker only */}
+      {/* No shift → show profile picker only */}
       {!opening && (
         <ProfilePicker
           isAr={isAr}
@@ -1354,7 +1354,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
 
       <div className="flex gap-4 h-[calc(100vh-13rem)] min-h-[500px]">
 
-        {/* â•â• LEFT PANEL â€” Product catalog â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* â•â• LEFT PANEL — Product catalog â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="flex-1 flex flex-col gap-3 min-w-0">
           {/* Barcode + search + group filter */}
           <div className="flex gap-2 flex-wrap">
@@ -1365,7 +1365,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isAr ? 'Ø¨Ø­Ø« Ø¨Ø§Ù„Ø§Ø³Ù… Ø£Ùˆ Ø§Ù„ÙƒÙˆØ¯â€¦' : 'Search by name or codeâ€¦'}
+                placeholder={isAr ? 'بحث بالاسم أو الكود…' : 'Search by name or code…'}
                 className="w-full ps-9 pe-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[color:var(--color-brand-500)]"
               />
             </div>
@@ -1374,7 +1374,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
               onChange={(e) => setGroupFilter(e.target.value)}
               className="px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-w-[180px]"
             >
-              <option value="">{isAr ? 'ÙƒÙ„ Ø§Ù„ÙØ¦Ø§Øª' : 'All categories'}</option>
+              <option value="">{isAr ? 'كل Ø§Ù„ÙØ¦Ø§Øª' : 'All categories'}</option>
               {groups.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}
@@ -1386,7 +1386,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
             {filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                 <ShoppingCart size={40} className="opacity-30" />
-                <p className="text-sm">{isAr ? 'Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù†ØªØ¬Ø§Øª' : 'No products found'}</p>
+                <p className="text-sm">{isAr ? 'لا توجد منتجات' : 'No products found'}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pb-4">
@@ -1398,13 +1398,13 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
           </div>
         </div>
 
-        {/* â•â• RIGHT PANEL â€” Cart â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* â•â• RIGHT PANEL — Cart â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="w-[340px] shrink-0 flex flex-col gap-3">
 
           {/* Order type + table selector */}
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-white/5 p-3 space-y-2">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
-              {isAr ? 'Ù†ÙˆØ¹ Ø§Ù„Ø·Ù„Ø¨' : 'Order type'}
+              {isAr ? 'نوع الطلب' : 'Order type'}
             </p>
             <OrderTypePicker
               posMode={mode}
@@ -1415,7 +1415,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
               }}
               isAr={isAr}
             />
-            {/* Table picker â€” restaurant + dine-in only */}
+            {/* Table picker — restaurant + dine-in only */}
             {mode === 'restaurant' && orderType === 'dinein' && (
               <div className="flex items-center gap-2 pt-1">
                 <button
@@ -1429,8 +1429,8 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
                 >
                   <LayoutGrid size={15} />
                   {selectedTable
-                    ? (isAr ? `Ø·Ø§ÙˆÙ„Ø© ${selectedTableNumber}` : `Table ${selectedTableNumber}`)
-                    : (isAr ? 'Ø§Ø®ØªØ± Ø·Ø§ÙˆÙ„Ø©â€¦' : 'Select tableâ€¦')}
+                    ? (isAr ? `طاولة ${selectedTableNumber}` : `Table ${selectedTableNumber}`)
+                    : (isAr ? 'اختر طاولة…' : 'Select table…')}
                 </button>
                 {selectedTable && (
                   <button
@@ -1458,7 +1458,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
                   setShowCustomerDrop(true);
                 }}
                 onFocus={() => setShowCustomerDrop(true)}
-                placeholder={isAr ? 'Ø§Ø®ØªØ± Ø¹Ù…ÙŠÙ„ Ø£Ùˆ Ù†Ø²ÙŠÙ„â€¦' : 'Select customer or walk-inâ€¦'}
+                placeholder={isAr ? 'اختر عميل أو نزيل…' : 'Select customer or walk-in…'}
                 className="flex-1 text-sm bg-transparent outline-none text-slate-700 dark:text-white placeholder:text-slate-400"
               />
               <ChevronDown size={14} className="text-slate-400" />
@@ -1487,7 +1487,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
           <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-white/5 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5">
               <p className="text-sm font-bold text-slate-700 dark:text-white">
-                {isAr ? 'Ø§Ù„Ø³Ù„Ø©' : 'Cart'}
+                {isAr ? 'السلة' : 'Cart'}
                 {totalQty > 0 && (
                   <span className="ms-2 text-[10px] px-1.5 py-0.5 rounded-full bg-[color:var(--color-brand-100)] dark:bg-[color:var(--color-brand-900)] text-[color:var(--color-brand-700)] dark:text-[color:var(--color-brand-300)] font-bold">
                     {totalQty}
@@ -1499,7 +1499,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
                   type="button"
                   onClick={clearCart}
                   className="text-rose-400 hover:text-rose-600 transition"
-                  title={isAr ? 'ØªÙØ±ÙŠØº Ø§Ù„Ø³Ù„Ø©' : 'Clear cart'}
+                  title={isAr ? 'ØªÙØ±ÙŠØº السلة' : 'Clear cart'}
                 >
                   <Trash2 size={15} />
                 </button>
@@ -1509,7 +1509,7 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
               {cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-slate-300 dark:text-slate-600 gap-2 py-8">
                   <ShoppingCart size={36} />
-                  <p className="text-xs">{isAr ? 'Ø§Ù„Ø³Ù„Ø© ÙØ§Ø±ØºØ©' : 'Cart is empty'}</p>
+                  <p className="text-xs">{isAr ? 'السلة ÙØ§Ø±ØºØ©' : 'Cart is empty'}</p>
                 </div>
               ) : (
                 cart.map((line, idx) => (
@@ -1529,14 +1529,14 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
             {cart.length > 0 && (
               <div className="px-4 py-3 border-t border-slate-100 dark:border-white/5 space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>{isAr ? 'Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ù‚Ø¨Ù„ Ø§Ù„Ø®ØµÙ…' : 'Subtotal'}</span>
+                  <span>{isAr ? 'المجموع قبل الخصم' : 'Subtotal'}</span>
                   <span className="font-bold">{formatCurrency(subtotal)} {currency}</span>
                 </div>
                 {/* Global discount */}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs text-slate-500 flex items-center gap-1">
                     <Percent size={11} />
-                    {isAr ? 'Ø®ØµÙ… Ø¹Ø§Ù…%' : 'Overall disc%'}
+                    {isAr ? 'خصم عام%' : 'Overall disc%'}
                   </span>
                   <input
                     type="number"
@@ -1550,12 +1550,12 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
                 </div>
                 {globalDiscount > 0 && (
                   <div className="flex items-center justify-between text-xs text-rose-500">
-                    <span>{isAr ? 'Ø§Ù„Ø®ØµÙ…' : 'Discount'}</span>
+                    <span>{isAr ? 'الخصم' : 'Discount'}</span>
                     <span>-{formatCurrency(discountAmt)} {currency}</span>
                   </div>
                 )}
                 <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-white/5">
-                  <span className="text-sm font-black text-slate-700 dark:text-white">{isAr ? 'Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ' : 'Total'}</span>
+                  <span className="text-sm font-black text-slate-700 dark:text-white">{isAr ? 'الإجمالي' : 'Total'}</span>
                   <span className="text-lg font-black text-[color:var(--color-brand-600)]">
                     {formatCurrency(total)} {currency}
                   </span>
@@ -1571,11 +1571,11 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
               type="button"
               disabled={cart.length === 0}
               onClick={holdOrder}
-              title={isAr ? 'ØªØ¹Ù„ÙŠÙ‚ Ø§Ù„Ø·Ù„Ø¨' : 'Hold order'}
+              title={isAr ? 'تعليق الطلب' : 'Hold order'}
               className="flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl bg-amber-500 text-white font-bold text-xs hover:bg-amber-400 transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Pause size={15} />
-              {isAr ? 'ØªØ¹Ù„ÙŠÙ‚' : 'Hold'}
+              {isAr ? 'تعليق' : 'Hold'}
             </button>
 
             {/* View held orders */}
@@ -1583,10 +1583,10 @@ export default function POSPage({ mode = 'retail' }: { mode?: 'retail' | 'restau
               type="button"
               onClick={() => setShowHeld(true)}
               className="relative flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-              title={isAr ? 'Ø§Ù„Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù‚Ø©' : 'Held orders'}
+              title={isAr ? 'الطلبات المعلقة' : 'Held orders'}
             >
               <Play size={15} />
-              {isAr ? 'Ø§Ù„Ù…Ø¹Ù„Ù‚Ø©' : 'Held'}
+              {isAr ? 'المعلقة' : 'Held'}
               {heldOrders.length > 0 && (
                 <span className="absolute -top-1.5 -end-1.5 min-w-[18px] h-[18px] text-[10px] font-black bg-amber-500 text-white rounded-full flex items-center justify-center px-1">
                   {heldOrders.length}
