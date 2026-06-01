@@ -85,8 +85,10 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
+  // save_and_submit creates + submits in one atomic call, avoiding timestamp race conditions
+  const { call: saveAndSubmitCall, loading: savingAndSubmitting } = useFrappePostCall<{ message: unknown }>('frappe.client.save_and_submit');
   const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
-  const saving = creating || updating || submitting;
+  const saving = creating || updating || submitting || savingAndSubmitting;
 
   const totalDebit = useMemo(() => (doc.accounts ?? []).reduce((s, l) => s + Number(l.debit_in_account_currency ?? 0), 0), [doc.accounts]);
   const totalCredit = useMemo(() => (doc.accounts ?? []).reduce((s, l) => s + Number(l.credit_in_account_currency ?? 0), 0), [doc.accounts]);
@@ -134,22 +136,25 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
         })),
     };
     try {
-      let savedName = name;
       if (isEdit && name) {
-        await updateDoc('Journal Entry', name, payload);
-      } else {
-        const res = await createDoc('Journal Entry', payload);
-        savedName = (res as any)?.name ?? '';
-      }
-      if (andSubmit && savedName && (doc.docstatus ?? 0) === 0) {
-        try {
-          await submitCall({ doc: JSON.stringify({ doctype: 'Journal Entry', name: savedName }) });
-          toast.success('تم الانشاء والترحيل');
-        } catch (submitErr: any) {
-          toast.warning('تم الحفظ كمسودة — تعذر الترحيل: ' + (extractFrappeError(submitErr) ?? ''));
+        // Edit mode: update the existing draft
+        const updated = await updateDoc('Journal Entry', name, payload) as any;
+        if (andSubmit && (doc.docstatus ?? 0) === 0) {
+          // Pass modified from the update response so Frappe's timestamp check passes
+          const modifiedTs = updated?.modified ?? updated?.message?.modified ?? '';
+          await submitCall({ doc: JSON.stringify({ doctype: 'Journal Entry', name, ...(modifiedTs ? { modified: modifiedTs } : {}) }) });
+          toast.success('تم الترحيل');
+        } else {
+          toast.success('تم تحديث القيد');
         }
+      } else if (andSubmit) {
+        // Create + submit atomically — avoids timestamp race condition
+        await saveAndSubmitCall({ doc: JSON.stringify({ doctype: 'Journal Entry', ...payload }) });
+        toast.success('تم الإنشاء والترحيل');
       } else {
-        toast.success(isEdit ? 'تم تحديث القيد' : 'تم حفظ القيد كمسودة');
+        // Save as draft only
+        await createDoc('Journal Entry', payload);
+        toast.success('تم حفظ القيد كمسودة');
       }
       onDone();
     } catch (e: any) {
