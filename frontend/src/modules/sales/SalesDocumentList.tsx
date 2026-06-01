@@ -56,6 +56,7 @@ interface SDRow {
   customer?: string;
   party_name?: string;
   grand_total?: number;
+  outstanding_amount?: number;
   status?: string;
   docstatus?: 0 | 1 | 2;
 }
@@ -122,7 +123,7 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
   }, [baseFilters, search, statusFilter, from, to, cfg]);
 
   const { data: rows, isLoading } = useFrappeGetDocList<SDRow>(cfg.doctype, {
-    fields: ['name', cfg.dateField, cfg.customerField, 'grand_total', 'status', 'docstatus'],
+    fields: ['name', cfg.dateField, cfg.customerField, 'grand_total', 'outstanding_amount', 'status', 'docstatus'],
     filters,
     limit: 100,
     orderBy: { field: cfg.dateField, order: 'desc' },
@@ -195,6 +196,7 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
                 {!hide(cfg.dateField) && <Th>التاريخ</Th>}
                 {!hide(cfg.customerField) && <Th>العميل</Th>}
                 {!hide('grand_total') && <Th>الإجمالي</Th>}
+                {variant === 'invoices' && <Th>المتبقي</Th>}
                 {!hide('status') && <Th>الحالة</Th>}
                 <Th />
               </tr>
@@ -208,6 +210,13 @@ function Body({ cfg, variant }: { cfg: VariantConfig; variant: string }) {
                   {!hide(cfg.dateField) && <td className="px-5 py-3 text-sm text-slate-600">{r[cfg.dateField as keyof SDRow] as string ?? '—'}</td>}
                   {!hide(cfg.customerField) && <td className="px-5 py-3 text-sm text-slate-800">{r[cfg.customerField as keyof SDRow] as string ?? '—'}</td>}
                   {!hide('grand_total') && <td className="px-5 py-3 text-sm font-mono">{fmtNum(r.grand_total ?? 0)}</td>}
+                  {variant === 'invoices' && (
+                    <td className="px-5 py-3 text-sm font-mono">
+                      {r.docstatus === 1
+                        ? <span className={(r.outstanding_amount ?? 0) > 0 ? 'text-red-600 font-semibold' : 'text-emerald-600'}>{fmtNum(r.outstanding_amount ?? 0)}</span>
+                        : '—'}
+                    </td>
+                  )}
                   {!hide('status') && <td className="px-5 py-3"><StatusBadge docstatus={r.docstatus ?? 0} status={r.status} /></td>}
                   <td className="px-5 py-3">
                     <div className="flex items-center justify-center gap-1">

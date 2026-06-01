@@ -1,8 +1,9 @@
 /** SalesDocumentDetail — shared show page for invoice/order/quotation/return. */
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk';
+import { useState } from 'react';
+import { useFrappeGetDoc, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk';
 import { toast } from 'sonner';
-import { ArrowRight, ArrowRightLeft, CheckCircle, FileText, Pencil, Printer } from 'lucide-react';
+import { ArrowRight, ArrowRightLeft, CheckCircle, CreditCard, FileText, Pencil, Printer, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -44,6 +45,7 @@ interface SalesDoc {
   discount_amount?: number;
   total_taxes_and_charges?: number;
   grand_total?: number;
+  outstanding_amount?: number;
   remarks?: string;
   project?: string;
   cost_center?: string;
@@ -64,6 +66,56 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
   // Insert mapped doc as draft
   const { call: insertCall } = useFrappePostCall<{ message: any }>('frappe.client.insert');
   const converting = makingOrder || makingInvoice;
+
+  // Register Payment (for Sales Invoice)
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payAmount, setPayAmount] = useState('');
+  const [payMop, setPayMop] = useState('Cash');
+  const [registering, setRegistering] = useState(false);
+  const { call: getPaymentEntryCall } = useFrappePostCall<{ message: any }>(
+    'erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry',
+  );
+  const { call: saveAndSubmitCall } = useFrappePostCall<{ message: any }>('frappe.client.save_and_submit');
+  const { data: mopList } = useFrappeGetDocList<{ name: string }>('Mode of Payment', {
+    fields: ['name'],
+    limit: 50,
+  });
+
+  async function registerPayment() {
+    if (!doc) return;
+    const amount = parseFloat(payAmount);
+    if (!amount || amount <= 0) { toast.error('أدخل مبلغاً صحيحاً'); return; }
+    setRegistering(true);
+    try {
+      const res = await getPaymentEntryCall({
+        dt: 'Sales Invoice',
+        dn: doc.name,
+        party_amount: amount,
+        bank_account: '',
+        bank_amount: 0,
+      });
+      const peData = res?.message;
+      if (!peData) throw new Error('لم يتم الحصول على بيانات الدفعة');
+      // Override mode_of_payment and adjust amounts
+      peData.mode_of_payment = payMop;
+      peData.paid_amount = amount;
+      peData.received_amount = amount;
+      // Fix allocated amount in references to match entered amount
+      if (Array.isArray(peData.references) && peData.references.length > 0) {
+        peData.references[0].allocated_amount = amount;
+      }
+      const saved = await saveAndSubmitCall({ doc: JSON.stringify(peData) });
+      if (!saved?.message) throw new Error('فشل حفظ الدفعة');
+      toast.success('تم تسجيل الدفعة وترحيلها بنجاح');
+      setShowPayModal(false);
+      void refreshDoc();
+    } catch (e: any) {
+      const msg = e?.exc ?? e?.message ?? 'تعذر تسجيل الدفعة';
+      toast.error(msg);
+    } finally {
+      setRegistering(false);
+    }
+  }
 
   if (isLoading || !doc) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
@@ -133,6 +185,16 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
                   <Pencil size={16} /> تعديل
                 </Link>
               </>
+            )}
+            {/* Register Payment — Sales Invoice only when submitted and has outstanding amount */}
+            {doc.docstatus === 1 && variant === 'invoice' && (doc.outstanding_amount ?? 0) > 0 && (
+              <button
+                type="button"
+                onClick={() => { setPayAmount(String(doc.outstanding_amount ?? '')); setShowPayModal(true); }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm"
+              >
+                <CreditCard size={16} /> تسجيل دفعة
+              </button>
             )}
             {/* Quotation → Sales Order (only when submitted) */}
             {doc.docstatus === 1 && variant === 'quotation' && (
@@ -218,9 +280,77 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
               <Sum label="إجمالي الخصم" value={doc.discount_amount ?? 0} color="red" />
               <Sum label="إجمالي الضريبة" value={doc.total_taxes_and_charges ?? 0} />
               <Sum label="الإجمالي النهائي" value={doc.grand_total ?? 0} color="brand" big />
+              {variant === 'invoice' && doc.docstatus === 1 && (
+                <Sum label="المبلغ المتبقي" value={doc.outstanding_amount ?? 0} color={(doc.outstanding_amount ?? 0) > 0 ? 'red' : 'slate'} />
+              )}
             </div>
           </div>
         </div>
+
+        {/* Register Payment Modal */}
+        {showPayModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white">تسجيل دفعة</h2>
+                <button type="button" onClick={() => setShowPayModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X size={20} />
+                </button>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 mb-1">الفاتورة</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-white">{doc.name}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  المبلغ المدفوع <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={doc.outstanding_amount ?? undefined}
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
+                  dir="ltr"
+                />
+                {(doc.outstanding_amount ?? 0) > 0 && (
+                  <p className="text-xs text-slate-400 mt-1">المتبقي: {fmtNum(doc.outstanding_amount ?? 0)}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">طريقة الدفع</label>
+                <select
+                  value={payMop}
+                  onChange={(e) => setPayMop(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
+                >
+                  {(mopList ?? [{ name: 'Cash' }]).map((m) => (
+                    <option key={m.name} value={m.name}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  disabled={registering}
+                  onClick={registerPayment}
+                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50"
+                >
+                  {registering ? 'جاري التسجيل...' : 'تأكيد الدفعة'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPayModal(false)}
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl transition-all"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </PageShell>
     </RequirePerm>
   );

@@ -10,6 +10,7 @@ import {
   useFrappeGetCall,
   useFrappeGetDoc,
   useFrappeGetDocList,
+  useFrappePostCall,
   useFrappeUpdateDoc,
   useSWRConfig,
 } from 'frappe-react-sdk';
@@ -122,8 +123,6 @@ function Body({
     party_type: 'Supplier',
     mode_of_payment: 'Cash',
   });
-  const [submitting, setSubmitting] = useState(false);
-
   // Company defaults so we can auto-fill the party-side account.
   const { data: defaults } = useFrappeGetCall<{ message: { default_company?: string } }>(
     'frappe.client.get_value',
@@ -177,8 +176,9 @@ function Body({
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
+  const { call: saveAndSubmitCall, loading: saveAndSubmitting } = useFrappePostCall<{ message: any }>('frappe.client.save_and_submit');
   const { mutate: mutateCache } = useSWRConfig();
-  const saving = creating || updating || submitting;
+  const saving = creating || updating || saveAndSubmitting;
 
   // The list pages use the SDK's default SWR key (a string built from the
   // resource URL + query params), so any cached `/api/resource/Payment Entry`
@@ -276,37 +276,42 @@ function Body({
     });
 
     try {
-      let savedName: string;
-      if (isEdit && name) {
-        await updateDoc('Payment Entry', name, payload);
-        savedName = name;
-        toast.success('تم تحديث السند');
+      if (andSubmit && !isEdit) {
+        // New + submit: atomic to avoid modified timestamp race
+        const docPayload = { doctype: 'Payment Entry', ...payload };
+        await saveAndSubmitCall({ doc: JSON.stringify(docPayload) });
+        toast.success('تم حفظ وترحيل السند');
       } else {
-        const res = await createDoc('Payment Entry', payload);
-        savedName = (res as any)?.name ?? '';
-        toast.success('تم حفظ السند');
-      }
+        let savedName: string;
+        if (isEdit && name) {
+          await updateDoc('Payment Entry', name, payload);
+          savedName = name;
+          toast.success('تم تحديث السند');
+        } else {
+          const res = await createDoc('Payment Entry', payload);
+          savedName = (res as any)?.name ?? '';
+          toast.success('تم حفظ السند');
+        }
 
-      if (andSubmit && savedName) {
-        setSubmitting(true);
-        try {
-          const csrf = getCsrf();
-          const r = await fetch('/api/method/frappe.client.submit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'X-Frappe-CSRF-Token': csrf,
-            },
-            body: `doc=${encodeURIComponent(
-              JSON.stringify({ doctype: 'Payment Entry', name: savedName }),
-            )}`,
-          });
-          if (!r.ok) throw new Error('Submit failed');
-          toast.success('تم ترحيل السند');
-        } catch {
-          toast.error('تم الحفظ لكن تعذر الترحيل — راجع الإعدادات');
-        } finally {
-          setSubmitting(false);
+        if (andSubmit && savedName) {
+          try {
+            const csrf = getCsrf();
+            const r = await fetch('/api/method/frappe.client.submit', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Frappe-CSRF-Token': csrf,
+              },
+              body: `doc=${encodeURIComponent(JSON.stringify({ doctype: 'Payment Entry', name: savedName }))}`,
+            });
+            if (!r.ok) {
+              const body = await r.json().catch(() => ({}));
+              throw new Error((body as any)?.exc ?? 'Submit failed');
+            }
+            toast.success('تم ترحيل السند');
+          } catch (submitErr: any) {
+            toast.error('تم الحفظ لكن تعذر الترحيل: ' + (submitErr?.message ?? ''));
+          }
         }
       }
 
