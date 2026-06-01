@@ -16,7 +16,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useFrappeCreateDoc, useFrappeGetDoc, useFrappeGetDocList, useFrappeUpdateDoc } from 'frappe-react-sdk';
+import { useFrappeCreateDoc, useFrappeGetDoc, useFrappeGetDocList, useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk';
 import { toast } from 'sonner';
 import { ArrowRight, AlertCircle, CheckCircle2, Plus, Trash2, X } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
@@ -37,6 +37,7 @@ interface JEDoc {
   user_remark?: string;
   cost_center?: string;
   accounts?: JELine[];
+  docstatus?: 0 | 1 | 2;
 }
 
 export default function JournalEntryFormPage({ mode }: { mode: 'create' | 'edit' }) {
@@ -77,7 +78,8 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
-  const saving = creating || updating;
+  const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
+  const saving = creating || updating || submitting;
 
   const totalDebit = useMemo(() => (doc.accounts ?? []).reduce((s, l) => s + Number(l.debit_in_account_currency ?? 0), 0), [doc.accounts]);
   const totalCredit = useMemo(() => (doc.accounts ?? []).reduce((s, l) => s + Number(l.credit_in_account_currency ?? 0), 0), [doc.accounts]);
@@ -96,8 +98,7 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   function addLine() { setDoc((d) => ({ ...d, accounts: [...(d.accounts ?? []), emptyLine()] })); }
   function removeLine(idx: number) { setDoc((d) => ({ ...d, accounts: (d.accounts ?? []).filter((_, i) => i !== idx) })); }
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function save(andSubmit: boolean) {
     if (!isBalanced) {
       toast.error('القيد غير متوازن — يجب أن يتساوى المدين والدائن');
       return;
@@ -117,17 +118,32 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
         })),
     };
     try {
+      let savedName = name;
       if (isEdit && name) {
         await updateDoc('Journal Entry', name, payload);
-        toast.success('تحديث القيد');
       } else {
-        await createDoc('Journal Entry', payload);
-        toast.success('حفظ القيد');
+        const res = await createDoc('Journal Entry', payload);
+        savedName = (res as any)?.name ?? '';
+      }
+      if (andSubmit && savedName && (doc.docstatus ?? 0) === 0) {
+        try {
+          await submitCall({ doc: JSON.stringify({ doctype: 'Journal Entry', name: savedName }) });
+          toast.success('تم الانشاء والترحيل');
+        } catch (submitErr: any) {
+          toast.warning('تم الحفظ كمسودة — تعذر الترحيل: ' + (extractFrappeError(submitErr) ?? ''));
+        }
+      } else {
+        toast.success(isEdit ? 'تم تحديث القيد' : 'تم حفظ القيد كمسودة');
       }
       onDone();
     } catch (e: any) {
       toast.error(extractFrappeError(e) ?? 'تعذر الحفظ');
     }
+  }
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    save(true);
   }
 
   return (
@@ -229,12 +245,22 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
           <button type="button" onClick={onDone} className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl transition-all">
             <Trash2 size={16} /> إلغاء
           </button>
+          {!isEdit && (
+            <button
+              type="button"
+              disabled={!isBalanced || saving}
+              onClick={() => save(false)}
+              className={'inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl transition-all border ' + (isBalanced ? 'border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5' : 'border-slate-200 text-slate-400 cursor-not-allowed')}
+            >
+              حفظ كمسودة
+            </button>
+          )}
           <button
             type="submit"
             disabled={!isBalanced || saving}
             className={'inline-flex items-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl transition-all ' + (isBalanced ? 'bg-gradient-to-r from-[color:var(--color-brand-500)] to-[color:var(--color-brand-600)] hover:from-[color:var(--color-brand-600)] hover:to-[color:var(--color-brand-700)] shadow-lg shadow-[color:var(--color-brand-500)]/20' : 'bg-gradient-to-r from-slate-300 to-slate-400 cursor-not-allowed')}
           >
-            {isEdit ? 'تحديث القيد' : 'حفظ القيد'}
+            {saving ? 'جاري...' : isEdit ? 'تحديث القيد' : 'حفظ وترحيل'}
           </button>
         </div>
       </div>
