@@ -432,7 +432,14 @@ export const router = createBrowserRouter(
         path: 'sales/returns/:id',
         element: (<Suspense fallback={Loading}><SalesDocumentDetail variant="return" /></Suspense>),
       },
-      // --- Purchases: detail pages for invoice/order/return ---
+      // --- Purchases: detail pages for invoice/order/receipt/return ---
+      {
+        path: 'purchases/receipts',
+        lazy: async () => {
+          const mod = await import('../modules/purchases/receipts/overrides/page');
+          return { Component: mod.default };
+        },
+      },
       {
         path: 'purchases/invoices/:id',
         element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="invoice" /></Suspense>),
@@ -440,6 +447,10 @@ export const router = createBrowserRouter(
       {
         path: 'purchases/orders/:id',
         element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="order" /></Suspense>),
+      },
+      {
+        path: 'purchases/receipts/:id',
+        element: (<Suspense fallback={Loading}><PurchaseDocumentDetail variant="receipt" /></Suspense>),
       },
       {
         path: 'purchases/returns/:id',

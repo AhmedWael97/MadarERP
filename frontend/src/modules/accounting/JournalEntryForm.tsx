@@ -29,6 +29,8 @@ interface JELine {
   credit_in_account_currency?: number;
   user_remark?: string;
   cost_center?: string;
+  party_type?: string;
+  party?: string;
 }
 
 interface JEDoc {
@@ -68,13 +70,18 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
   const { data: existing } = useFrappeGetDoc<JEDoc>('Journal Entry', isEdit ? name : undefined, isEdit && name ? `je:${name}` : null);
   useEffect(() => { if (existing) setDoc((d) => ({ ...d, ...existing, accounts: existing.accounts ?? d.accounts })); }, [existing]);
 
-  const { data: accounts } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string }>('Account', {
-    fields: ['name', 'account_name', 'account_number'],
+  const { data: accounts } = useFrappeGetDocList<{ name: string; account_name?: string; account_number?: string; account_type?: string }>('Account', {
+    fields: ['name', 'account_name', 'account_number', 'account_type'],
     filters: [['is_group', '=', 0], ['disabled', '=', 0]],
     limit: 500,
     orderBy: { field: 'account_number', order: 'asc' },
   });
   const { data: costCenters } = useFrappeGetDocList<{ name: string }>('Cost Center', { fields: ['name'], limit: 100 });
+  const { data: customers } = useFrappeGetDocList<{ name: string; customer_name?: string }>('Customer', { fields: ['name', 'customer_name'], limit: 500, orderBy: { field: 'customer_name', order: 'asc' } });
+  const { data: suppliers } = useFrappeGetDocList<{ name: string; supplier_name?: string }>('Supplier', { fields: ['name', 'supplier_name'], limit: 500, orderBy: { field: 'supplier_name', order: 'asc' } });
+
+  // Map account name → account_type for quick AR/AP detection
+  const accountTypeMap = useMemo(() => new Map((accounts ?? []).map((a) => [a.name, a.account_type ?? ''])), [accounts]);
 
   const { createDoc, loading: creating } = useFrappeCreateDoc();
   const { updateDoc, loading: updating } = useFrappeUpdateDoc();
@@ -92,6 +99,13 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
       // Mutex debit/credit: typing one zeroes the other.
       if (patch.debit_in_account_currency !== undefined && Number(patch.debit_in_account_currency) > 0) next[idx].credit_in_account_currency = 0;
       if (patch.credit_in_account_currency !== undefined && Number(patch.credit_in_account_currency) > 0) next[idx].debit_in_account_currency = 0;
+      // Auto-set party_type when account changes to an AR/AP account
+      if (patch.account !== undefined) {
+        const accType = accountTypeMap.get(patch.account ?? '');
+        if (accType === 'Receivable') { next[idx].party_type = 'Customer'; next[idx].party = ''; }
+        else if (accType === 'Payable') { next[idx].party_type = 'Supplier'; next[idx].party = ''; }
+        else { next[idx].party_type = ''; next[idx].party = ''; }
+      }
       return { ...d, accounts: next };
     });
   }
@@ -115,6 +129,8 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
           credit_in_account_currency: Number(l.credit_in_account_currency ?? 0),
           user_remark: l.user_remark,
           cost_center: l.cost_center,
+          party_type: l.party_type ?? '',
+          party: l.party ?? '',
         })),
     };
     try {
@@ -184,7 +200,8 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
             <thead>
               <tr className="border-b border-slate-100 dark:border-white/5">
                 <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase w-10">#</th>
-                <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase min-w-[250px]">الحساب *</th>
+                <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase min-w-[220px]">الحساب *</th>
+                <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase min-w-[180px]">الطرف (عميل/مورد)</th>
                 <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase w-32">مدين</th>
                 <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase w-32">دائن</th>
                 <th className="px-4 py-3 text-start text-xs font-bold text-slate-500 uppercase min-w-[150px]">البيان</th>
@@ -200,6 +217,38 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
                       <option value="">اختر حساب</option>
                       {(accounts ?? []).map((a) => (<option key={a.name} value={a.name}>{a.account_number ?? ''} — {a.account_name ?? a.name}</option>))}
                     </select>
+                  </td>
+                  {/* Party Type + Party — only required for AR/AP accounts */}
+                  <td className="px-4 py-2">
+                    {(() => {
+                      const accType = accountTypeMap.get(line.account ?? '');
+                      if (accType !== 'Receivable' && accType !== 'Payable') return <span className="text-xs text-slate-300">—</span>;
+                      const partyList = accType === 'Receivable' ? (customers ?? []) : (suppliers ?? []);
+                      return (
+                        <div className="flex flex-col gap-1">
+                          <select
+                            value={line.party_type ?? ''}
+                            onChange={(e) => setLine(idx, { party_type: e.target.value, party: '' })}
+                            className="w-full px-2 py-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs"
+                          >
+                            <option value="Customer">عميل</option>
+                            <option value="Supplier">مورد</option>
+                            <option value="Employee">موظف</option>
+                          </select>
+                          <select
+                            required
+                            value={line.party ?? ''}
+                            onChange={(e) => setLine(idx, { party: e.target.value })}
+                            className="w-full px-2 py-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs"
+                          >
+                            <option value="">اختر...</option>
+                            {partyList.map((p) => (
+                              <option key={p.name} value={p.name}>{('customer_name' in p ? p.customer_name : (p as any).supplier_name) ?? p.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-2">
                     <input type="number" step="0.01" min={0} dir="ltr" placeholder="0.00" value={line.debit_in_account_currency ?? ''} onChange={(e) => setLine(idx, { debit_in_account_currency: e.target.value === '' ? 0 : Number(e.target.value) })} className="w-full px-3 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-mono focus:ring-2 focus:ring-[color:var(--color-brand-500)] focus:border-[color:var(--color-brand-400)]" />
@@ -222,7 +271,7 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-slate-200 dark:border-white/10">
-                <td className="px-4 py-3 font-bold text-slate-800 dark:text-white" colSpan={2}>الإجمالي</td>
+                <td className="px-4 py-3 font-bold text-slate-800 dark:text-white" colSpan={3}>الإجمالي</td>
                 <td className={'px-4 py-3 font-mono font-bold text-sm ' + (isBalanced ? 'text-emerald-600' : 'text-red-600')}>{totalDebit.toFixed(2)}</td>
                 <td className={'px-4 py-3 font-mono font-bold text-sm ' + (isBalanced ? 'text-emerald-600' : 'text-red-600')}>{totalCredit.toFixed(2)}</td>
                 <td className="px-4 py-3 text-center" colSpan={2}>
@@ -269,5 +318,5 @@ function Body({ mode, name, onDone }: { mode: 'create' | 'edit'; name?: string; 
 }
 
 function emptyLine(): JELine {
-  return { account: '', debit_in_account_currency: 0, credit_in_account_currency: 0, user_remark: '', cost_center: '' };
+  return { account: '', debit_in_account_currency: 0, credit_in_account_currency: 0, user_remark: '', cost_center: '', party_type: '', party: '' };
 }

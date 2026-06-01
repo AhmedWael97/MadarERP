@@ -1,5 +1,6 @@
 /** ميزان المراجعة — wraps ERPNext "Trial Balance". */
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FinancialReportShell, DateRangeFilters, fmtNum, type ReportColumn } from '../FinancialReportShell';
 import { localDate, localYearStart } from '@/lib/formatters/dates';
 
@@ -12,7 +13,21 @@ const COLUMNS: ReportColumn[] = [
   {
     label: 'اسم الحساب',
     fieldname: 'account',
-    render: (row) => (row.account_name as string) || (row.account as string) || '—',
+    render: (row) => {
+      const displayName = (row.account_name as string) || (row.account as string) || '—';
+      const accountId = row.account as string;
+      if (accountId) {
+        return (
+          <Link
+            to={`/accounting/reports/general-ledger?account=${encodeURIComponent(accountId)}`}
+            className="text-[color:var(--color-brand-600)] hover:underline font-medium"
+          >
+            {displayName}
+          </Link>
+        );
+      }
+      return displayName;
+    },
   },
   { label: 'مدين', fieldname: 'debit', numeric: true },
   { label: 'دائن', fieldname: 'credit', numeric: true },
@@ -41,7 +56,7 @@ export default function TrialBalancePage() {
       title="ميزان المراجعة"
       subtitle="عرض أرصدة جميع الحسابات المدينة والدائنة"
       reportName="Trial Balance"
-      filters={{ from_date: fromDate, to_date: toDate, fiscal_year: undefined }}
+      filters={{ from_date: fromDate, to_date: toDate, fiscal_year: undefined, show_zero_values: 1 }}
       permDoctype="GL Entry"
       columns={COLUMNS}
       filterUI={<DateRangeFilters fromDate={fromDate} toDate={toDate} onFromDate={setFromDate} onToDate={setToDate} />}

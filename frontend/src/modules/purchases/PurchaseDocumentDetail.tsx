@@ -1,8 +1,8 @@
-/** PurchaseDocumentDetail — shared show page for invoice/order/return. */
+/** PurchaseDocumentDetail — shared show page for invoice/order/receipt/return. */
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk';
 import { toast } from 'sonner';
-import { ArrowRight, CheckCircle, Pencil, Printer } from 'lucide-react';
+import { ArrowRight, ArrowRightLeft, CheckCircle, FileText, Pencil, Printer } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -14,9 +14,10 @@ interface VariantConfig {
 }
 
 const VARIANTS: Record<string, VariantConfig> = {
-  invoice: { doctype: 'Purchase Invoice', title: 'فاتورة مشتريات', listPath: '/purchases/invoices', dateField: 'posting_date' },
-  order:   { doctype: 'Purchase Order',   title: 'أمر شراء',       listPath: '/purchases/orders',   dateField: 'transaction_date' },
-  return:  { doctype: 'Purchase Invoice', title: 'مرتجع مشتريات',  listPath: '/purchases/returns',  dateField: 'posting_date' },
+  invoice: { doctype: 'Purchase Invoice',  title: 'فاتورة مشتريات', listPath: '/purchases/invoices',  dateField: 'posting_date' },
+  order:   { doctype: 'Purchase Order',    title: 'أمر شراء',       listPath: '/purchases/orders',   dateField: 'transaction_date' },
+  receipt: { doctype: 'Purchase Receipt',  title: 'إيصال استلام',   listPath: '/purchases/receipts', dateField: 'posting_date' },
+  return:  { doctype: 'Purchase Invoice',  title: 'مرتجع مشتريات',  listPath: '/purchases/returns',  dateField: 'posting_date' },
 };
 
 interface PurchaseItem {
@@ -56,6 +57,13 @@ export default function PurchaseDocumentDetailPage({ variant }: { variant: keyof
   const { id } = useParams<{ id: string }>();
   const { data: doc, isLoading, mutate: refreshDoc } = useFrappeGetDoc<PurchaseDoc>(cfg.doctype, id);
   const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
+  // Purchase Order → Purchase Receipt
+  const { call: makeReceiptCall, loading: makingReceipt } = useFrappePostCall<{ message: any }>('erpnext.buying.doctype.purchase_order.purchase_order.make_purchase_receipt');
+  // Purchase Receipt → Purchase Invoice
+  const { call: makeInvoiceFromReceiptCall, loading: makingInvoice } = useFrappePostCall<{ message: any }>('erpnext.buying.doctype.purchase_receipt.purchase_receipt.make_purchase_invoice');
+  // Insert mapped doc as draft
+  const { call: insertCall } = useFrappePostCall<{ message: any }>('frappe.client.insert');
+  const converting = makingReceipt || makingInvoice;
 
   if (isLoading || !doc) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
@@ -70,6 +78,36 @@ export default function PurchaseDocumentDetailPage({ variant }: { variant: keyof
       void refreshDoc();
     } catch (e: any) {
       toast.error(e?.message ?? 'تعذر الترحيل');
+    }
+  }
+
+  async function convertToReceipt() {
+    if (!doc) return;
+    try {
+      const res = await makeReceiptCall({ source_name: doc.name });
+      const mapped = res?.message;
+      if (!mapped) { toast.error('لم يتم الحصول على بيانات إيصال الاستلام'); return; }
+      const saved = await insertCall({ doc: mapped });
+      const newName = saved?.message?.name;
+      toast.success('تم إنشاء إيصال الاستلام');
+      if (newName) navigate(`/purchases/receipts/${encodeURIComponent(newName)}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'تعذر التحويل');
+    }
+  }
+
+  async function convertReceiptToInvoice() {
+    if (!doc) return;
+    try {
+      const res = await makeInvoiceFromReceiptCall({ source_name: doc.name });
+      const mapped = res?.message;
+      if (!mapped) { toast.error('لم يتم الحصول على بيانات الفاتورة'); return; }
+      const saved = await insertCall({ doc: mapped });
+      const newName = saved?.message?.name;
+      toast.success('تم إنشاء فاتورة المشتريات');
+      if (newName) navigate(`/purchases/invoices/${encodeURIComponent(newName)}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'تعذر التحويل');
     }
   }
 
@@ -94,6 +132,28 @@ export default function PurchaseDocumentDetailPage({ variant }: { variant: keyof
                   <Pencil size={16} /> تعديل
                 </Link>
               </>
+            )}
+            {/* Purchase Order → Purchase Receipt (only when submitted) */}
+            {doc.docstatus === 1 && variant === 'order' && (
+              <button
+                type="button"
+                disabled={converting}
+                onClick={convertToReceipt}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-500 hover:bg-violet-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+              >
+                <ArrowRightLeft size={16} /> {converting ? 'جاري...' : 'إنشاء إيصال استلام'}
+              </button>
+            )}
+            {/* Purchase Receipt → Purchase Invoice (only when submitted) */}
+            {doc.docstatus === 1 && variant === 'receipt' && (
+              <button
+                type="button"
+                disabled={converting}
+                onClick={convertReceiptToInvoice}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-500 hover:bg-violet-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+              >
+                <FileText size={16} /> {converting ? 'جاري...' : 'تحويل إلى فاتورة مشتريات'}
+              </button>
             )}
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 text-sm font-semibold rounded-xl">
               <Printer size={16} /> طباعة

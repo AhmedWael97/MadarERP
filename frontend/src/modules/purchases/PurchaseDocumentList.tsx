@@ -22,6 +22,7 @@ interface VariantConfig {
 const VARIANTS: Record<string, VariantConfig> = {
   invoices: { doctype: 'Purchase Invoice', title: 'فواتير المشتريات', subtitle: 'إدارة فواتير الشراء والصرف',                basePath: '/purchases/invoices', newLabel: 'فاتورة جديدة', excludeFilter: ['is_return', '!=', 1], dateField: 'posting_date' },
   orders:   { doctype: 'Purchase Order',   title: 'أوامر الشراء',      subtitle: 'إدارة أوامر الشراء',                       basePath: '/purchases/orders',   newLabel: 'أمر جديد',                                          dateField: 'transaction_date' },
+  receipts: { doctype: 'Purchase Receipt', title: 'إيصالات الاستلام',  subtitle: 'استلام البضائع من الموردين (GRN)',           basePath: '/purchases/receipts', newLabel: 'إيصال جديد',                                       dateField: 'posting_date' },
   returns:  { doctype: 'Purchase Invoice', title: 'مرتجعات المشتريات', subtitle: 'إدارة مرتجعات المشتريات والإشعارات المدينة', basePath: '/purchases/returns',  newLabel: 'مرتجع جديد',   extraFilter: ['is_return', '=', 1],   dateField: 'posting_date' },
 };
 

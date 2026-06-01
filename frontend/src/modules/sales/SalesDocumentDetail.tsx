@@ -2,7 +2,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk';
 import { toast } from 'sonner';
-import { ArrowRight, CheckCircle, Pencil, Printer } from 'lucide-react';
+import { ArrowRight, ArrowRightLeft, CheckCircle, FileText, Pencil, Printer } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
 
@@ -57,6 +57,13 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
   const { id } = useParams<{ id: string }>();
   const { data: doc, isLoading, mutate: refreshDoc } = useFrappeGetDoc<SalesDoc>(cfg.doctype, id);
   const { call: submitCall, loading: submitting } = useFrappePostCall<{ message: unknown }>('frappe.client.submit');
+  // Quotation → Sales Order
+  const { call: makeOrderCall, loading: makingOrder } = useFrappePostCall<{ message: any }>('erpnext.selling.doctype.quotation.quotation.make_sales_order');
+  // Sales Order → Sales Invoice
+  const { call: makeInvoiceCall, loading: makingInvoice } = useFrappePostCall<{ message: any }>('erpnext.selling.doctype.sales_order.sales_order.make_sales_invoice');
+  // Insert mapped doc as draft
+  const { call: insertCall } = useFrappePostCall<{ message: any }>('frappe.client.insert');
+  const converting = makingOrder || makingInvoice;
 
   if (isLoading || !doc) {
     return <div className="rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-slate-800/50 p-6 text-center text-sm text-slate-500">جاري التحميل...</div>;
@@ -72,6 +79,36 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
       void refreshDoc();
     } catch (e: any) {
       toast.error(e?.message ?? 'تعذر الترحيل');
+    }
+  }
+
+  async function convertToOrder() {
+    if (!doc) return;
+    try {
+      const res = await makeOrderCall({ source_name: doc.name });
+      const mapped = res?.message;
+      if (!mapped) { toast.error('لم يتم الحصول على بيانات أمر البيع'); return; }
+      const saved = await insertCall({ doc: mapped });
+      const newName = saved?.message?.name;
+      toast.success('تم إنشاء أمر البيع');
+      if (newName) navigate(`/sales/orders/${encodeURIComponent(newName)}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'تعذر التحويل');
+    }
+  }
+
+  async function convertToInvoice() {
+    if (!doc) return;
+    try {
+      const res = await makeInvoiceCall({ source_name: doc.name });
+      const mapped = res?.message;
+      if (!mapped) { toast.error('لم يتم الحصول على بيانات الفاتورة'); return; }
+      const saved = await insertCall({ doc: mapped });
+      const newName = saved?.message?.name;
+      toast.success('تم إنشاء فاتورة البيع');
+      if (newName) navigate(`/sales/invoices/${encodeURIComponent(newName)}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? 'تعذر التحويل');
     }
   }
 
@@ -96,6 +133,28 @@ export default function SalesDocumentDetailPage({ variant }: { variant: keyof ty
                   <Pencil size={16} /> تعديل
                 </Link>
               </>
+            )}
+            {/* Quotation → Sales Order (only when submitted) */}
+            {doc.docstatus === 1 && variant === 'quotation' && (
+              <button
+                type="button"
+                disabled={converting}
+                onClick={convertToOrder}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-500 hover:bg-violet-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+              >
+                <ArrowRightLeft size={16} /> {converting ? 'جاري...' : 'تحويل إلى أمر بيع'}
+              </button>
+            )}
+            {/* Sales Order → Sales Invoice (only when submitted) */}
+            {doc.docstatus === 1 && variant === 'order' && (
+              <button
+                type="button"
+                disabled={converting}
+                onClick={convertToInvoice}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-500 hover:bg-violet-600 text-white text-sm font-semibold rounded-xl transition-all shadow-sm disabled:opacity-50"
+              >
+                <FileText size={16} /> {converting ? 'جاري...' : 'تحويل إلى فاتورة'}
+              </button>
             )}
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 text-blue-600 text-sm font-semibold rounded-xl">
               <Printer size={16} /> طباعة
