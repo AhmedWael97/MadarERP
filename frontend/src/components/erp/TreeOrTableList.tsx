@@ -43,6 +43,8 @@ export interface TreeOrTableCfg {
    * Empty / null field values are filtered out before joining.
    */
   labelFields?: { fields: string[]; separator?: string };
+  /** Extra action buttons rendered before the "New" button in the page header. */
+  extraActions?: React.ReactNode;
 }
 
 interface TreeRow extends Record<string, unknown> {
@@ -59,9 +61,12 @@ export default function TreeOrTableList({ cfg }: { cfg: TreeOrTableCfg }) {
         title={cfg.title}
         subtitle={cfg.subtitle}
         actions={
-          <Link to={`${cfg.basePath}/create`} className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[color:var(--color-brand-500)] to-[color:var(--color-brand-600)] hover:from-[color:var(--color-brand-600)] hover:to-[color:var(--color-brand-700)] text-white text-sm font-semibold rounded-xl shadow-lg shadow-[color:var(--color-brand-500)]/20 transition-all">
-            <Plus size={16} /> {cfg.newLabel}
-          </Link>
+          <>
+            {cfg.extraActions}
+            <Link to={`${cfg.basePath}/create`} className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[color:var(--color-brand-500)] to-[color:var(--color-brand-600)] hover:from-[color:var(--color-brand-600)] hover:to-[color:var(--color-brand-700)] text-white text-sm font-semibold rounded-xl shadow-lg shadow-[color:var(--color-brand-500)]/20 transition-all">
+              <Plus size={16} /> {cfg.newLabel}
+            </Link>
+          </>
         }
       >
         <Body cfg={cfg} />
