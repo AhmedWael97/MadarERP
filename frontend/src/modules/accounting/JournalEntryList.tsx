@@ -1,11 +1,10 @@
 /** Accounting entries list — queries GL Entry (all accounting vouchers: Sales Invoice,
  *  Purchase Invoice, Journal Entry, Payment Entry, Stock Entry, etc.).
- *  This replaces the old Journal-Entry-only view so submitted Sales Invoices, Purchase
- *  Invoices, etc. appear here automatically. */
+ *  Also shows draft Journal Entry records (docstatus=0) in a dedicated panel. */
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFrappeGetDocCount, useFrappeGetDocList } from 'frappe-react-sdk';
-import { FileText, FileCheck2, FileClock, Plus, Search } from 'lucide-react';
+import { FileText, FileCheck2, FileClock, FilePen, Plus, Search } from 'lucide-react';
 import { PageShell } from '@/components/erp/PageShell';
 import { DataTableToolbar, type ToolbarColumn } from '@/components/erp/DataTableToolbar';
 import { RequirePerm } from '@/lib/auth/RequirePerm';
@@ -93,6 +92,75 @@ const SOURCE_FILTER: Record<Exclude<SourceKey, ''>, Array<any>> = {
   'stock':    [['voucher_type', 'in', ['Stock Entry', 'Delivery Note', 'Purchase Receipt']]],
 };
 
+interface JEDraftRow {
+  name: string;
+  posting_date?: string;
+  user_remark?: string;
+  total_debit?: number;
+  total_credit?: number;
+}
+
+/** Panel showing unsubmitted Journal Entry drafts. */
+function DraftsPanel() {
+  const navigate = useNavigate();
+  const { data: drafts, isLoading } = useFrappeGetDocList<JEDraftRow>('Journal Entry', {
+    fields: ['name', 'posting_date', 'user_remark', 'total_debit', 'total_credit'],
+    filters: [['docstatus', '=', 0]],
+    limit: 50,
+    orderBy: { field: 'modified', order: 'desc' },
+  });
+
+  if (!isLoading && (!drafts || drafts.length === 0)) return null;
+
+  return (
+    <div className="bg-amber-50 dark:bg-amber-500/5 rounded-2xl border border-amber-200 dark:border-amber-500/20 overflow-hidden">
+      <div className="px-5 py-3 border-b border-amber-200 dark:border-amber-500/20 flex items-center gap-2">
+        <FilePen size={16} className="text-amber-600 dark:text-amber-400" />
+        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">مسودات القيود اليدوية</span>
+        {drafts && <span className="text-xs font-semibold bg-amber-200 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">{drafts.length}</span>}
+      </div>
+      {isLoading ? (
+        <p className="px-5 py-4 text-sm text-slate-400">جاري التحميل...</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                <th className="px-5 py-2 text-start">رقم القيد</th>
+                <th className="px-5 py-2 text-start">التاريخ</th>
+                <th className="px-5 py-2 text-start">البيان</th>
+                <th className="px-5 py-2 text-end">إجمالي مدين</th>
+                <th className="px-5 py-2 text-end">إجمالي دائن</th>
+                <th className="px-5 py-2" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-amber-100 dark:divide-amber-500/10">
+              {(drafts ?? []).map((je) => (
+                <tr key={je.name} className="hover:bg-amber-100/50 dark:hover:bg-amber-500/10 cursor-pointer" onClick={() => navigate(`/accounting/journal-entries/${encodeURIComponent(je.name)}`)}>
+                  <td className="px-5 py-2 font-mono font-semibold text-amber-700 dark:text-amber-400 whitespace-nowrap">{je.name}</td>
+                  <td className="px-5 py-2 whitespace-nowrap text-slate-600 dark:text-slate-300">{je.posting_date ?? '—'}</td>
+                  <td className="px-5 py-2 text-slate-600 dark:text-slate-300 max-w-[200px] truncate">{je.user_remark || '—'}</td>
+                  <td className="px-5 py-2 text-end font-mono text-emerald-700 dark:text-emerald-400">{je.total_debit ? fmtNum(je.total_debit) : '—'}</td>
+                  <td className="px-5 py-2 text-end font-mono text-red-600 dark:text-red-400">{je.total_credit ? fmtNum(je.total_credit) : '—'}</td>
+                  <td className="px-5 py-2 text-end">
+                    <Link
+                      to={`/accounting/journal-entries/${encodeURIComponent(je.name)}/edit`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs font-semibold text-amber-600 hover:underline"
+                    >
+                      تعديل
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Body() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -104,6 +172,7 @@ function Body() {
   const { data: total }     = useFrappeGetDocCount('GL Entry');
   const { data: active }    = useFrappeGetDocCount('GL Entry', [['is_cancelled', '=', 0]]);
   const { data: cancelled } = useFrappeGetDocCount('GL Entry', [['is_cancelled', '=', 1]]);
+  const { data: draftCount } = useFrappeGetDocCount('Journal Entry', [['docstatus', '=', 0]]);
 
   const filters = useMemo(() => {
     const f: Array<any> = [];
@@ -141,11 +210,15 @@ function Body() {
   return (
     <div className="space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <Stat label="إجمالي القيود"  value={Number(total ?? 0)}     icon={<FileText size={20} />}     color="brand" />
-        <Stat label="نشطة"           value={Number(active ?? 0)}    icon={<FileCheck2 size={20} />}   color="emerald" />
-        <Stat label="ملغاة"          value={Number(cancelled ?? 0)} icon={<FileClock size={20} />}    color="red" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Stat label="إجمالي القيود"  value={Number(total ?? 0)}      icon={<FileText size={20} />}    color="brand" />
+        <Stat label="نشطة"           value={Number(active ?? 0)}     icon={<FileCheck2 size={20} />}  color="emerald" />
+        <Stat label="ملغاة"          value={Number(cancelled ?? 0)}  icon={<FileClock size={20} />}   color="red" />
+        <Stat label="مسودات يدوية"   value={Number(draftCount ?? 0)} icon={<FilePen size={20} />}     color="amber" />
       </div>
+
+      {/* Draft Journal Entries panel */}
+      <DraftsPanel />
 
       {/* Filters */}
       <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 p-3">
@@ -233,8 +306,8 @@ function Body() {
   );
 }
 
-function Stat({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: 'brand' | 'emerald' | 'red' }) {
-  const cls = { brand: 'bg-[color:var(--color-brand-100,#d1fae5)] text-[color:var(--color-brand-600)]', emerald: 'bg-emerald-100 text-emerald-600', red: 'bg-red-100 text-red-600' }[color];
+function Stat({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: 'brand' | 'emerald' | 'red' | 'amber' }) {
+  const cls = { brand: 'bg-[color:var(--color-brand-100,#d1fae5)] text-[color:var(--color-brand-600)]', emerald: 'bg-emerald-100 text-emerald-600', red: 'bg-red-100 text-red-600', amber: 'bg-amber-100 text-amber-600' }[color];
   return (
     <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 p-4 text-center">
       <div className={`w-10 h-10 mx-auto mb-2 rounded-xl ${cls} flex items-center justify-center`}>{icon}</div>
